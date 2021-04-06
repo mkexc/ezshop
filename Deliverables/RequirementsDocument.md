@@ -41,9 +41,9 @@ EZShop is a software application to:
 
 | Stakeholder name        | Description                                                   |
 | ----------------------- |:-------------------------------------------------------------:|
-| End user                | warehouse workers, cashiers, cash registers, managers, owners |
-| Company that develops   | soft eng, mech eng, electro eng, marketing people, safety eng |
-| Maintainers             | the same company that develops the app                        |
+| End user                | Warehouse workers, cashiers, cash registers, managers, owners |
+| Company that develops   | Soft eng, mech eng, electro eng, marketing people, safety eng |
+| Maintainers             | The same company that develops the app                        |
 | Certification authority | ...                                                           |
 | **Generic Device**      | ...                                                           |
 | Suppliers, customers    | ...                                                           |
