@@ -1,10 +1,10 @@
 # Requirements Document 
 
-Authors: Roberto Alessi (290180), Gianvito Greco (281761), Michelangelo Bartolomucci (249673), Roberto Torta (290184)
+Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (249673), Gianvito Greco (281761), Roberto Torta (290184)
 
 Date: 06/04/2021
 
-Version: 0.2
+Version: 0.2.1
 
 
 # Contents
@@ -39,15 +39,15 @@ EZShop is a software application to:
 
 # Stakeholders
 
-| Stakeholder name        | Description                                                         |
-| ----------------------- |:-------------------------------------------------------------------:|
-| End user   	          | warehouse workers, cashiers, cash registers, managers, owners       |
-| Company that develops   | soft eng, mech eng, electro eng, marketing people, safety engineers |
-| Maintainers             | the same company that develops the app                              |
-| Certification authority | ...                                                                 |
-| Generic Device          | ...                                                                 |
-| Suppliers, customers    | ...                                                                 |
-| Item                    | ...                                                                 |
+| Stakeholder name        | Description                                                   |
+| ----------------------- |:-------------------------------------------------------------:|
+| End user                | warehouse workers, cashiers, cash registers, managers, owners |
+| Company that develops   | soft eng, mech eng, electro eng, marketing people, safety eng |
+| Maintainers             | the same company that develops the app                        |
+| Certification authority | ...                                                           |
+| **Generic Device**      | ...                                                           |
+| Suppliers, customers    | ...                                                           |
+| **Item**                | ...                                                           |
 
 
 # Context Diagram and interfaces
@@ -80,17 +80,17 @@ package context_diagram {
 
 ## Interfaces
 
-| Actor            | Logical Interface | Physical Interface  |
-| ---------------- |:-----------------:| -------------------:|
-| Cashier          | On/off button     | GUI                 |
-|                  | scan item command | Barcode scanner     |
-|                  | onClick command   | Touchscreen         |
-| Generic Device   | 220V 50hz         | Cash Register       |
-|                  | Pos               | Internet connection |
-| Warehouse worker | GUI               | On/off button       |
-|                  |                   | Touchscreen         |
-| Manager/Owner    | GUI               | On/off button       |
-|                  |                   | Touchscreen         |
+| Actor            | Logical Interface   | Physical Interface |
+| ---------------- |:-------------------:| ------------------:|
+| Cashier          | GUI                 | On/off button      |
+| ^                | Scan item command   | Barcode scanner    |
+| ^                | onClick command     | Touchscreen        |
+| Generic Device   | 220V 50hz           | Cash Register      |
+| ^                | Internet connection | POS                |
+| Warehouse worker | GUI                 | On/off button      |
+| ^                | ^                   | Touchscreen        |
+| Manager/Owner    | GUI                 | On/off button      |
+| ^                | ^                   | Touchscreen        |
 
 
 # Stories and personas
@@ -107,7 +107,7 @@ package context_diagram {
 
 | ID                                                                             | Description |
 | ------------------------------------------------------------------------------ |:-----------:|
-| FR1 Manage sales                                                               | ...         |
+| **FR1 Manage sales**                                                           | ...         |
 | FR1.1 Transaction for a customer purchase                                      | ...         |
 | FR1.1.1 Check the register number                                              | ...         |
 | FR1.1.1.1 Electronic transaction                                               | ...         |
@@ -140,11 +140,11 @@ package context_diagram {
 | FR4.4.1 Analyze and display total income                                       | ...         |
 | FR4.4.2 Analyze and display net income                                         | ...         |
 | FR4.4 Check numbers of sold products if equal to inventory warehouse decrement | ...         |
-| FR5 Manage employees                                                           | ...         |
+| **FR5 Manage employees**                                                       | ...         |
 | FR5.1 Hire a new Employee                                                      | ...         |
 | FR5.2 Fire an Employee                                                         | ...         |
 | FR5.3 Edit employee’s documents                                                | ...         |
-| FR5.4 Bind employee with a purchase (for statistic’s sake)                     | ...         |
+| **FR5.4 Bind employee with a purchase (statistics)**                           | ...         |
 | FR5.5 Pay employee                                                             | ...         |
 | FR5.6 Manage employee salary                                                   | ...         |
 | FR                                                                             |             |
@@ -177,7 +177,7 @@ scale max 1024 width
 
 left to right direction
 package use_cases{
-    actor cashier as CSH 
+    actor cashier as CSH
     actor POS
     actor Warehouse_worker as WW
     actor Manager as MNG
@@ -255,9 +255,9 @@ package use_cases{
 | Actors Involved  | Cashier, Customer, POS, Barcode scanner                          |
 | ---------------- |:----------------------------------------------------------------:|
 | Precondition     | Cash register is ON                                              |
-|                  | Barcode scanner is ready                                         |
-|                  | Item’s barcode is valid                                          |
-|                  | POS is connected                                                 |
+| ^                | Barcode scanner is ready                                         |
+| ^                | Item’s barcode is valid                                          |
+| ^                | POS is connected                                                 |
 | Post condition   | /                                                                |
 | Nominal Scenario | Items scan, transaction is okay, print receipt, update inventory |
 | Variants         | 1.2, 1.3                                                         |
@@ -267,9 +267,9 @@ package use_cases{
 | Scenario 1.1   |                                                |
 | -------------- |:----------------------------------------------:|
 | Precondition   | Cash register is ON                            |
-|                | Barcode scanner is ready                       |
-|                | Item’s barcode is valid                        |
-|                | POS is connected                               |
+| ^              | Barcode scanner is ready                       |
+| ^              | Item’s barcode is valid                        |
+| ^              | POS is connected                               |
 | Post condition | /                                              |
 | Step#          | Description                                    |
 | 1              | The cashier scans the items                    |
@@ -284,10 +284,10 @@ package use_cases{
 | Scenario 1.2   |                                                |
 | -------------- |:----------------------------------------------:|
 | Precondition   | Cash register is ON                            |
-|                | Barcode scanner is ready                       |
-|                | Item’s barcode is valid                        |
-|                | POS is not connected                           |
-| Post condition | Cash is available, want to retry transaction   |
+| ^              | Barcode scanner is ready                       |
+| ^              | Item’s barcode is valid                        |
+| ^              | POS is not connected                           |
+| Post condition | Cash is available or want to retry transaction |
 | Step#          | Description                                    |
 | 1              | The cashier scans the items                    |
 | 2              | The cashier scans the fidelity card (optional) |
@@ -300,9 +300,9 @@ package use_cases{
 | Scenario 1.3   |                                                |
 | -------------- |:----------------------------------------------:|
 | Precondition   | Cash register is ON                            |
-|                | Barcode scanner is ready                       |
-|                | Item’s barcode is not valid                    |
-|                | POS is connected                               |
+| ^              | Barcode scanner is ready                       |
+| ^              | Item’s barcode is not valid                    |
+| ^              | POS is connected                               |
 | Post condition | Items returned to warehouse                    |
 | Step#          | Description                                    |
 | 1              | The cashier scans the items                    |
@@ -352,7 +352,7 @@ package use_cases{
 
 # Glossary
 
-\<use UML class diagram to define important terms, or concepts in the domain of the system, and their relationships> 
+\<use UML class diagram to define important terms, or concepts in the domain of the system, and their relationships>
 
 \<concepts are used consistently all over the document, ex in use cases, requirements etc>
 
