@@ -173,6 +173,7 @@ package context_diagram {
 
 ```plantuml
 @startuml
+scale max 1024 width
 
 left to right direction
 package use_cases{
@@ -251,15 +252,15 @@ package use_cases{
 
 ### Use case 1, UC1
 
-| Actors Involved  | Cashier, Customer, POS, Barcode scanner                         |
-| ---------------- |:---------------------------------------------------------------:|
-| Precondition     | Cash register is ON                                             |
-|                  | Barcode scanner is ready                                        |
-|                  | Item’s barcode is valid                                         |
-|                  | POS is connected                                                |
-| Post condition   | /                                                               |
-| Nominal Scenario | Items scan,transaction is okay, print receipt, update inventory |
-| Variants         | 1.2, 1.3                                                        |
+| Actors Involved  | Cashier, Customer, POS, Barcode scanner                          |
+| ---------------- |:----------------------------------------------------------------:|
+| Precondition     | Cash register is ON                                              |
+|                  | Barcode scanner is ready                                         |
+|                  | Item’s barcode is valid                                          |
+|                  | POS is connected                                                 |
+| Post condition   | /                                                                |
+| Nominal Scenario | Items scan, transaction is okay, print receipt, update inventory |
+| Variants         | 1.2, 1.3                                                         |
 
 ##### Scenario 1.1
 
