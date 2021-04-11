@@ -1,11 +1,10 @@
 # Requirements Document 
 
-Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (249673), Gianvito Greco (281761), Roberto Torta (290184)
+Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 06/04/2021
+Date: 11/04/2021
 
-Version: 0.2.1
-
+Version: 0.7.1
 
 # Contents
 
@@ -63,7 +62,6 @@ package context_diagram {
 	actor Owner as OWN
 	actor Cashier as CSH
 	actor Customer as CST
-	actor POS
 	package Generic_Device {
 		usecase "APP" as APP
 	}
@@ -72,7 +70,6 @@ package context_diagram {
 	OWN --> APP
 	CSH -- Generic_Device
 	CST -- CSH
-	POS -- APP
 }
 
 @enduml
@@ -92,63 +89,79 @@ package context_diagram {
 | Manager/Owner    | GUI                 | On/off button      |
 | ^                | ^                   | Touchscreen        |
 
-
 # Stories and personas
-\<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
 
-\<Persona is-an-instance-of actor>
+## Personas
 
-\<stories will be formalized later as scenarios in use cases>
+* **Anna** is a 20yo student who lives alone and tries to save as money as possible in order to not waste her parent's and to be indipendent. So she is inclined to accept the terms of having a fidelity card to access all the possible shop's discounts. Since she is a university student, most of her friends lives like her and it is likable that she suggests the shop to them.
 
+* **Luigi** is 40yo man who works for a big delivery company, he drives a big camion and he is always on time. He starts at 6:00 AM and finishes at 2:00 PM. He has two sons and he is divorced. He's a very extrovert person and likes to stay a lot in public places.
+
+* **Mario** is 40yo man, he is  the warehouse worker of the shop. He is very accurate and careful, the manager trusts him a lot. He starts at 12:00 AM and finishes at 8:00 PM. He is not married but loves a girl called Peach.
+
+* **Giovanni** is a 30 y/o factory worker. He is married with Roberta and has got 3 kids, of which 2 are twins that are 3 y/o and the other one is 1 y/o. He wakes up very early in the morning, typically at 6:00 AM, and goes to work at 7:30 AM. He is a very introvert person and is very frustrated in his life. When he has to do a task, like going to the shop, he prefers that the task is done without issues or slowdowns.
+
+* **John** is a 50yo cashier. He works really hard to maintain his family. He tries to find every time new way to improve his job and to make it less harder. John has a dog and buys all the necessary products from the shop where he works. He tries every time to help who needs it.
+
+## Stories
+* Anna enters in the shop, buy some products and goes to the cash register. For the sales, she decides asks more informations to the cashier about the fidelity card. The cashier explains her all the advantages of having a fidelity card. Anna now is convinced and wants to request it. She gives all the necessary informations, the cashier compiles the form using them and release the fidelity card. Eventually she pays using credit card and starts to accumulate discount point on her new fidelity card.
+
+* Luigi, after a 3 hours travel, arrives to the shop's warehouse to deliver the suppliers. Mario, his brother, marks the delivery on the tablet and controls the quality of the items.
+
+* Giovanni, after a long day of work, decides to go to the shop to buy some food for the dinner. He enters the shop and goes through all the selection of the products. When he's done, he goes to the Cash Register to pay. He's got the fidelity card so he can obtain some discounts on the products prices. Finally, after the discounts have been applied, he can pay, exit the shop and go back home to eat.
+
+* John is a cashier of the shop, every day he wakes up at 6:30am, goes to work at 7:30am and stays there until 17:30pm. If he decides to hire a friend through the applications on his cash register, the application will block him because his account has no privileges to do such operation (only a manager or the ownet account can do so).
 
 # Functional and non functional requirements
 
 ## Functional Requirements
 
-| ID                                                                             | Description |
-| ------------------------------------------------------------------------------ |:-----------:|
-| **FR1 Manage sales**                                                           | ...         |
-| FR1.1 Transaction for a customer purchase                                      | ...         |
-| FR1.1.1 Check the register number                                              | ...         |
-| FR1.1.1.1 Electronic transaction                                               | ...         |
-| FR1.1.1.1.1 Check for fidelity card                                            | ...         |
-| FR1.1.1.1.2 Make the transaction through the POS                               | ...         |
-| FR1.1.1.2 Cash transaction                                                     | ...         |
-| FR1.1.1.2.1 Check for fidelity card                                            | ...         |
-| FR1.2 Display total purchase cost                                              | ...         |
-| FR2 Manage inventory                                                           | ...         |
-| FR2.1 Refill warehouse                                                         | ...         |
-| FR2.1.1 warehouse receives the supply from the suppliers                       | ...         |
-| FR2.1.2 warehouse increase the items supply level                              | ...         |
-| FR2.2 Check items in inventory                                                 | ...         |
-| FR2.2.1 Check only by name                                                     | ...         |
-| FR2.2.2 Check quantity                                                         | ...         |
-| FR2.2.2.1 Order new supply if the level is below a threshold                   | ...         |
-| FR2.2.2.1.1 Make an order from suppliers                                       | ...         |
-| FR2.2.3 Make dispute to the supplier for bad/damaged products                  | ...         |
-| FR3 Manage customers                                                           | ...         |
-| FR3.1 Add a new subscribed customer                                            | ...         |
-| FR3.2 Manage a fidelity card                                                   | ...         |
-| FR3.2.1 Check fidelity points                                                  | ...         |
-| FR3.2.2 Give gifts to subscriber after threshold                               | ...         |
-| FR3.3 Edit/Update an existing subscriber                                       | ...         |
-| FR3.4 Delete a customer from subscribers                                       | ...         |
-| FR4 Support accounting                                                         | ...         |
-| FR4.1 Calculate taxes                                                          | ...         |
-| FR4.2 Calculate daily income                                                   | ...         |
-| FR4.3 Analyze annual income                                                    | ...         |
-| FR4.4.1 Analyze and display total income                                       | ...         |
-| FR4.4.2 Analyze and display net income                                         | ...         |
-| FR4.4 Check numbers of sold products if equal to inventory warehouse decrement | ...         |
-| **FR5 Manage employees**                                                       | ...         |
-| FR5.1 Hire a new Employee                                                      | ...         |
-| FR5.2 Fire an Employee                                                         | ...         |
-| FR5.3 Edit employee’s documents                                                | ...         |
-| **FR5.4 Bind employee with a purchase (statistics)**                           | ...         |
-| FR5.5 Pay employee                                                             | ...         |
-| FR5.6 Manage employee salary                                                   | ...         |
-| FR                                                                             |             |
-| FR                                                                             |             |
+| ID                                                                | Description |
+| ------------------------------------------------------------------|:-----------:|
+| **FR1 Manage sales**                                              | ...         |
+| - FR1.1 Transaction for a customer purchase                       | ...         |
+| -- FR1.1.1 Check the register number                              | ...         |
+| --- FR1.1.1.1 Electronic transaction                              | ...         |
+| ---- FR1.1.1.1.1 Check for fidelity card                          | ...         |
+| ---- FR1.1.1.1.2 Make the transaction through the POS             | ...         |
+| --- FR1.1.1.2 Cash transaction                                    | ...         |
+| ---- FR1.1.1.2.1 Check for fidelity card                          | ...         |
+| - FR1.2 Display total purchase cost                               | ...         |
+| **FR2 Manage inventory**                                          | ...         |
+| - FR2.1 Refill warehouse                                          | ...         |
+| -- FR2.1.1 warehouse receives the supply from the suppliers       | ...         |
+| -- FR2.1.2 warehouse increase the items supply level              | ...         |
+| - FR2.2 Check items in inventory                                  | ...         |
+| -- FR2.2.1 Check only by name                                     | ...         |
+| -- FR2.2.2 Check quantity                                         | ...         |
+| --- FR2.2.2.1 Order new supply if the level is below a threshold  | ...         |
+| ---- FR2.2.2.1.1 Make an order from suppliers                     | ...         |
+| -- FR2.2.3 Display item's price                                   | ...         |
+| -- FR2.2.4 Make dispute to the supplier for bad/damaged products  | ...         |
+| - FR2.3 Edit item's price                                         | ...         |
+| **FR3 Manage subscribers**                                        | ...         |
+| - FR3.1 Add a new subscribed customer                             | ...         |
+| - FR3.2 Manage a fidelity card                                    | ...         |
+| -- FR3.2.1 Check fidelity points                                  | ...         |
+| -- FR3.2.2 Give gifts to subscriber after threshold               | ...         |
+| - FR3.3 Edit/Update an existing subscriber                        | ...         |
+| - FR3.4 Delete a customer from subscribers                        | ...         |
+| **FR4 Support accounting**                                        | ...         |
+| - FR4.1 Calculate taxes                                           | ...         |
+| - FR4.2 Calculate daily income                                    | ...         |
+| - FR4.3 Analyze annual income                                     | ...         |
+| -- FR4.3.1 Analyze and display total income                       | ...         |
+| -- FR4.3.2 Analyze and display net income                         | ...         |
+| - FR4.4 Check anti-theft control                                  | ...         |
+| **FR5 Manage employees**                                          | ...         |
+| - FR5.1 Hire a new Employee                                       | ...         |
+| -- FR5.1.1 A badge is released to the new Employee                | ...         |
+| - FR5.2 Fire an Employee                                          | ...         |
+| - FR5.3 Edit employee’s documents                                 | ...         |
+| -- FR5.3.1 Manage employee's ID                                   | ...         |
+| - FR5.4 Bind employee with a purchase (statistics)                | ...         |
+| - FR5.5 Pay employee                                              | ...         |
+| - FR5.6 Manage employee salary                                    | ...         |
 
 
 ## Non Functional Requirements
@@ -163,9 +176,6 @@ package context_diagram {
 | NFR6          | ease of use                        | time to learn how to use for non engineer < 15minutes | ...       |
 | NFR7          | efficiency                         | response time to any (virtual) button pressed <1sec   | ...       |
 | NFR8          | robustness                         | availability at least 99%                             | ...       |
-| NFR9          |                                    |                                                       |           |
-| NFR10         |                                    |                                                       |           |
-
 
 # Use case diagram and use cases
 
@@ -190,6 +200,7 @@ package use_cases{
         usecase "FR2: Manage inventory" as FR2
         usecase "FR2.1: Refill warehouse" as FR2_1
         usecase "FR2.2: Check items in inventory" as FR2_2
+        usecase "FR2.3: Edit item's price" as FR2_3
         usecase "FR3: Manage costumer" as FR3
         usecase "FR3.1: Add a new subscribed customer" as FR3_1
         usecase "FR3.2: Manage a fidelity card" as FR3_2
@@ -199,7 +210,7 @@ package use_cases{
         usecase "FR4.1: Calculate taxes" as FR4_1
         usecase "FR4.2: Calculate daily income" as FR4_2
         usecase "FR4.3: Analyze annual income" as FR4_3
-        usecase "FR4.4: Control if the number of sold products is equal to the number of the warehouse decrease" as FR4_4
+        usecase "FR4.4: Check anti-theft control" as FR4_4
         usecase "FR5: Manage employees" as FR5
         usecase "FR5.1: Hire a new employee" as FR5_1
         usecase "FR5.2: Fire an employee" as FR5_2
@@ -208,7 +219,7 @@ package use_cases{
         usecase "FR5.5: Pay employee" as FR5_5
         usecase "FR5.6: Manage employee salary" as FR5_6
 
-        CSH --> FR1
+        CSH -> FR1
         CSH --> FR3
         POS ---> FR1
         WW  --> FR2
@@ -223,20 +234,18 @@ package use_cases{
         FR1 ..> FR1_2
         FR1_1 --> FR2
         FR1_1 --> FR4_2
-
         FR2 ..> FR2_1
         FR2 ..> FR2_2
-
+        FR2 ..> FR2_3
+        FR2_2 -> FR4_2
         FR3 .> FR3_1
         FR3 ..> FR3_2
         FR3 ..> FR3_3
         FR3 ..> FR3_4
-
         FR4 ..> FR4_1
         FR4 ..> FR4_2
         FR4 ..> FR4_3
         FR4 ..> FR4_4
-
         FR5 ..> FR5_1
         FR5 ..> FR5_2
         FR5 ..> FR5_3
@@ -321,7 +330,7 @@ package use_cases{
 | Precondition     | /                                                                    |
 | Post condition   | Items are guaranteed                                                 |
 | Nominal Scenario | Item search, item found, item quantity printed and is over threshold |
-| Variants         | 1.2, 1.3                                                             |
+| Variants         | 2.2                                                                  |
 
 #### Scenario 2.1
 
@@ -346,24 +355,229 @@ package use_cases{
 | 3              | Item quantity is printed but it’s lower than the threshold |
 | 4              | An order to the supplier is made                           |
 
-### Use case x, UCx
-..
 
+### Use case 3, UC3
+
+| Actors Involved  | Manager, cashier, subscriber                                                                       |
+| ---------------- |:--------------------------------------------------------------------------------------------------:|
+| Precondition     | SSN is not already in the database                                                                 |
+| Post condition   | A new fidelity card has been released                                                              |
+| Nominal Scenario | Customer asks for fidelity card and gives his informations, cashier inserts informations in a form |
+| Variants         | 3.2                                                                                                |
+
+#### Scenario 3.1
+
+| Scenario 3.1   |                                                     |
+| -------------- |:---------------------------------------------------:|
+| Precondition   | SSN is not already in the database                  |
+| Post condition | A new fidelity card has been released               |
+| Step#          | Description                                         |
+| 1              | The subscriber asks for fidelity card benefits      |
+| 2              | The cashier explains them                           |
+| 3              | The subscriber decides to subscribe                 |
+| 4              | The cashier inserts subscriber info in the app form |
+| 5              | The fidelity card gets linked to the subscriber     |
+| 6              | The fidelity card is released to the subscriber     |
+
+#### Scenario 3.2
+
+| Scenario 3.2   |                                                                                                             |
+| -------------- |:-----------------------------------------------------------------------------------------------------------:|
+| Precondition   | SSN is already on the database                                                                              |
+| Post condition | A new fidelity card hasn't been released                                                                    |
+| Step#          | Description                                                                                                 |
+| 1              | The subscriber asks for fidelity card benefits                                                              |
+| 2              | The cashier explains them                                                                                   |
+| 3              | The subscriber decides to subscribe                                                                         |
+| 4              | The cashier inserts subscriber info in the app form                                                         |
+| 5              | The cashier receives an error which say the user is already registered in the database                      |
+| 6              | The cashier tell customer is already registered and has the possibility to buy a copy of the fildelity card |
+
+
+### Use case 4, UC4
+
+| Actors Involved  | Manager, Owner                                                        |
+| ---------------- |:---------------------------------------------------------------------:|
+| Precondition     | The shop was open during that day                                     |
+| Post condition   | Total daily income is calculated                                      |
+| Nominal Scenario | Shop is open, Products get sold during the day, Daily income is shown |
+| Variants         | 4.2                                                                   |
+
+#### Scenario 4.1
+
+| Scenario 4.1   |                                                 |
+| -------------- |:-----------------------------------------------:|
+| Precondition   | The shop was open during the day                |
+| ^              | The manager/owner log in to obtain daily income |
+| Post condition | Total daily income is calculated                |
+| Step#          | Description                                     |
+| 1              | The actor involved search for the daily income  |
+| 2              | The actor has the access granted                |
+| 3              | The daily income is printed                     |
+
+##### Scenario 4.2
+
+| Scenario 4.2   |                                                                                 |
+| -------------- |:-------------------------------------------------------------------------------:|
+| Precondition   | The shop was open during the day                                                |
+| ^              | A cashier log in to obtain daily income                                         |
+| Post condition | The cashier cannot see daily income because it does not have enough permissions |
+| Step#          | Description                                                                     |
+| 1              | The actor involved search for the daily income                                  |
+| 2              | The actor has the access granted                                                |
+| 3              | The actor has access denied because it does not have enough permissions         |
+
+
+### Use case 5, UC5
+
+| Actors Involved  | Manager, Owner                                                                                                       |
+| ---------------- |:--------------------------------------------------------------------------------------------------------------------:|
+| Precondition     | An actor publishes an ad to hire new employees                                                                       |
+| Post condition   | Employees are hired                                                                                                  |
+| Nominal Scenario | Owner publishes an ad, people candidate themselves, owner/manager decides which one to hire, a new employee is hired |
+| Variants         | 5.2, 5.3                                                                                                             |
+
+#### Scenario 5.1
+
+| Scenario 5.1   |                                                                      |
+| -------------- |:--------------------------------------------------------------------:|
+| Precondition   | The actor wants to hire a new employee                               |
+| Post condition | A new employee is hired                                              |
+| Step#          | Description                                                          |
+| 1              | Actor decides which new employee to hire                             |
+| 2              | The personal data of the new employee is inserted into an app's form |
+| 3              | An ID number gets released to the new employee                       |
+| 4              | A badge gets released to the new employee                            |
+
+##### Scenario 5.2
+
+| Scenario 5.2   |                                             |
+| -------------- |:-------------------------------------------:|
+| Precondition   | The manager wants to fire the owner         |
+| Post condition | The dismissal does not happen               |
+| Step#          | Description                                 |
+| 1              | The actors involved tries to fire the owner |
+| 2              | The owner has the biggest privileges        |
+| 3              | Advise "Operation not permitted" is shown   |
+
+##### Scenario 5.3
+
+| Scenario 5.3   |                                                     |
+| -------------- |:---------------------------------------------------:|
+| Precondition   | The manager wants to improve his own salary         |
+| Post condition | The operation does not happen                       |
+| Step#          | Description                                         |
+| 1              | The actors involved try to improve his own salary   |
+| 2              | The privileges aren't enough hight                  |
+| 3              | Advise "Operation not permitted" is shown           |
 
 # Glossary
 
-\<use UML class diagram to define important terms, or concepts in the domain of the system, and their relationships>
+```plantuml
+@startuml
 
-\<concepts are used consistently all over the document, ex in use cases, requirements etc>
+class Employee{
+    ID
+    Privilege_level
+    function
+}
+class Price_list{
+    item_price
+    item_code
+    item_sale
+}
+class Owner{}
+class Manager{}
+class EZShop{}
 
+Manager --|> Employee
+Owner --|> Manager
+
+Employee "1..*"-->"*" EZShop
+Price_list "1" -->"*" EZShop
+
+note as EmployeeDescription
+    An employee is a person that works in the shop
+end note
+
+note as ManagerDescription
+    A manager is a person that works in the shop and has high
+    privileges in the app, such as hiring or firing employees
+end note
+
+note as OwnerDescription
+    The owner is a special actor who can fire/hire
+    a manager and extends the latter's privileges
+end note
+
+note as PriceListDescription
+    The price list is the list containing all item's price
+    and any sale, it is kept inside a shared db server
+end note
+
+EmployeeDescription ..> Employee
+ManagerDescription ..> Manager
+OwnerDescription ..> Owner
+PriceListDescription ..> Price_list
+
+@enduml
+```
 
 # System Design
-\<describe here system design>
 
-\<must be consistent with Context diagram>
+```plantuml
 
+@startuml
+top to bottom direction
+class EZShop{
+    + FR1_Manage_sales()
+    + FR2_Manage_inventory()
+    + FR3_Manage_subscribers()
+    + FR4_Support_accounting()
+    + FR5_Manage_employees()
+}
+
+class Tablet {
+    user_logged
+    user_privileges
+    tablet_serial_number
+    table_pwd
+}
+
+class Cash_register{}
+
+Cash_register "1 " ---|> "1   " Tablet
+
+class Barcode_reader {}
+
+class POS {}
+
+class Fidelity_card {
+    id
+    SSN
+}
+
+Tablet "1"--o "1..*" EZShop
+Barcode_reader "1..*"--o "1   " Cash_register
+POS "0..1   "--o "1" Cash_register
+Fidelity_card "0..*" --o "0..*" Barcode_reader
+
+@enduml
+```
 
 # Deployment Diagram
 
-\<describe here deployment diagram >
+```plantuml
+@startuml
+left to right direction
+file EZShop_Application
+node Tablet
+node Local_server
+database Database
 
+EZShop_Application  "<<interact>>"--> Local_server
+Database "<<run>>" .. Local_server
+EZShop_Application "<<deploy>>" --> Tablet
+
+@enduml
+```
