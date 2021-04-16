@@ -448,24 +448,24 @@ package use_cases{
 
 ##### Scenario 5.2
 
-| Scenario 5.2   |                                             |
-| -------------- |:-------------------------------------------:|
-| Precondition   | The manager wants to fire the owner         |
-| Post condition | The dismissal does not happen               |
-| Step#          | Description                                 |
-| 1              | The actors involved tries to fire the owner |
-| 2              | The owner has the biggest privileges        |
-| 3              | Advise "Operation not permitted" is shown   |
+| Scenario 5.2   |                                                  |
+| -------------- |:------------------------------------------------:|
+| Precondition   | The manager wants to hire an actual employee     |
+| Post condition | The hiring does not happen                       |
+| Step#          | Description                                      |
+| 1              | The actors involved tries to hire the employee   |
+| 2              | The employee is already in the system            |
+| 3              | Advise "Employee already in system" is shown     |
 
 ##### Scenario 5.3
 
 | Scenario 5.3   |                                                   |
 | -------------- |:-------------------------------------------------:|
-| Precondition   | The manager wants to improve his own salary       |
-| Post condition | The operation does not happen                     |
+| Precondition   | A cashier wants to hire a new employee            |
+| Post condition | The operation is halted                           |
 | Step#          | Description                                       |
-| 1              | The actors involved try to improve his own salary |
-| 2              | The privileges aren't enough hight                |
+| 1              | The cashier tries to enter the management area    |
+| 2              | The privileges aren't enough high                 |
 | 3              | Advise "Operation not permitted" is shown         |
 
 # Glossary
