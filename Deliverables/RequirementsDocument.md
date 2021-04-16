@@ -4,7 +4,7 @@ Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito M
 
 Date: 16/04/2021
 
-Version: 1.0
+Version: 1.0.1
 
 # Contents
 
@@ -443,10 +443,9 @@ package use_cases{
 | Precondition   | The actor wants to hire a new employee                               |
 | Post condition | A new employee is hired                                              |
 | Step#          | Description                                                          |
-| 1              | Actor decides which new employee to hire                             |
-| 2              | The personal data of the new employee is inserted into an app's form |
-| 3              | An ID number gets released to the new employee                       |
-| 4              | A badge gets released to the new employee                            |
+| 1              | The personal data of the new employee is inserted into an app's form |
+| 2              | An ID number gets released to the new employee                       |
+| 3              | A badge gets released to the new employee                            |
 
 ##### Scenario 5.2
 
