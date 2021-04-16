@@ -4,7 +4,7 @@ Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito M
 
 Date: 16/04/2021
 
-Version: 1.0.2
+Version: 1.1.2
 
 # Contents
 
@@ -43,9 +43,9 @@ EZShop is a software application to:
 | End user                | Warehouse workers, cashiers, cash registers, managers, owners |
 | Company that develops   | Soft eng, mech eng, electro eng, marketing people, safety eng |
 | Maintainers             | The same company that develops the app                        |
-| Certification authority | ...                                                           |
-| **Generic Device**      | ...                                                           |
-| Suppliers, customers    | ...                                                           |
+| Certification authority | Company who gives digital certificate for security keys       |
+| Tablet                  | Device used to access to EZShop                               |
+| Suppliers, customers    | External users who interact with the user inside the shop     |
 | **Item**                | ...                                                           |
 
 
@@ -142,16 +142,15 @@ package context_diagram {
 | - FR3.1 Add a new subscribed customer                            | Function to add a new subscriber                                        |
 | - FR3.2 Manage a fidelity card                                   | Gives the ability to manage a fidelity card                             |
 | -- FR3.2.1 Check fidelity points                                 | It lets to get the point                                                |
-| -- FR3.2.2 Give gifts to subscriber after threshold              | After the subscriber reached a certain amount of point, this function lets decide which gift to choose |
+| -- FR3.2.2 Give gifts to subscriber after threshold              | After subscriber reached certain amount of points, give a gift          |
 | - FR3.3 Edit/Update an existing subscriber                       | Edits subscribers profile                                               |
 | - FR3.4 Delete a customer from subscribers                       | Deletes a subscriber from the system                                    |
 | **FR4 Support accounting**                                       | **Functions that support accounting**                                   |
 | - FR4.1 Calculate taxes                                          | Calculates taxes                                                        |
-| - FR4.2 Calculate daily income                                   | Calculates the daily income by summing all the payments amounts         |
-| - FR4.3 Analyze annual income                                    | Analyzes annual income                                                  |
-| -- FR4.3.1 Analyze and display total income                      | Displays the total income                                               |
-| -- FR4.3.2 Analyze and display net income                        | Displays the net income                                                 |
-| - FR4.4 Check anti-theft control                                 | Functions that control if there has been a theft                        |
+| - FR4.2 Calculate income                                         | Calculates the income by summing all the payments amounts               |
+| -- FR4.2.1 Analyze and display total income                      | Displays the total income                                               |
+| -- FR4.2.2 Analyze and display net income                        | Displays the net income                                                 |
+| - FR4.3 Check anti-theft control                                 | Functions that control if there has been a theft                        |
 | **FR5 Manage employees**                                         | **Functions to manage employees**                                       |
 | - FR5.1 Hire a new Employee                                      | Add a new employee account                                              |
 | -- FR5.1.1 Released the badge to the new Employee                | Adds a new employee to the system                                       |
@@ -207,9 +206,8 @@ package use_cases{
         usecase "FR3.4: Delete a customer from subscribers" as FR3_4
         usecase "FR4: Support accounting" as FR4
         usecase "FR4.1: Calculate taxes" as FR4_1
-        usecase "FR4.2: Calculate daily income" as FR4_2
-        usecase "FR4.3: Analyze annual income" as FR4_3
-        usecase "FR4.4: Check anti-theft control" as FR4_4
+        usecase "FR4.2: Calculate income" as FR4_2
+        usecase "FR4.3: Check anti-theft control" as FR4_3
         usecase "FR5: Manage employees" as FR5
         usecase "FR5.1: Hire a new employee" as FR5_1
         usecase "FR5.2: Fire an employee" as FR5_2
@@ -244,7 +242,6 @@ package use_cases{
         FR4 ..> FR4_1
         FR4 ..> FR4_2
         FR4 ..> FR4_3
-        FR4 ..> FR4_4
         FR5 ..> FR5_1
         FR5 ..> FR5_2
         FR5 ..> FR5_3
@@ -404,26 +401,26 @@ package use_cases{
 
 #### Scenario 4.1
 
-| Scenario 4.1   |                                                 |
-| -------------- |:-----------------------------------------------:|
-| Precondition   | The shop was open during the day                |
-| ^              | The manager/owner log in to obtain daily income |
-| Post condition | Total daily income is calculated                |
-| Step#          | Description                                     |
-| 1              | The actor involved search for the daily income  |
-| 2              | The actor has the access granted                |
-| 3              | The daily income is printed                     |
+| Scenario 4.1   |                                                                  |
+| -------------- |:----------------------------------------------------------------:|
+| Precondition   | The shop was open during the day                                 |
+| ^              | The manager/owner log in to obtain a period income               |
+| Post condition | Total period income is calculated                                |
+| Step#          | Description                                                      |
+| 1              | The actor involved selects the period where to calculate income  |
+| 2              | The actor has the access granted and the period is valid         |
+| 3              | The calculated income is printed                                 |
 
 ##### Scenario 4.2
 
-| Scenario 4.2   |                                                                                 |
-| -------------- |:-------------------------------------------------------------------------------:|
-| Precondition   | The shop was open during the day                                                |
-| ^              | A cashier log in to obtain daily income                                         |
-| Post condition | The cashier cannot see daily income because it does not have enough permissions |
-| Step#          | Description                                                                     |
-| 1              | The actor involved search for the daily income                                  |
-| 2              | The actor has access denied because it does not have enough permissions         |
+| Scenario 4.2   |                                                                               |
+| -------------- |:-----------------------------------------------------------------------------:|
+| Precondition   | The shop was open during the day                                              |
+| ^              | A cashier log in to obtain a period income                                    |
+| Post condition | The cashier cannot see the income because it does not have enough permissions |
+| Step#          | Description                                                                   |
+| 1              | The actor involved tries to request the income on a period                    |
+| 2              | The actor has access denied because it does not have enough permissions       |
 
 
 ### Use case 5, UC5
@@ -448,25 +445,25 @@ package use_cases{
 
 ##### Scenario 5.2
 
-| Scenario 5.2   |                                                  |
-| -------------- |:------------------------------------------------:|
-| Precondition   | The manager wants to hire an actual employee     |
-| Post condition | The hiring does not happen                       |
-| Step#          | Description                                      |
-| 1              | The actors involved tries to hire the employee   |
-| 2              | The employee is already in the system            |
-| 3              | Advise "Employee already in system" is shown     |
+| Scenario 5.2   |                                                |
+| -------------- |:----------------------------------------------:|
+| Precondition   | The manager wants to hire an actual employee   |
+| Post condition | The hiring does not happen                     |
+| Step#          | Description                                    |
+| 1              | The actors involved tries to hire the employee |
+| 2              | The employee is already in the system          |
+| 3              | Advise "Employee already in system" is shown   |
 
 ##### Scenario 5.3
 
-| Scenario 5.3   |                                                   |
-| -------------- |:-------------------------------------------------:|
-| Precondition   | A cashier wants to hire a new employee            |
-| Post condition | The operation is halted                           |
-| Step#          | Description                                       |
-| 1              | The cashier tries to enter the management area    |
-| 2              | The privileges aren't enough high                 |
-| 3              | Advise "Not enough privileges" is shown           |
+| Scenario 5.3   |                                                |
+| -------------- |:----------------------------------------------:|
+| Precondition   | A cashier wants to hire a new employee         |
+| Post condition | The operation is halted                        |
+| Step#          | Description                                    |
+| 1              | The cashier tries to enter the management area |
+| 2              | The privileges aren't enough high              |
+| 3              | Advise "Not enough privileges" is shown        |
 
 # Glossary
 
