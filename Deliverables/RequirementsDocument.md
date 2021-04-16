@@ -466,7 +466,7 @@ package use_cases{
 | Step#          | Description                                       |
 | 1              | The cashier tries to enter the management area    |
 | 2              | The privileges aren't enough high                 |
-| 3              | Advise "Operation not permitted" is shown         |
+| 3              | Advise "Not enough privileges" is shown           |
 
 # Glossary
 
