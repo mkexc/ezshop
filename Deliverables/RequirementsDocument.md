@@ -2,9 +2,9 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 11/04/2021
+Date: 16/04/2021
 
-Version: 0.7.1
+Version: 1.0
 
 # Contents
 
