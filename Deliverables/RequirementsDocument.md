@@ -4,7 +4,7 @@ Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito M
 
 Date: 16/04/2021
 
-Version: 1.0.1
+Version: 1.0.2
 
 # Contents
 
@@ -116,65 +116,65 @@ package context_diagram {
 
 ## Functional Requirements
 
-| ID                                                                | Description                                                             |
-| ------------------------------------------------------------------|:-----------:                                                            |
-| **FR1 Manage sales**                                              | **Functions to manage the sales**                                       |
-| - FR1.1 Transaction for a customer purchase                       | Start a new transaction                                                 |
-| -- FR1.1.1 Check the register number                              | Gives the number of the register where the sale is done                 |
-| -- FR1.1.2 Electronic transaction                                 | Transaction made by POS                                                 |
-| --- FR1.1.1.1.1 Make the transaction through the POS              | Uses POS' APIs                                                          |
-| -- FR1.1.3 Cash transaction                                       | Registers the new income                                                |
-| -- FR1.1.4 Check for fidelity card                                | Reads the fidelity card barcode                                         |
-| - FR1.2 Display total purchase cost                               | Shows the total cost for the transaction                                |
-| **FR2 Manage inventory**                                          | **Functions to manage the inventory**                                   |
-| - FR2.1 Manage warehouse                                          | Gives the ability to manage the warehouse                               |
-| -- FR2.1.1 warehouse receives the supply from the suppliers       | Manages the reception of the supplies                                   |
-| --- FR2.1.1.1 warehouse increase the items supply level           | It lets increase the items' number in inventory                         |
-| - FR2.2 Check items in inventory                                  | Gives the ability to check items' presence in inventory                 |
-| -- FR2.2.1 Check only by name                                     | Checks if the item is in the database                                   |
-| -- FR2.2.2 Check quantity                                         | Checks the quantity of an item in the warehouse                         |
-| --- FR2.2.2.1 Order new supply if the level is below a threshold  | Checks if the number of items is below a threshold                      |
-| ---- FR2.2.2.1.1 Make an order from suppliers                     | Makes an order from suppliers                                           |
-| -- FR2.2.3 Display item's price                                   | Shows an item's price                                                   |
-| -- FR2.2.4 Make dispute to the supplier for bad/damaged products  | Gives the ability to make a dispute to a supplier                       |
-| - FR2.3 Edit item's price                                         | Manage an item price                                                    |
-| **FR3 Manage subscribers**                                        | **Functions to manage the subscribers**                                 |
-| - FR3.1 Add a new subscribed customer                             | Function to add a new subscriber                                        |
-| - FR3.2 Manage a fidelity card                                    | Gives the ability to manage a fidelity card                             |
-| -- FR3.2.1 Check fidelity points                                  | It lets to get the point                                                |
-| -- FR3.2.2 Give gifts to subscriber after threshold               | After the subscriber reached a certain amount of point, this function lets decide which gift to choose         |
-| - FR3.3 Edit/Update an existing subscriber                        | Edits subscribers profile                                               |
-| - FR3.4 Delete a customer from subscribers                        | Deletes a subscriber from the system                                    |
-| **FR4 Support accounting**                                        | **Functions that support accounting**                                   |
-| - FR4.1 Calculate taxes                                           | Calculates taxes                                                        |
-| - FR4.2 Calculate daily income                                    | Calculates the daily income by summing all the payments amounts         |
-| - FR4.3 Analyze annual income                                     | Analyzes annual income                                                  |
-| -- FR4.3.1 Analyze and display total income                       | Displays the total income                                               |
-| -- FR4.3.2 Analyze and display net income                         | Displays the net income                                                 |
-| - FR4.4 Check anti-theft control                                  | Functions that control if there has been a theft                        |
-| **FR5 Manage employees**                                          | **Functions to manage employees**                                       |
-| - FR5.1 Hire a new Employee                                       | Add a new employee account                                              |
-| -- FR5.1.1 Released the badge to the new Employee                 | Adds a new employee to the system                                       |
-| - FR5.2 Fire an Employee                                          | Disables employee's account                                             |
-| - FR5.3 Edit employee’s documents                                 | Edits the employee profile                                              |
-| -- FR5.3.1 Manage employee's ID                                   | Manages the ID of the employees                                         |
-| - FR5.4 Bind employee with a purchase (statistics)                | Shows how much income an employee has provided                          |
-| - FR5.5 Pay employee                                              | Adds the employee to the list of the current month payed employees      |
-| - FR5.6 Manage employee salary                                    | Lets the owner or the manager manage an employee's salary               |
+| ID                                                               | Description                                                             |
+| -----------------------------------------------------------------|:-----------------------------------------------------------------------:|
+| **FR1 Manage sales**                                             | **Functions to manage the sales**                                       |
+| - FR1.1 Transaction for a customer purchase                      | Start a new transaction                                                 |
+| -- FR1.1.1 Check the register number                             | Gives the number of the register where the sale is done                 |
+| -- FR1.1.2 Electronic transaction                                | Transaction made by POS                                                 |
+| --- FR1.1.1.1.1 Make the transaction through the POS             | Uses POS' APIs                                                          |
+| -- FR1.1.3 Cash transaction                                      | Registers the new income                                                |
+| -- FR1.1.4 Check for fidelity card                               | Reads the fidelity card barcode                                         |
+| - FR1.2 Display total purchase cost                              | Shows the total cost for the transaction                                |
+| **FR2 Manage inventory**                                         | **Functions to manage the inventory**                                   |
+| - FR2.1 Manage warehouse                                         | Gives the ability to manage the warehouse                               |
+| -- FR2.1.1 warehouse receives the supply from the suppliers      | Manages the reception of the supplies                                   |
+| --- FR2.1.1.1 warehouse increase the items supply level          | It lets increase the items' number in inventory                         |
+| - FR2.2 Check items in inventory                                 | Gives the ability to check items' presence in inventory                 |
+| -- FR2.2.1 Check only by name                                    | Checks if the item is in the database                                   |
+| -- FR2.2.2 Check quantity                                        | Checks the quantity of an item in the warehouse                         |
+| --- FR2.2.2.1 Order new supply if the level is below a threshold | Checks if the number of items is below a threshold                      |
+| ---- FR2.2.2.1.1 Make an order from suppliers                    | Makes an order from suppliers                                           |
+| -- FR2.2.3 Display item's price                                  | Shows an item's price                                                   |
+| -- FR2.2.4 Make dispute to the supplier for bad/damaged products | Gives the ability to make a dispute to a supplier                       |
+| - FR2.3 Edit item's price                                        | Manage an item price                                                    |
+| **FR3 Manage subscribers**                                       | **Functions to manage the subscribers**                                 |
+| - FR3.1 Add a new subscribed customer                            | Function to add a new subscriber                                        |
+| - FR3.2 Manage a fidelity card                                   | Gives the ability to manage a fidelity card                             |
+| -- FR3.2.1 Check fidelity points                                 | It lets to get the point                                                |
+| -- FR3.2.2 Give gifts to subscriber after threshold              | After the subscriber reached a certain amount of point, this function lets decide which gift to choose |
+| - FR3.3 Edit/Update an existing subscriber                       | Edits subscribers profile                                               |
+| - FR3.4 Delete a customer from subscribers                       | Deletes a subscriber from the system                                    |
+| **FR4 Support accounting**                                       | **Functions that support accounting**                                   |
+| - FR4.1 Calculate taxes                                          | Calculates taxes                                                        |
+| - FR4.2 Calculate daily income                                   | Calculates the daily income by summing all the payments amounts         |
+| - FR4.3 Analyze annual income                                    | Analyzes annual income                                                  |
+| -- FR4.3.1 Analyze and display total income                      | Displays the total income                                               |
+| -- FR4.3.2 Analyze and display net income                        | Displays the net income                                                 |
+| - FR4.4 Check anti-theft control                                 | Functions that control if there has been a theft                        |
+| **FR5 Manage employees**                                         | **Functions to manage employees**                                       |
+| - FR5.1 Hire a new Employee                                      | Add a new employee account                                              |
+| -- FR5.1.1 Released the badge to the new Employee                | Adds a new employee to the system                                       |
+| - FR5.2 Fire an Employee                                         | Disables employee's account                                             |
+| - FR5.3 Edit employee’s documents                                | Edits the employee profile                                              |
+| -- FR5.3.1 Manage employee's ID                                  | Manages the ID of the employees                                         |
+| - FR5.4 Bind employee with a purchase (statistics)               | Shows how much income an employee has provided                          |
+| - FR5.5 Pay employee                                             | Adds the employee to the list of the current month payed employees      |
+| - FR5.6 Manage employee salary                                   | Lets the owner or the manager manage an employee's salary               |
 
 
 ## Non Functional Requirements
 
-| ID          | Type                         | Description                                           | Refers to        |
-| ----------- | :--------------------------: | :---------------------------------------------------: | ----------------:|
-| NFR1        | size                         | manage a maximum of 2500 item types                   | Database         |
-| NFR2        | size                         | manage a maximum of 50 employees                      | Manager          |
-| NFR3        | efficiency                   | be able to complete actions in less than 2 clicks     | Employee         |
-| NFR4        | portability                  | deployable on different operating systems (Java)      | Tablet           |
-| NFR5        | speed                        | low latency (1 seconds for action)                    | Table and Server |
-| NFR6        | ease of use                  | time to learn how to use for non engineer < 15minutes | Employee         |
-| NFR7        | efficiency                   | response time to any (virtual) button pressed <1sec   | Tablet           |
-| NFR8        | robustness                   | availability at least 99%                             | Tablet and Server|
+| ID   | Type        | Description                                           | Refers to         |
+| ---- |:-----------:| :---------------------------------------------------: | ----------------: |
+| NFR1 | size        | manage a maximum of 2500 item types                   | Database          |
+| NFR2 | size        | manage a maximum of 50 employees                      | Manager           |
+| NFR3 | efficiency  | be able to complete actions in less than 2 clicks     | Employee          |
+| NFR4 | portability | deployable on different operating systems (Java)      | Tablet            |
+| NFR5 | speed       | low latency (1 seconds for action)                    | Table and Server  |
+| NFR6 | ease of use | time to learn how to use for non engineer < 15minutes | Employee          |
+| NFR7 | efficiency  | response time to any (virtual) button pressed <1sec   | Tablet            |
+| NFR8 | robustness  | availability at least 99%                             | Tablet and Server |
 
 # Use case diagram and use cases
 
@@ -423,8 +423,7 @@ package use_cases{
 | Post condition | The cashier cannot see daily income because it does not have enough permissions |
 | Step#          | Description                                                                     |
 | 1              | The actor involved search for the daily income                                  |
-| 2              | The actor has the access granted                                                |
-| 3              | The actor has access denied because it does not have enough permissions         |
+| 2              | The actor has access denied because it does not have enough permissions         |
 
 
 ### Use case 5, UC5
@@ -460,14 +459,14 @@ package use_cases{
 
 ##### Scenario 5.3
 
-| Scenario 5.3   |                                                     |
-| -------------- |:---------------------------------------------------:|
-| Precondition   | The manager wants to improve his own salary         |
-| Post condition | The operation does not happen                       |
-| Step#          | Description                                         |
-| 1              | The actors involved try to improve his own salary   |
-| 2              | The privileges aren't enough hight                  |
-| 3              | Advise "Operation not permitted" is shown           |
+| Scenario 5.3   |                                                   |
+| -------------- |:-------------------------------------------------:|
+| Precondition   | The manager wants to improve his own salary       |
+| Post condition | The operation does not happen                     |
+| Step#          | Description                                       |
+| 1              | The actors involved try to improve his own salary |
+| 2              | The privileges aren't enough hight                |
+| 3              | Advise "Operation not permitted" is shown         |
 
 # Glossary
 
