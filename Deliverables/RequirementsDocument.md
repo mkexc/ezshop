@@ -1,10 +1,10 @@
-# Requirements Document 
+# Requirements Document
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 16/04/2021
+Date: 19/04/2021
 
-Version: 1.1.2
+Version: 1.1.3
 
 # Contents
 
@@ -20,7 +20,11 @@ Version: 1.1.2
 - [Use case diagram and use cases](#use-case-diagram-and-use-cases)
 	+ [Use case diagram](#use-case-diagram)
 	+ [Use cases](#use-cases)
-    	+ [Relevant scenarios](#relevant-scenarios)
+    	+ [UC1](#use-case-1-UC1)
+        + [UC2](#use-case-2-UC2)
+        + [UC3](#use-case-3-UC3)
+        + [UC4](#use-case-4-UC4)
+        + [UC5](#use-case-5-UC5)
 - [Glossary](#glossary)
 - [System design](#system-design)
 - [Deployment diagram](#deployment-diagram)
@@ -40,14 +44,13 @@ EZShop is a software application to:
 
 | Stakeholder name        | Description                                                   |
 | ----------------------- |:-------------------------------------------------------------:|
-| End user                | Warehouse workers, cashiers, cash registers, managers, owners |
-| Company that develops   | Soft eng, mech eng, electro eng, marketing people, safety eng |
+| End user                | Warehouse workers, cashiers, managers, owners                 |
+| Company that develops   | Soft eng, electro eng, marketing people, safety eng           |
 | Maintainers             | The same company that develops the app                        |
 | Certification authority | Company who gives digital certificate for security keys       |
 | Tablet                  | Device used to access to EZShop                               |
 | Suppliers, customers    | External users who interact with the user inside the shop     |
-| **Item**                | ...                                                           |
-
+| Fidelity card           | A card with barcode which define a subscriber                 |
 
 # Context Diagram and interfaces
 
@@ -57,60 +60,70 @@ EZShop is a software application to:
 @startuml
 left to right direction
 package context_diagram {
-	actor Warehouse_worker as WW
-	actor Manager as MNG
-	actor Owner as OWN
-	actor Cashier as CSH
-	actor Customer as CST
-	package Generic_Device {
-		usecase "APP" as APP
-	}
-	WW --> APP
-	MNG --> APP
-	OWN --> APP
-	CSH -- Generic_Device
-	CST -- CSH
+    actor Manager as MNG
+    actor Warehouse_worker as WW
+    actor Owner as OWN
+    actor Cashier as CSH
+    actor Customer as CST
+    actor FidelityCard as FC
+    actor Subscriber as SC
+    actor Tablet as TAB
+    actor CashRegister_Tablet as CSR
+    usecase "  EZShop" as APP
+    
+    FC --> SC
+    CST <|-- SC
+    MNG --> TAB
+    WW --> TAB
+    OWN --> TAB
+    CSH --> CSR
+    CST --> CSH
+    CSR--|> TAB
+    TAB--> APP
 }
-
 @enduml
 ```
 
 ## Interfaces
 
-| Actor            | Logical Interface   | Physical Interface |
-| ---------------- |:-------------------:| ------------------:|
-| Cashier          | GUI                 | On/off button      |
-| ^                | Scan item command   | Barcode scanner    |
-| ^                | onClick command     | Touchscreen        |
-| Generic Device   | 220V 50hz           | Cash Register      |
-| ^                | Internet connection | POS                |
-| Warehouse worker | GUI                 | On/off button      |
-| ^                | ^                   | Touchscreen        |
-| Manager/Owner    | GUI                 | On/off button      |
-| ^                | ^                   | Touchscreen        |
+| Actor                       | Logical Interface   | Physical Interface     |
+| ----------------------------|:-------------------:| ----------------------:|
+| Cashier                     | GUI                 | On/off button          |
+| ^                           | Scan item command   | Barcode scanner        |
+| ^                           | onClick command     | Touchscreen            |
+| Tablet/Cash Register tablet | 5V DC               | Cash Register          |
+| ^                           | ^                   | Touchscreen            |  
+| ^                           | Internet connection | POS (SumUp Native SDK) |
+| Warehouse worker            | GUI                 | On/off button          |
+| ^                           | ^                   | Touchscreen            |
+| Manager/Owner               | GUI                 | On/off button          |
+| ^                           | ^                   | Touchscreen            |
+| Fidelity Card               | /                   | Barcode Scanner        |
+
 
 # Stories and personas
 
 ## Personas
 
-* **Anna** is a 20yo student who lives alone and tries to save as money as possible in order to not waste her parent's and to be indipendent. So she is inclined to accept the terms of having a fidelity card to access all the possible shop's discounts. Since she is a university student, most of her friends lives like her and it is likable that she suggests the shop to them.
+* **Anna** is a 20 y/o student who lives alone and tries to save as money as possible in order to not waste her parent's and to be indipendent. So she is inclined to accept the terms of having a fidelity card to access all the possible shop's discounts. Since she is a university student, most of her friends lives like her and it is likable that she suggests the shop to them.
 
-* **Luigi** is 40yo man who works for a big delivery company, he drives a big camion and he is always on time. He starts at 6:00 AM and finishes at 2:00 PM. He has two sons and he is divorced. He's a very extrovert person and likes to stay a lot in public places.
+* **Luigi** is 40 y/o man who works for a big delivery company, he drives a big camion and he is always on time. He starts at 6:00 AM and finishes at 2:00 PM. He has two sons and he is divorced. He's a very extrovert person and likes to stay a lot in public places.
 
-* **Mario** is 40yo man, he is  the warehouse worker of the shop. He is very accurate and careful, the manager trusts him a lot. He starts at 12:00 AM and finishes at 8:00 PM. He is not married but loves a girl called Peach.
+* **Mario** is 40 y/o man, he is  the warehouse worker of the shop. He is very accurate and careful, the manager trusts him a lot. He starts at 12:00 AM and finishes at 8:00 PM. He is not married but loves a girl called Peach.
 
 * **Giovanni** is a 30 y/o factory worker. He is married with Roberta and has got 3 kids, of which 2 are twins that are 3 y/o and the other one is 1 y/o. He wakes up very early in the morning, typically at 6:00 AM, and goes to work at 7:30 AM. He is a very introvert person and is very frustrated in his life. When he has to do a task, like going to the shop, he prefers that the task is done without issues or slowdowns.
 
 * **John** is a 50yo cashier. He works really hard to maintain his family. He tries to find every time new way to improve his job and to make it less harder. John has a dog and buys all the necessary products from the shop where he works. He tries every time to help who needs it.
 
 ## Stories
+
 * Anna enters in the shop, buy some products and goes to the cash register. For the sales, she decides asks more informations to the cashier about the fidelity card. The cashier explains her all the advantages of having a fidelity card. Anna now is convinced and wants to request it. She gives all the necessary informations, the cashier compiles the form using them and release the fidelity card. Eventually she pays using credit card and starts to accumulate discount point on her new fidelity card.
 
 * Luigi, after a 3 hours travel, arrives to the shop's warehouse to deliver the suppliers. Mario, his brother, marks the delivery on the tablet and controls the quality of the items.
 
 * Giovanni, after a long day of work, decides to go to the shop to buy some food for the dinner. He enters the shop and goes through all the selection of the products. When he's done, he goes to the Cash Register to pay. He's got the fidelity card so he can obtain some discounts on the products prices. Finally, after the discounts have been applied, he can pay, exit the shop and go back home to eat.
 
-* John is a cashier of the shop, every day he wakes up at 6:30am, goes to work at 7:30am and stays there until 17:30pm. If he decides to hire a friend through the applications on his cash register, the application will block him because his account has no privileges to do such operation (only a manager or the ownet account can do so).
+* John is a cashier of the shop, every day he wakes up at 6:30am, goes to work at 7:30am and stays there until 17:30pm. If he decides to hire a friend through the EZShop application on his cash register, but the app will block him because his account has no privileges to do such operation (only a manager or the owner account can do so).
 
 # Functional and non functional requirements
 
@@ -120,11 +133,11 @@ package context_diagram {
 | -----------------------------------------------------------------|:-----------------------------------------------------------------------:|
 | **FR1 Manage sales**                                             | **Functions to manage the sales**                                       |
 | - FR1.1 Transaction for a customer purchase                      | Start a new transaction                                                 |
-| -- FR1.1.1 Check the register number                             | Gives the number of the register where the sale is done                 |
-| -- FR1.1.2 Electronic transaction                                | Transaction made by POS                                                 |
-| --- FR1.1.1.1.1 Make the transaction through the POS             | Uses POS' APIs                                                          |
+| -- FR1.1.1 Check the register number                             | Gives the number of the register where the sale will be done            |
+| -- FR1.1.2 Electronic transaction                                | Transaction made by POS using SumUp Native SDK                          |
+| --- FR1.1.1.1.1 Make the transaction through the POS             | Uses POS' APIs (SumUp Native SDK)                                       |
 | -- FR1.1.3 Cash transaction                                      | Registers the new income                                                |
-| -- FR1.1.4 Check for fidelity card                               | Reads the fidelity card barcode                                         |
+| -- FR1.1.4 Check for fidelity card                               | Reads the fidelity card's  barcode                                      |
 | - FR1.2 Display total purchase cost                              | Shows the total cost for the transaction                                |
 | **FR2 Manage inventory**                                         | **Functions to manage the inventory**                                   |
 | - FR2.1 Manage warehouse                                         | Gives the ability to manage the warehouse                               |
@@ -134,16 +147,16 @@ package context_diagram {
 | -- FR2.2.1 Check only by name                                    | Checks if the item is in the database                                   |
 | -- FR2.2.2 Check quantity                                        | Checks the quantity of an item in the warehouse                         |
 | --- FR2.2.2.1 Order new supply if the level is below a threshold | Checks if the number of items is below a threshold                      |
-| ---- FR2.2.2.1.1 Make an order from suppliers                    | Makes an order from suppliers                                           |
+| ---- FR2.2.2.1.1 Make an order from the suppliers                | Makes an order from the suppliers                                       |
 | -- FR2.2.3 Display item's price                                  | Shows an item's price                                                   |
 | -- FR2.2.4 Make dispute to the supplier for bad/damaged products | Gives the ability to make a dispute to a supplier                       |
 | - FR2.3 Edit item's price                                        | Manage an item price                                                    |
 | **FR3 Manage subscribers**                                       | **Functions to manage the subscribers**                                 |
 | - FR3.1 Add a new subscribed customer                            | Function to add a new subscriber                                        |
 | - FR3.2 Manage a fidelity card                                   | Gives the ability to manage a fidelity card                             |
-| -- FR3.2.1 Check fidelity points                                 | It lets to get the point                                                |
-| -- FR3.2.2 Give gifts to subscriber after threshold              | After subscriber reached certain amount of points, give a gift          |
-| - FR3.3 Edit/Update an existing subscriber                       | Edits subscribers profile                                               |
+| -- FR3.2.1 Check fidelity points                                 | It lets to get the point from a fidelity card's code                    |
+| -- FR3.2.2 Give gifts to subscriber after a threshold            | After subscriber reached certain amount of points, give a gift          |
+| - FR3.3 Edit/Update an existing subscriber                       | Edits a subscriber's profile                                            |
 | - FR3.4 Delete a customer from subscribers                       | Deletes a subscriber from the system                                    |
 | **FR4 Support accounting**                                       | **Functions that support accounting**                                   |
 | - FR4.1 Calculate taxes                                          | Calculates taxes                                                        |
@@ -191,7 +204,7 @@ package use_cases{
     actor Manager as MNG
     actor Owner as OWN
 
-    package app {
+    package EZShop {
         usecase "FR1: Manage sales" as FR1
         usecase "FR1.1: Transaction for a customer purchase" as FR1_1
         usecase "FR1.2: Display total purchase cost" as FR1_2
@@ -255,23 +268,23 @@ package use_cases{
 @enduml
 ```
 
+## Use cases
+
 ### Use case 1, UC1
 
-| Actors Involved  | Cashier, Customer, POS, Barcode scanner                          |
-| ---------------- |:----------------------------------------------------------------:|
-| Precondition     | Cash register is ON                                              |
-| ^                | Barcode scanner is ready                                         |
-| ^                | Item’s barcode is valid                                          |
-| ^                | POS is connected                                                 |
-| Post condition   | /                                                                |
-| Nominal Scenario | Items scan, transaction is okay, print receipt, update inventory |
-| Variants         | 1.2, 1.3                                                         |
-
-##### Scenario 1.1
+| Actors Involved  | Cashier, Customer, POS, Barcode scanner |
+| ---------------- |:---------------------------------------:|
+| Precondition     | Cash register tablet is ON              |
+| ^                | Barcode scanner is ready                |
+| ^                | Item’s barcode is valid                 |
+| ^                | POS is connected                        |
+| Post condition   | /                                       |
+| Nominal Scenario | 1.1                                     |
+| Variants         | 1.2, 1.3                                |
 
 | Scenario 1.1   |                                                |
-| -------------- |:----------------------------------------------:|
-| Precondition   | Cash register is ON                            |
+| -------------- |:----------------------------------------------:| 
+| Precondition   | Cash register tablet is ON                     |
 | ^              | Barcode scanner is ready                       |
 | ^              | Item’s barcode is valid                        |
 | ^              | POS is connected                               |
@@ -284,11 +297,9 @@ package use_cases{
 | 5              | After confirm, print receipt                   |
 | 6              | Update warehouse inventory                     |
 
-##### Scenario 1.2
-
 | Scenario 1.2   |                                                |
 | -------------- |:----------------------------------------------:|
-| Precondition   | Cash register is ON                            |
+| Precondition   | Cash register tablet is ON                     |
 | ^              | Barcode scanner is ready                       |
 | ^              | Item’s barcode is valid                        |
 | ^              | POS is not connected                           |
@@ -300,11 +311,9 @@ package use_cases{
 | 4              | The transaction is made with POS               |
 | 5              | Transaction fails                              |
 
-##### Scenario 1.3
-
 | Scenario 1.3   |                                                |
 | -------------- |:----------------------------------------------:|
-| Precondition   | Cash register is ON                            |
+| Precondition   | Cash register tablet is ON                     |
 | ^              | Barcode scanner is ready                       |
 | ^              | Item’s barcode is not valid                    |
 | ^              | POS is connected                               |
@@ -321,14 +330,12 @@ package use_cases{
 
 ### Use case 2, UC2
 
-| Actors Involved  | Manager, Owner, Warehouse workers                                    |
-| ---------------- |:--------------------------------------------------------------------:|
-| Precondition     | /                                                                    |
-| Post condition   | Items are guaranteed                                                 |
-| Nominal Scenario | Item search, item found, item quantity printed and is over threshold |
-| Variants         | 2.2                                                                  |
-
-#### Scenario 2.1
+| Actors Involved  | Manager, Owner, Warehouse workers |
+| ---------------- |:---------------------------------:|
+| Precondition     | /                                 |
+| Post condition   | Items are guaranteed              |
+| Nominal Scenario | 2.1                               |
+| Variants         | 2.2                               |
 
 | Scenario 2.1   |                                        |
 | -------------- |:--------------------------------------:|
@@ -338,8 +345,6 @@ package use_cases{
 | 1              | The actor involved search for the item |
 | 2              | The item is found                      |
 | 3              | Item quantity is printed and is enough |
-
-##### Scenario 2.2
 
 | Scenario 2.2   |                                                            |
 | -------------- |:----------------------------------------------------------:|
@@ -351,31 +356,26 @@ package use_cases{
 | 3              | Item quantity is printed but it’s lower than the threshold |
 | 4              | An order to the supplier is made                           |
 
-
 ### Use case 3, UC3
 
-| Actors Involved  | Manager, cashier, subscriber                                                                       |
-| ---------------- |:--------------------------------------------------------------------------------------------------:|
-| Precondition     | SSN is not already in the database                                                                 |
-| Post condition   | A new fidelity card has been released                                                              |
-| Nominal Scenario | Customer asks for fidelity card and gives his informations, cashier inserts informations in a form |
-| Variants         | 3.2                                                                                                |
-
-#### Scenario 3.1
+| Actors Involved  | Manager, cashier, subscriber          |
+| ---------------- |:-------------------------------------:|
+| Precondition     | SSN is not already in the database    |
+| Post condition   | A new fidelity card has been released |
+| Nominal Scenario | 3.1                                   |
+| Variants         | 3.2                                   |
 
 | Scenario 3.1   |                                                     |
 | -------------- |:---------------------------------------------------:|
 | Precondition   | SSN is not already in the database                  |
 | Post condition | A new fidelity card has been released               |
 | Step#          | Description                                         |
-| 1              | The subscriber asks for fidelity card benefits      |
+| 1              | The subscriber asks for the fidelity card benefits  |
 | 2              | The cashier explains them                           |
 | 3              | The subscriber decides to subscribe                 |
 | 4              | The cashier inserts subscriber info in the app form |
 | 5              | The fidelity card gets linked to the subscriber     |
 | 6              | The fidelity card is released to the subscriber     |
-
-#### Scenario 3.2
 
 | Scenario 3.2   |                                                                                                             |
 | -------------- |:-----------------------------------------------------------------------------------------------------------:|
@@ -392,26 +392,22 @@ package use_cases{
 
 ### Use case 4, UC4
 
-| Actors Involved  | Manager, Owner                                                        |
-| ---------------- |:---------------------------------------------------------------------:|
-| Precondition     | The shop was open during that day                                     |
-| Post condition   | Total daily income is calculated                                      |
-| Nominal Scenario | Shop is open, Products get sold during the day, Daily income is shown |
-| Variants         | 4.2                                                                   |
+| Actors Involved  | Manager, Owner                    |
+| ---------------- |:---------------------------------:|
+| Precondition     | The shop was open during that day |
+| Post condition   | Total daily income is calculated  |
+| Nominal Scenario | 4.1                               |
+| Variants         | 4.2                               |
 
-#### Scenario 4.1
-
-| Scenario 4.1   |                                                                  |
-| -------------- |:----------------------------------------------------------------:|
-| Precondition   | The shop was open during the day                                 |
-| ^              | The manager/owner log in to obtain a period income               |
-| Post condition | Total period income is calculated                                |
-| Step#          | Description                                                      |
-| 1              | The actor involved selects the period where to calculate income  |
-| 2              | The actor has the access granted and the period is valid         |
-| 3              | The calculated income is printed                                 |
-
-##### Scenario 4.2
+| Scenario 4.1   |                                                                 |
+| -------------- |:---------------------------------------------------------------:|
+| Precondition   | The shop was open during the day                                |
+| ^              | The manager/owner log in to obtain a period income              |
+| Post condition | Total period income is calculated                               |
+| Step#          | Description                                                     |
+| 1              | The actor involved selects the period where to calculate income |
+| 2              | The actor has the access granted and the period is valid        |
+| 3              | The calculated income is printed                                |
 
 | Scenario 4.2   |                                                                               |
 | -------------- |:-----------------------------------------------------------------------------:|
@@ -425,14 +421,12 @@ package use_cases{
 
 ### Use case 5, UC5
 
-| Actors Involved  | Manager, Owner                                                                                                       |
-| ---------------- |:--------------------------------------------------------------------------------------------------------------------:|
-| Precondition     | An actor publishes an ad to hire new employees                                                                       |
-| Post condition   | Employees are hired                                                                                                  |
-| Nominal Scenario | Owner publishes an ad, people candidate themselves, owner/manager decides which one to hire, a new employee is hired |
-| Variants         | 5.2, 5.3                                                                                                             |
-
-#### Scenario 5.1
+| Actors Involved  | Manager, Owner                                 |
+| ---------------- |:----------------------------------------------:|
+| Precondition     | An actor publishes an ad to hire new employees |
+| Post condition   | Employees are hired                            |
+| Nominal Scenario | 5.1                                            |
+| Variants         | 5.2, 5.3                                       |
 
 | Scenario 5.1   |                                                                      |
 | -------------- |:--------------------------------------------------------------------:|
@@ -443,8 +437,6 @@ package use_cases{
 | 2              | An ID number gets released to the new employee                       |
 | 3              | A badge gets released to the new employee                            |
 
-##### Scenario 5.2
-
 | Scenario 5.2   |                                                |
 | -------------- |:----------------------------------------------:|
 | Precondition   | The manager wants to hire an actual employee   |
@@ -453,8 +445,6 @@ package use_cases{
 | 1              | The actors involved tries to hire the employee |
 | 2              | The employee is already in the system          |
 | 3              | Advise "Employee already in system" is shown   |
-
-##### Scenario 5.3
 
 | Scenario 5.3   |                                                |
 | -------------- |:----------------------------------------------:|
@@ -470,6 +460,8 @@ package use_cases{
 ```plantuml
 @startuml
 top to bottom direction
+scale max 1024 width
+
 class Cashier{
     ID
     Privilege_level
@@ -477,7 +469,6 @@ class Cashier{
 }
 class Price_list{
     item_price
-    item_code
     item_sale
 }
 class Owner{}
@@ -485,25 +476,49 @@ class Manager{}
 class EZShop{}
 class WarehouseWorker{}
 class Tablet{}
-class CashRegister{}
+class CashRegister_Tablet{}
 class Employee{}
+class Item{
+    barcode
+}
+class Customer{}
+class Subscriber{}
+class FidelityCard{}
 
+Subscriber --|>Customer 
 Cashier --|>Employee
 Manager --|>Employee
 WarehouseWorker --|>Employee
 Owner --|> Manager
 
-Cashier "1..* "-->"*" CashRegister
+FidelityCard --> Subscriber
+FidelityCard --> CashRegister_Tablet
+Cashier "1..* "-->"*" CashRegister_Tablet
 Price_list "1" -->"*" EZShop
-WarehouseWorker "1.."--> "*" Tablet
-Tablet "1  "-->"1..*" EZShop
-Tablet <|-- CashRegister
+WarehouseWorker "1..    "--> "*" Tablet
+Tablet "1  "-->"     1..*" EZShop
+Tablet <|-- CashRegister_Tablet
 Manager "1..   "-->"*" Tablet
+Item -> Price_list
 
+note as SubscriberDescription
+    A subscriber is a customer with a fidelity card
+end note
 
-note as CashRegisterDescription
-    A cash register implements a tablet where the Application runs.
-    It also connects the POS and the barcode reader to the system via their APIs
+note as CustomerDescription
+    A customer is a person who buys items in
+    the shop without having a subscription
+end note
+
+note as FidelityCardDescription
+    A card with a barcode
+end note
+
+note as CashRegister_TabletDescription
+    A cash register implements a 
+    tablet where the application runs.
+    It also connects the POS and the 
+    barcode reader to the system via their APIs
 end note
 
 note as EmployeeDescription
@@ -539,14 +554,23 @@ note as PriceListDescription
     and any sale, it is kept inside a shared db server
 end note
 
+note as ItemDescription
+    The item is a physical object that is sold in the shop
+end note
+
+
+FidelityCardDescription ..>FidelityCard
+SubscriberDescription ..>Subscriber
+CustomerDescription ..> Customer
 CashierDescription ..> Cashier
 ManagerDescription ..> Manager
 OwnerDescription ..> Owner
 PriceListDescription ..> Price_list
-CashRegisterDescription ..> CashRegister
+CashRegister_TabletDescription ..> CashRegister_Tablet
 WarehouseWorkerDescription ..> WarehouseWorker
 TabletDescription ..> Tablet
 EmployeeDescription ..>Employee
+ItemDescription ..> Item
 
 @enduml
 ```
@@ -572,9 +596,9 @@ class Tablet {
     table_pwd
 }
 
-class Cash_register{}
+class CashRegister_Tablet{}
 
-Cash_register "1 " ---|> "1   " Tablet
+CashRegister_Tablet "1 " ---|> "1   " Tablet
 
 class Barcode_reader {}
 
@@ -586,8 +610,8 @@ class Fidelity_card {
 }
 
 Tablet "1"--o "1..*" EZShop
-Barcode_reader "1..*"--o "1   " Cash_register
-POS "0..1   "--o "1" Cash_register
+Barcode_reader "1..*"--o "1   " CashRegister_Tablet
+POS "0..1   "--o "1" CashRegister_Tablet
 Fidelity_card "0..*" --o "0..*" Barcode_reader
 
 @enduml
