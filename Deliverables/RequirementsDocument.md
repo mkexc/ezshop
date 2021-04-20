@@ -2,9 +2,9 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 19/04/2021
+Date: 20/04/2021
 
-Version: 1.1.3
+Version: 1.2
 
 # Contents
 
@@ -42,15 +42,14 @@ EZShop is a software application to:
 
 # Stakeholders
 
-| Stakeholder name        | Description                                                   |
-| ----------------------- |:-------------------------------------------------------------:|
-| End user                | Warehouse workers, cashiers, managers, owners                 |
-| Company that develops   | Soft eng, electro eng, marketing people, safety eng           |
-| Maintainers             | The same company that develops the app                        |
-| Certification authority | Company who gives digital certificate for security keys       |
-| Tablet                  | Device used to access to EZShop                               |
-| Suppliers, customers    | External users who interact with the user inside the shop     |
-| Fidelity card           | A card with barcode which define a subscriber                 |
+| Stakeholder name        | Description                                               |
+| ----------------------- |:---------------------------------------------------------:|
+| End user                | Warehouse workers, cashiers, managers, owners             |
+| Company that develops   | Soft eng, electro eng, marketing people, safety eng       |
+| Maintainers             | The same company that develops the app                    |
+| Certification authority | Company who gives digital certificate for security keys   |
+| Suppliers, customers    | External users who interact with the user inside the shop |
+| Fidelity card           | A card with barcode which define a subscriber             |
 
 # Context Diagram and interfaces
 
@@ -67,38 +66,30 @@ package context_diagram {
     actor Customer as CST
     actor FidelityCard as FC
     actor Subscriber as SC
-    actor Tablet as TAB
-    actor CashRegister_Tablet as CSR
     usecase "  EZShop" as APP
     
     FC --> SC
     CST <|-- SC
-    MNG --> TAB
-    WW --> TAB
-    OWN --> TAB
-    CSH --> CSR
+    WW --> APP
+    MNG --> APP
+    OWN --> APP
+    CSH --> APP
     CST --> CSH
-    CSR--|> TAB
-    TAB--> APP
 }
 @enduml
 ```
 
 ## Interfaces
 
-| Actor                       | Logical Interface   | Physical Interface     |
-| ----------------------------|:-------------------:| ----------------------:|
-| Cashier                     | GUI                 | On/off button          |
-| ^                           | Scan item command   | Barcode scanner        |
-| ^                           | onClick command     | Touchscreen            |
-| Tablet/Cash Register tablet | 5V DC               | Cash Register          |
-| ^                           | ^                   | Touchscreen            |  
-| ^                           | Internet connection | POS (SumUp Native SDK) |
-| Warehouse worker            | GUI                 | On/off button          |
-| ^                           | ^                   | Touchscreen            |
-| Manager/Owner               | GUI                 | On/off button          |
-| ^                           | ^                   | Touchscreen            |
-| Fidelity Card               | /                   | Barcode Scanner        |
+| Actor            | Logical Interface      | Physical Interface      |
+| -----------------|:----------------------:| -----------------------:|
+| Cashier          | GUI                    | On/off button           |
+| ^                | Scan item command      | Barcode scanner         |
+| ^                | POS (SumUp Native SDK) | POS (Physical Keyboard) |
+| ^                | /                      | Cash Register Tablet    |
+| Warehouse worker | GUI                    | Tablet                  |
+| Manager/Owner    | GUI                    | Tablet                  |
+| Fidelity Card    | /                      | Barcode Scanner         |
 
 
 # Stories and personas
@@ -129,64 +120,64 @@ package context_diagram {
 
 ## Functional Requirements
 
-| ID                                                               | Description                                                             |
-| -----------------------------------------------------------------|:-----------------------------------------------------------------------:|
-| **FR1 Manage sales**                                             | **Functions to manage the sales**                                       |
-| - FR1.1 Transaction for a customer purchase                      | Start a new transaction                                                 |
-| -- FR1.1.1 Check the register number                             | Gives the number of the register where the sale will be done            |
-| -- FR1.1.2 Electronic transaction                                | Transaction made by POS using SumUp Native SDK                          |
-| --- FR1.1.1.1.1 Make the transaction through the POS             | Uses POS' APIs (SumUp Native SDK)                                       |
-| -- FR1.1.3 Cash transaction                                      | Registers the new income                                                |
-| -- FR1.1.4 Check for fidelity card                               | Reads the fidelity card's  barcode                                      |
-| - FR1.2 Display total purchase cost                              | Shows the total cost for the transaction                                |
-| **FR2 Manage inventory**                                         | **Functions to manage the inventory**                                   |
-| - FR2.1 Manage warehouse                                         | Gives the ability to manage the warehouse                               |
-| -- FR2.1.1 warehouse receives the supply from the suppliers      | Manages the reception of the supplies                                   |
-| --- FR2.1.1.1 warehouse increase the items supply level          | It lets increase the items' number in inventory                         |
-| - FR2.2 Check items in inventory                                 | Gives the ability to check items' presence in inventory                 |
-| -- FR2.2.1 Check only by name                                    | Checks if the item is in the database                                   |
-| -- FR2.2.2 Check quantity                                        | Checks the quantity of an item in the warehouse                         |
-| --- FR2.2.2.1 Order new supply if the level is below a threshold | Checks if the number of items is below a threshold                      |
-| ---- FR2.2.2.1.1 Make an order from the suppliers                | Makes an order from the suppliers                                       |
-| -- FR2.2.3 Display item's price                                  | Shows an item's price                                                   |
-| -- FR2.2.4 Make dispute to the supplier for bad/damaged products | Gives the ability to make a dispute to a supplier                       |
-| - FR2.3 Edit item's price                                        | Manage an item price                                                    |
-| **FR3 Manage subscribers**                                       | **Functions to manage the subscribers**                                 |
-| - FR3.1 Add a new subscribed customer                            | Function to add a new subscriber                                        |
-| - FR3.2 Manage a fidelity card                                   | Gives the ability to manage a fidelity card                             |
-| -- FR3.2.1 Check fidelity points                                 | It lets to get the point from a fidelity card's code                    |
-| -- FR3.2.2 Give gifts to subscriber after a threshold            | After subscriber reached certain amount of points, give a gift          |
-| - FR3.3 Edit/Update an existing subscriber                       | Edits a subscriber's profile                                            |
-| - FR3.4 Delete a customer from subscribers                       | Deletes a subscriber from the system                                    |
-| **FR4 Support accounting**                                       | **Functions that support accounting**                                   |
-| - FR4.1 Calculate taxes                                          | Calculates taxes                                                        |
-| - FR4.2 Calculate income                                         | Calculates the income by summing all the payments amounts               |
-| -- FR4.2.1 Analyze and display total income                      | Displays the total income                                               |
-| -- FR4.2.2 Analyze and display net income                        | Displays the net income                                                 |
-| - FR4.3 Check anti-theft control                                 | Functions that control if there has been a theft                        |
-| **FR5 Manage employees**                                         | **Functions to manage employees**                                       |
-| - FR5.1 Hire a new Employee                                      | Add a new employee account                                              |
-| -- FR5.1.1 Released the badge to the new Employee                | Adds a new employee to the system                                       |
-| - FR5.2 Fire an Employee                                         | Disables employee's account                                             |
-| - FR5.3 Edit employee’s documents                                | Edits the employee profile                                              |
-| -- FR5.3.1 Manage employee's ID                                  | Manages the ID of the employees                                         |
-| - FR5.4 Bind employee with a purchase (statistics)               | Shows how much income an employee has provided                          |
-| - FR5.5 Pay employee                                             | Adds the employee to the list of the current month payed employees      |
-| - FR5.6 Manage employee salary                                   | Lets the owner or the manager manage an employee's salary               |
+| ID                                                               | Description                                                        |
+| -----------------------------------------------------------------|:------------------------------------------------------------------:|
+| **FR1 Manage sales**                                             | **Functions to manage the sales**                                  |
+| - FR1.1 Transaction for a customer purchase                      | Start a new transaction                                            |
+| -- FR1.1.1 Check the register number                             | Gives the number of the register where the sale will be done       |
+| -- FR1.1.2 Electronic transaction                                | Transaction made by POS using SumUp Native SDK                     |
+| --- FR1.1.1.1.1 Make the transaction through the POS             | Uses POS's APIs (SumUp Native SDK)                                 |
+| -- FR1.1.3 Cash transaction                                      | Registers the new income                                           |
+| -- FR1.1.4 Check for fidelity card                               | Reads the fidelity card's  barcode                                 |
+| - FR1.2 Display total purchase cost                              | Shows the total cost for the transaction                           |
+| **FR2 Manage inventory**                                         | **Functions to manage the inventory**                              |
+| - FR2.1 Manage warehouse                                         | Gives the ability to manage the warehouse                          |
+| -- FR2.1.1 warehouse receives the supply from the suppliers      | Manages the reception of the supplies                              |
+| --- FR2.1.1.1 warehouse increase the items supply level          | It lets increase the items' number in inventory                    |
+| - FR2.2 Check items in inventory                                 | Gives the ability to check items' presence in inventory            |
+| -- FR2.2.1 Check only by name                                    | Checks if the item is in the database                              |
+| -- FR2.2.2 Check quantity                                        | Checks the quantity of an item in the warehouse                    |
+| --- FR2.2.2.1 Order new supply if the level is below a threshold | Checks if the number of items is below a threshold                 |
+| ---- FR2.2.2.1.1 Make an order from the suppliers                | Makes an order from the suppliers                                  |
+| -- FR2.2.3 Display item's price                                  | Shows an item's price                                              |
+| -- FR2.2.4 Make dispute to the supplier for bad/damaged products | Gives the ability to make a dispute to a supplier                  |
+| - FR2.3 Edit item's price                                        | Manage an item price                                               |
+| **FR3 Manage subscribers**                                       | **Functions to manage the subscribers**                            |
+| - FR3.1 Add a new subscribed customer                            | Function to add a new subscriber                                   |
+| - FR3.2 Manage a fidelity card                                   | Gives the ability to manage a fidelity card                        |
+| -- FR3.2.1 Check fidelity points                                 | It lets to get the point from a fidelity card's code               |
+| -- FR3.2.2 Give gifts to subscriber after a threshold            | After subscriber reached certain amount of points, give a gift     |
+| - FR3.3 Edit/Update an existing subscriber                       | Edits a subscriber's profile                                       |
+| - FR3.4 Delete a customer from subscribers                       | Deletes a subscriber from the system                               |
+| **FR4 Support accounting**                                       | **Functions that support accounting**                              |
+| - FR4.1 Calculate taxes                                          | Calculates taxes                                                   |
+| - FR4.2 Calculate income                                         | Calculates the income by summing all the payments amounts          |
+| -- FR4.2.1 Analyze and display total income                      | Displays the total income                                          |
+| -- FR4.2.2 Analyze and display net income                        | Displays the net income                                            |
+| - FR4.3 Check anti-theft control                                 | Functions that control if there has been a theft                   |
+| **FR5 Manage employees**                                         | **Functions to manage employees**                                  |
+| - FR5.1 Hire a new Employee                                      | Add a new employee account                                         |
+| -- FR5.1.1 Released the badge to the new Employee                | Adds a new employee to the system                                  |
+| - FR5.2 Fire an Employee                                         | Disables employee's account                                        |
+| - FR5.3 Edit employee’s documents                                | Edits the employee profile                                         |
+| -- FR5.3.1 Manage employee's ID                                  | Manages the ID of the employees                                    |
+| - FR5.4 Bind employee with a purchase (statistics)               | Shows how much income an employee has provided                     |
+| - FR5.5 Pay employee                                             | Adds the employee to the list of the current month payed employees |
+| - FR5.6 Manage employee salary                                   | Lets the owner or the manager manage an employee's salary          |
 
 
 ## Non Functional Requirements
 
-| ID   | Type        | Description                                           | Refers to         |
-| ---- |:-----------:| :---------------------------------------------------: | ----------------: |
-| NFR1 | size        | manage a maximum of 2500 item types                   | Database          |
-| NFR2 | size        | manage a maximum of 50 employees                      | Manager           |
-| NFR3 | efficiency  | be able to complete actions in less than 2 clicks     | Employee          |
-| NFR4 | portability | deployable on different operating systems (Java)      | Tablet            |
-| NFR5 | speed       | low latency (1 seconds for action)                    | Table and Server  |
-| NFR6 | ease of use | time to learn how to use for non engineer < 15minutes | Employee          |
-| NFR7 | efficiency  | response time to any (virtual) button pressed <1sec   | Tablet            |
-| NFR8 | robustness  | availability at least 99%                             | Tablet and Server |
+| ID   | Type        | Description                                           | Refers to|
+|------|:-----------:|:-----------------------------------------------------:|:--------:|
+| NFR1 | size        | manage a maximum of 2500 item types                   | FR2      |
+| NFR2 | size        | manage a maximum of 50 employees                      | FR5      |
+| NFR3 | efficiency  | be able to complete actions in less than 3 clicks     | All FR   |
+| NFR4 | portability | deployable on different operating systems (Java)      | All FR   |
+| NFR5 | speed       | low latency (1 seconds for action)                    | All FR   |
+| NFR6 | ease of use | time to learn how to use for non engineer < 15minutes | All FR   |
+| NFR7 | efficiency  | response time to any (virtual) button pressed <1sec   | All FR   |
+| NFR8 | robustness  | availability at least 99%                             | All FR   |
 
 # Use case diagram and use cases
 
@@ -283,7 +274,7 @@ package use_cases{
 | Variants         | 1.2, 1.3                                |
 
 | Scenario 1.1   |                                                |
-| -------------- |:----------------------------------------------:| 
+| -------------- |:----------------------------------------------:|
 | Precondition   | Cash register tablet is ON                     |
 | ^              | Barcode scanner is ready                       |
 | ^              | Item’s barcode is valid                        |
@@ -463,27 +454,58 @@ top to bottom direction
 scale max 1024 width
 
 class Cashier{
-    ID
+    SSN
     Privilege_level
-    function
 }
 class Price_list{
-    item_price
-    item_sale
+    Item_price
+    Item_sale
 }
-class Owner{}
-class Manager{}
-class EZShop{}
-class WarehouseWorker{}
-class Tablet{}
+class Owner{
+    SSN
+    Name
+    Surname
+    Privileges_level
+}
+class Manager{
+    SSN
+    Name
+    Surname
+    Privileges_level
+}
+class EZShop{
+    Version
+}
+class WarehouseWorker{
+    SSN
+    Name
+    Surname
+    Privileges_level
+}
+class Tablet{
+    SN
+}
 class CashRegister_Tablet{}
-class Employee{}
+class Employee{
+    SSN
+    Name
+    Surname
+}
 class Item{
-    barcode
+    Barcode
+    Name
+    Supplier
 }
 class Customer{}
-class Subscriber{}
-class FidelityCard{}
+class Subscriber{
+    SSN
+    Name
+    Surname
+}
+class FidelityCard{
+    ID 
+    SSN
+}
 
 Subscriber --|>Customer 
 Cashier --|>Employee
@@ -558,7 +580,6 @@ note as ItemDescription
     The item is a physical object that is sold in the shop
 end note
 
-
 FidelityCardDescription ..>FidelityCard
 SubscriberDescription ..>Subscriber
 CustomerDescription ..> Customer
@@ -574,7 +595,6 @@ ItemDescription ..> Item
 
 @enduml
 ```
-
 # System Design
 
 ```plantuml
@@ -604,15 +624,9 @@ class Barcode_reader {}
 
 class POS {}
 
-class Fidelity_card {
-    id
-    SSN
-}
-
 Tablet "1"--o "1..*" EZShop
 Barcode_reader "1..*"--o "1   " CashRegister_Tablet
 POS "0..1   "--o "1" CashRegister_Tablet
-Fidelity_card "0..*" --o "0..*" Barcode_reader
 
 @enduml
 ```
