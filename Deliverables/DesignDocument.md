@@ -1,10 +1,10 @@
-# Design Document 
+# Design Document
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
 Date: 26/04/2021
 
-Version: 0.1
+Version: 0.3
 
 
 # Contents
@@ -23,7 +23,7 @@ The design must satisfy the Official Requirements document, notably functional a
 The model used is MVC since is a standalone application working on each cash register separately.
 MODEL: it.ezshop.model.*
 VIEW: it.ezshop.gui.*
-CONTROLLER : it.ezshop.data.* (EZSHOPInterface implementation inside data) 
+CONTROLLER : it.ezshop.data.* (EZSHOPInterface implementation inside data)
 
 <report package diagram>
 
@@ -74,105 +74,139 @@ it.ezshop.model <- it.ezshop.gui
 @startuml
 left to right direction
 
-class Product{
-    + name : String
-    + destrinction : String
-    + type : Integer
-    + priceToBuy : Double
-    + priceToSell : Double
+class ProductType{
     + barCode : Integer
-    + getProductName()
+    + description : String
+    + sellPrice : Double
+    + quantity : 
+    + discountRate : Integer
+    + notes : String
+
     + getProductDescription()
+    + setProductDescription()
     + getProductBarCode()
-    + getProductType()
-    + getPriceToBuy()
-    + getPriceToSell()
-} 
-class ManageProduct{
-    + manageProductCatalog()
-    + defineNewProductType()
-    + modifyExistingProductType()
-    + deleteProductType()
-    + getListProductsTypes()
-    + searchProductTypeByBarCode()
-    + searchProductTypeByDescription()
+    + setProductBarCode()
+    + getSellPrice()
+    + setSellPrice()
+    + getQuantity()
+    + setQuantity()
+    + getDiscountRate()
+    + getNotes()
+    + setNotes()
 }
 
 class Catalog{
     + productList : ArrayList<Product>
-    + name : String
+
     + getProductList()
-    + getCatalogName()
+    + manageProductCatalog()
+    + searchProductType()
 }
+
 class Inventory{
-    + productQuantity : HashMap<Product,Integer>
-    + productPosition : HashMap<Product,Position> 
+    - productQuantity : HashMap<Product,Integer>
+    - productPosition : HashMap<Product,Position>
+
     + getProductMapQuantity()
     + getProductMapPosition()
     + modifyQuantityForProductType()
     + modifyPositionForProductType()
     + issueReorderWarningForProductType()
-    + sendAndPayOrderForProducType()
     + payIssuedReorderWarning()
     + recordOrderArrival()
     + getListOrdersByStatus()
+    + getListProductsTypes()
+    + defineNewProductType()
+    + modifyExistingProductType()
+    + deleteProductType()
+    + searchProductType()
 }
+
 class Order{
-    + price : Double
-    + productBarCode : Integer
-    + state : String
-    + quantity : Integer
-    + getProductBarCode()
+    - price : Double
+    - productToOrder : ArrayList<ProductType>
+    - state : String
+    - quantity : Integer
+
+    + sendAndPayOrderForProducType()
+    + getProductToOrder()
     + getQuantity()
+    + setQuantity()
     + getState()
+    + setState()
     + getPrice()
+    + setPrice()
+    + setProductToOrder()
 }
+
 class Position{
-    + shelf : Integer
-    + row : Integer
+    + aisleID : Integer
+    + rackID : Integer
+    + levelID : Integer
+
     + getPosition()
     + setPosition()
 }
-class FidelityCard{
+
+class LoyaltyCard{
     + points : Integer
-    + id : Integer 
+    + id : Integer
+
     + getPoints()
     + getId()
+    + createCard()
+    + attachCardToCustomer()
+    + addPoints()
 }
+
 class Customer{
-    + fidelityCardId : Integer
+    + loyaltyCardId : Integer
     + name : String
-    + surname : String   
-    + getFidelityCard()
+    + surname : String
+
+    + getLoyaltyCard()
     + getName()
     + getSurname()
-}
-class ManageCostumerAndCard{
-    + defineCustomer()
     + modifyCustomer()
+}
+
+class CustomerList{
+    + customersList : ArrayList<Customer>
+
+    + defineCustomer()
     + deleteCustomer()
     + searchCustomer()
     + getCustomersList()
-    + createCard()
-    + attachCardToCustomer()
-    + modifyPointsOnCard()
 }
-class Transaction{
-    + transactionElements : Map<Product,Integer>
+
+class FinancialTransaction {
+    + description : String
+    + amount : Double
+    + date : Date
+}
+
+class Credit {
+}
+
+class Debit {
+}
+
+class Quantity {
+    + quantity : Integer
+}
+
+class SaleTransaction{
+    + transactionElements : Map<ProductType,Integer>
     + id : Integer
     + points : Integer
+    + date : Date
+    + time : DateTime
+    + cost : Double
+    + paymentType : String
+    + discountRate : Integer
+
     + getTransactionId()
     + addPoints()
-}
-class ReturnTransaction{}
-class SaleTransaction{}
-class DiscountRate{
-    + rate : Double
-    + ProductBarCode : Integer
-    + getProductBarCode()
-    + getRate()
-}
-class ManageSaleTransaction{
     + startSale()
     + addProductToSale()
     + deleteProductFromSale()
@@ -199,16 +233,9 @@ class ManagePayment{
     + returnPaymentCreditCard()
 }
 
-class Debit{
-    + debit : Double
-    + getDebit()
-}
-class Credit{
-    + credit : Double
-    + getCredit()
-}
-class Accounting{
-    + listTransaction : List<Transaction>
+class AccountBook{
+    + listTransaction : List<FinancialTransaction>
+
     + recordDebit()
     + recordCredit()
     + showMovimentsOverTimePeriod()
@@ -216,30 +243,38 @@ class Accounting{
 }
 
 class Administrator{
-    + privilegeLevel: Integer
+    + privilegeLevel : Integer
+
     + getLevelPrivileges()
 }
+
 class ShopManager{
-    + privilegeLevel: Integer
+    + privilegeLevel : Integer
+
     + getLevelPrivileges()
 }
+
 class Cashier{
-    + privilegeLevel: Integer
+    + privilegeLevel : Integer
+
     + getLevelPrivileges()
 }
+
 class User{
     - username : String
     - password : String
-    - role : String
+    - status : Boolean
+
     + getUsername()
-    + getRole()
-    ~ manageRole()
-    ~ managePassword()
-    ~ deleteUser()
+    + getStatus()
+    + setUsername()
+    + setStatus()
+    ~ setPassword()
 }
 
 class UserList{
     - List : ArrayList<User>
+
     + addUser()
     + removeUser()
     + listAll()
@@ -326,59 +361,261 @@ class Exception{
     + InvalidDiscountRateException()    
 }
 
-Product --> ManageProduct
-DiscountRate -- Transaction
-FidelityCard -- Transaction
+
+SaleTransaction -- ProductType
+LoyaltyCard -- SaleTransaction
 Catalog -- Inventory
-FidelityCard --> ManageCostumerAndCard
-Customer --> ManageCostumerAndCard
-SaleTransaction --|> Transaction
-ReturnTransaction --|> Transaction
-Transaction --> ManageSaleTransaction
-Product -- Transaction
-Quantity --Transaction
+Catalog <-- Order
+ProductType -- SaleTransaction
+Quantity -- SaleTransaction
 Position -- Inventory
 Debit -- Order
-Credit <-- Transaction
+Credit <-- SaleTransaction
 User --> UserList
+LoyaltyCard --> Customer
+Customer --> CustomerList
 Administrator --|> User
 Cashier --|> User
 ShopManager --|> User
-Debit --> Accounting
-Credit --> Accounting
-Transaction --> ManagePayment
-Product -- Inventory
+Debit --|> FinancialTransaction
+Credit --|> FinancialTransaction
+FinancialTransaction --> AccountBook
+SaleTransaction --> ManagePayment
+ProductType -- Inventory
 Quantity -- Inventory
 Order -- Inventory
 EZShopInterface --|> EZShopController
+Exception <-- EZShopController
 @enduml
 ```
-
-
-<for each package, report class diagram>
-
-
-
-
-
-
-
 
 
 # Verification traceability matrix
 
 \<for each functional requirement from the requirement document, list which classes concur to implement it>
 
-
-
-
-
-
-
-
-
-
+|FR |Customer|LoyaltyCard|SaleTransaction|Cashier|ShopManager|Administrator|
+|:-:|:------:|:---------:|:-------------:|:-----:|:---------:|:-----------:|
+|FR1|        |           |               |      x|          x|            x|
+|FR3|        |           |               |       |          x|            x|
+|FR4|        |           |              x|      x|          x|            x|
+|FR5|       x|          x|              x|      x|          x|            x|
+|FR6|       x|          x|              x|      x|          x|            x|
+|FR7|       x|          x|              x|      x|          x|            x|
+|FR8|        |           |              x|      x|          x|            x|
+|                                                                                        |
+|FR |Catalog|Inventory|Credit|Debit|Exception|ManagePayment|Quantity|Order|AccountBook   |
+|:-:|:-----:|:-------:|:----:|:---:|:-------:|:-----------:|:------:|:---:|:------------:|
+|FR1|       |         |      |     |        x|             |        |     |              |  
+|FR3|      x|        x|      |     |        x|             |        |    x|              |  
+|FR4|      x|        x|      |     |        x|             |        |    x|             x|  
+|FR5|       |         |      |     |        x|             |        |     |              |  
+|FR6|       |        x|     x|    x|        x|            x|       x|     |             x|  
+|FR7|       |         |     x|    x|        x|            x|       x|     |             x|  
+|FR8|       |         |     x|    x|        x|            x|        |     |             x|
+|                                                                                              |
+|FR |UserList|CustumerList|EZShopGUI      |EZShopController|Product|ReturnTransaction|Position |
+|:-:|:------:|:----------:|:-------------:|:--------------:|:-----:|:---------------:|:-------:|
+|FR1|       x|            |              x|               x|       |                 |         |
+|FR3|        |            |              x|               x|      x|                 |         |
+|FR4|        |            |              x|               x|      x|                x|        x|
+|FR5|        |           x|              x|               x|       |                x|         |
+|FR6|        |           x|              x|               x|      x|                x|         |
+|FR7|        |           x|              x|               x|       |                x|         |
+|FR8|        |            |              x|               x|       |                x|         |
 
 # Verification sequence diagrams 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
+
+## Use Case 1
+### Scenario 1-1
+```plantuml
+@startuml
+autonumber
+actor User
+User -> EZShopGui
+EZShopGui -> EZShopController
+EZShopController -> Inventory
+Inventory -> ProductType : defineNewProductType()
+Inventory -> Position : setPosition()
+@enduml
+```
+
+## Use Case 2
+### Scenario 2-1
+```plantuml
+@startuml
+
+@enduml
+```
+
+## Use Case 3
+### Scenario 3-1
+```plantuml
+@startuml
+autonumber
+actor Manager
+
+Manager -> EZShopGui
+EZShopGui -> EZShopController
+EZShopController -> ShopManager : getPrivilegeLevel()
+ShopManager --> EZShopController : privilegeLevel
+EZShopController -> Order : setProductToOrder()
+EZShopController -> Order : setQuantity()
+EZShopController -> Order : issueReorder()
+EZShopController -> Catalog : getPrice()
+EZShopController <-- Catalog : price
+EZShopController -> Order : setPrice()
+EZShopController -> Order : setState()
+EZShopController -> Order : sendAndPayOrderForProducType()
+
+@enduml
+```
+
+## Use Case FR4
+### Scenario 4-1
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 4-2
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 4-3
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 4-4
+```plantuml
+@startuml
+
+@enduml
+```
+
+## Use Cases 5
+### Scenario 5-1
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 5-2
+```plantuml
+@startuml
+
+@enduml
+```
+
+
+## Use Cases 6
+### Scenario 6-1
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 6-2
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 6-3
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 6-4
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 6-5
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 6-6
+```plantuml
+@startuml
+
+@enduml
+```
+
+
+## Use Cases 7
+### Scenario 7-1
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 7-1
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 7-2
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 7-3
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 7-4
+```plantuml
+@startuml
+
+@enduml
+```
+
+
+## Use Case FR8
+### Scenario 8-1
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 8-2
+```plantuml
+@startuml
+
+@enduml
+```
+## Use Case FR9
+### Scenario 9-1
+```plantuml
+@startuml
+
+@enduml
+```
+## Use Case FR10
+### Scenario 10-1
+```plantuml
+@startuml
+
+@enduml
+```
+### Scenario 10-2
+```plantuml
+@startuml
+
+@enduml
+```
 

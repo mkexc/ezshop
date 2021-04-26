@@ -55,6 +55,7 @@ EZShop is a software application to
 ## Context Diagram
 
 ```plantuml
+
 top to bottom direction
 actor Administrator as a
 actor Cashier as ch
@@ -66,6 +67,7 @@ mngr -up-|> ch
 ch -> (EZShop)
  (EZShop) --> cc
  (EZShop) --> sp
+ 
 ```
 
 ## Interfaces
@@ -785,6 +787,7 @@ mngr --> (Manage inventory and orders)
 
 # Glossary
 ```plantuml
+@startuml
 left to right direction
 
 class Shop
@@ -889,7 +892,7 @@ note "bar code is a number on 12 to 14  digits, compliant to GTIN specifications
 N2 .. ProductType
 note "ID is a unique identifier of a transaction,  printed on the receipt (ticket number) " as N3
 N3 .. SaleTransaction
-
+@enduml
 ```
 
 
