@@ -2,9 +2,16 @@
 
 Authors: Vittorio Di Leo, Maurizio Morisio 
 
-Date: 21 April 2021
+Date: 27 April 2021
 
-Version: 1.0
+Version: 1.1
+
+ 
+| Version number | Change |
+| ----------------- |:-----------|
+| 1.1 | Modified glossary, Sale is now SaleTransaction|
+| 1.1 | Modified glossary, Return is now ReturnTransaction|
+
 
 # Contents
 
@@ -55,7 +62,6 @@ EZShop is a software application to
 ## Context Diagram
 
 ```plantuml
-
 top to bottom direction
 actor Administrator as a
 actor Cashier as ch
@@ -67,7 +73,6 @@ mngr -up-|> ch
 ch -> (EZShop)
  (EZShop) --> cc
  (EZShop) --> sp
- 
 ```
 
 ## Interfaces
@@ -101,7 +106,7 @@ ch -> (EZShop)
 | FR3.2     | Delete a product type |
 | FR3.3     |    List all products types |
 | FR3.4   | Search a product type (by bar code, by description) |
-| FR4 | Manage inventory |
+| FR4 | Manage inve()ntory |
 | FR4.1 | Modify quantity available for a product type |
 | FR4.2 | Modify position for a product type |
 | FR4.3 | Issue a reorder warning for a product type|
@@ -811,8 +816,8 @@ class Sale
 class Return
 
 Order --|> Debit
-Sale --|> Credit
-Return --|> Debit
+SaleTransaction --|> Credit
+ReturnTransaction --|> Debit
 
 
 class ProductType{
@@ -902,6 +907,7 @@ N3 .. SaleTransaction
 
 
 ```plantuml
+@startuml
 class EZShop
 class BarCodeReader
 class CreditCardReader
@@ -913,16 +919,19 @@ EZShop o-- CreditCardReader
 EZShop o-- Printer
 EZShop o-- LoyaltyCardReader
 EZShop o-- EZShopApplication
+@enduml
 ```
 
 # Deployment Diagram
 Stand alone application  model. 
 
 ```plantuml
+@startuml
 artifact "EZShop Application" as ezshop
 node "PC" as s
 
 s -- ezshop
+@enduml
 ```
 
 # Notes on development

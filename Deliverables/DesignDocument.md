@@ -2,9 +2,9 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 26/04/2021
+Date: 28/04/2021
 
-Version: 0.3
+Version: 0.5
 
 
 # Contents
@@ -20,51 +20,38 @@ The design must satisfy the Official Requirements document, notably functional a
 
 # High level design
 <discuss architectural styles used, if any>
-The model used is MVC since is a standalone application working on each cash register separately.
-MODEL: it.ezshop.model.*
-VIEW: it.ezshop.gui.*
-CONTROLLER : it.ezshop.data.* (EZSHOPInterface implementation inside data)
-
-<report package diagram>
+The model used is MVC (Model-View-Controller) since is a standalone application working on each cash register separately. The façade class is Shop.
 
 ```plantuml
 @startuml
-left to right direction
+top to bottom direction
 allow_mixing
 
-package it.ezshop {
-    package it.ezshop.gui {
-        package it.ezshop.gui.input {
-            package it.ezshop.gui.input.handler
-        }
-        package it.ezshop.gui.graphics {
-            package it.ezshop.gui.graphics.drawer
-        }
+package it.polito.ezshop {
+    package it.polito.ezshop.gui {
     }
-    package it.ezshop.exception {
-        
+    
+    package it.polito.ezshop.exception {}
+    
+    package it.polito.ezshop.model {
+        package it.polito.ezshop.model.AccountBook
+        package it.polito.ezshop.model.LoyalityCard
+        package it.polito.ezshop.model.UserList
+        package it.polito.ezshop.model.Inventory
+        package it.polito.ezshop.model.LoyaltyCardList
+        package it.polito.ezshop.model.CustomerList
+        package it.polito.ezshop.model.AccountBook
     }
-    package it.ezshop.model {
-        package it.ezshop.model.AccountBook
-        package it.ezshop.model.LoyalityCard
-        package it.ezshop.model.Product
-    }
-    package it.ezshop.data {
-        interface it.ezshop.data.EZShopInterface
-        class it.ezshop.data.EZShopController
-    }
-    package it.ezshop.transactionManagement {
-        package it.ezshop.transactionManagement.SaleTransaction
-        package it.ezshop.transactionManagement.FinancialTransaction
-        package it.ezshop.transactionManagement.Order
+    package it.polito.ezshop.data {
+        interface it.polito.ezshop.data.EZShopInterface
+        class it.polito.ezshop.data.Shop
     }
 }
 
-it.ezshop.data.EZShopController .|> it.ezshop.data.EZShopInterface
-it.ezshop.gui -- it.ezshop.data.EZShopController
-it.ezshop.model <- it.ezshop.data.EZShopController
-it.ezshop.model <- it.ezshop.gui
-
+it.polito.ezshop.data.Shop .|> it.polito.ezshop.data.EZShopInterface
+it.polito.ezshop.model <- it.polito.ezshop.data.Shop
+it.polito.ezshop.data.Shop <- it.polito.ezshop.gui
+it.polito.ezshop.exception <- it.polito.ezshop.data.Shop
 @enduml
 ```
 
@@ -74,215 +61,165 @@ it.ezshop.model <- it.ezshop.gui
 @startuml
 left to right direction
 
-class ProductType{
-    + barCode : Integer
-    + description : String
-    + sellPrice : Double
-    + quantity : 
-    + discountRate : Integer
-    + notes : String
+package ShopPackage{
 
-    + getProductDescription()
-    + setProductDescription()
-    + getProductBarCode()
-    + setProductBarCode()
-    + getSellPrice()
-    + setSellPrice()
-    + getQuantity()
-    + setQuantity()
-    + getDiscountRate()
-    + getNotes()
-    + setNotes()
+    class User{
+        - id : Integer
+        - username : String
+        - password : String
+        - role : enum{"Administrator"|"Cashier"|"ShopManager"}
+        - status : Boolean
+    }
+
+    class UserList{
+        - List : ArrayList<User>
+        
+        + createUser()
+        + deleteUser()
+        + getAllUsers()
+        + getUser()
+        + updateUserRights()
+        + login()
+        + logout()
+    }
+
+    class ProductType{
+        - id : Integer
+        - productCode : String
+        - description : String
+        - pricePerUnit : double
+        - quantity : Integer
+        - discountRate : Integer
+        - notes : String
+    }
+
+    class Inventory{
+        - list : HashMap<ProductType,Position>
+
+        + updateProduct()
+        + deleteProductType()
+        + getAllProductTypes()
+        + getProductTypeByBarCode()
+        + getProductTypesByDescription()
+        + updateQuantity()
+        + updatePosition()
+    }
+
+    class Order{
+        - orderId : Integer
+        - productId : Integer
+        - supplier: String
+        - pricePerUnit : double
+        - quantity: int
+        - status: enum{ISSUED|ORDERED|COMPLETED}
+    }
+
+    class OrderList{    
+        - orderList : ArrayList<Order>
+        
+        + issueOrder()
+        + payOrderFor()
+        + payOrder()
+        + getAllOrders()
+        + recordOrderArrival()
+    }
+
+    class Position{
+        + aisleID : Integer
+        + rackID : Integer
+        + levelID : Integer
+    }
+
+    class Quantity{
+        - quantity : HashMap<Integer,Integer>
+    }
+
+    class LoyaltyCard{
+        - points : Integer
+        - id : String()
+    }
+
+    class LoyaltyCardList{
+        - LoyaltyCardList: ArrayList<LoyaltyCard>
+
+        + createCard()
+        + attachCardToCustomer()
+        + modifyPointsOnCard()
+    }
+
+    class Customer{
+        - customerId : Integer
+        - loyaltyCardId : String
+        - name : String
+        - surname : String
+    }
+
+    class CustomerList{
+        - customersList : ArrayList<Customer>
+
+        + defineCustomer()
+        + deleteCustomer()
+        + searchCustomer()
+        + modifyCustomer()
+        + getCustomer()
+        + getAllCustomers()
+    }
+
+    class FinancialTransaction {
+        - description : String
+        - amount : Double
+        - date : Date
+        - type : enum{DEBIT|CREDIT}
+    }
+
+
+    class SaleTransaction{
+        - transactionElements : Map<ProductType,Integer>
+        - id : Integer
+        - points : Integer
+        - date : Date
+        - time : DateTime
+        - cost : Double
+        - paymentType : String
+        - discountRate : Integer
+        - returnedProducts : ArrayList<ReturnTransaction>
+
+        + addProductToSale()
+        + deleteProductFromSale()
+        + applyDiscountRateToProduct()
+        + applyDiscountRateToSale()
+        + computePointsForSale()
+    }
+
+    class ReturnTransaction {
+        - quantity : Integer 
+        - returnedValue : ProductType
+        - idSaleTransaction : Integer
+    }
+
+    class AccountBook{
+        - listTransaction : List<FinancialTransaction>
+
+        + startReturnTransaction()
+        + returnProduct()
+        + endReturnTransaction()
+        + deleteReturnTransaction()
+        + startSaleTransaction()
+        + deleteSaleTransaction()
+        + endSaleTransaction()
+        + getSaleTransaction()
+
+        + receivePaymentCash()
+        + receivePaymentcreditCard()
+        + returnPaymentCash()
+        + returnPaymentCreditCard()
+        + recordBalanceUpdate()
+        + getCreditsAndDebits()
+        + computeBalance()
+    }
 }
 
-class Catalog{
-    + productList : ArrayList<Product>
-
-    + getProductList()
-    + manageProductCatalog()
-    + searchProductType()
-}
-
-class Inventory{
-    - productQuantity : HashMap<Product,Integer>
-    - productPosition : HashMap<Product,Position>
-
-    + getProductMapQuantity()
-    + getProductMapPosition()
-    + modifyQuantityForProductType()
-    + modifyPositionForProductType()
-    + issueReorderWarningForProductType()
-    + payIssuedReorderWarning()
-    + recordOrderArrival()
-    + getListOrdersByStatus()
-    + getListProductsTypes()
-    + defineNewProductType()
-    + modifyExistingProductType()
-    + deleteProductType()
-    + searchProductType()
-}
-
-class Order{
-    - price : Double
-    - productToOrder : ArrayList<ProductType>
-    - state : String
-    - quantity : Integer
-
-    + sendAndPayOrderForProducType()
-    + getProductToOrder()
-    + getQuantity()
-    + setQuantity()
-    + getState()
-    + setState()
-    + getPrice()
-    + setPrice()
-    + setProductToOrder()
-}
-
-class Position{
-    + aisleID : Integer
-    + rackID : Integer
-    + levelID : Integer
-
-    + getPosition()
-    + setPosition()
-}
-
-class LoyaltyCard{
-    + points : Integer
-    + id : Integer
-
-    + getPoints()
-    + getId()
-    + createCard()
-    + attachCardToCustomer()
-    + addPoints()
-}
-
-class Customer{
-    + loyaltyCardId : Integer
-    + name : String
-    + surname : String
-
-    + getLoyaltyCard()
-    + getName()
-    + getSurname()
-    + modifyCustomer()
-}
-
-class CustomerList{
-    + customersList : ArrayList<Customer>
-
-    + defineCustomer()
-    + deleteCustomer()
-    + searchCustomer()
-    + getCustomersList()
-}
-
-class FinancialTransaction {
-    + description : String
-    + amount : Double
-    + date : Date
-}
-
-class Credit {
-}
-
-class Debit {
-}
-
-class Quantity {
-    + quantity : Integer
-}
-
-class SaleTransaction{
-    + transactionElements : Map<ProductType,Integer>
-    + id : Integer
-    + points : Integer
-    + date : Date
-    + time : DateTime
-    + cost : Double
-    + paymentType : String
-    + discountRate : Integer
-
-    + getTransactionId()
-    + addPoints()
-    + startSale()
-    + addProductToSale()
-    + deleteProductFromSale()
-    + applyDiscountRateToSale()
-    + applyDiscountRateToProductType()
-    + computePointsForSale()
-    + readBarCodeProduct()
-    + printSaleTicket()
-    + getSaleTicketFromTicketNumber()
-    + closeSaleTransaction()
-    + rollbackSaleTransaction()
-    + commitSaleTransaction()
-    + startReturnTransaction()
-    + returnProductListedInSaleTicket()
-    + closeReturnTransaction()
-    + rollbackReturnTransaction()
-    + commitReturnTransaction()
-}
-
-class ManagePayment{
-    + receivePaymentCash()
-    + receivePaymentcreditCard()
-    + returnPaymentCash()
-    + returnPaymentCreditCard()
-}
-
-class AccountBook{
-    + listTransaction : List<FinancialTransaction>
-
-    + recordDebit()
-    + recordCredit()
-    + showMovimentsOverTimePeriod()
-    + computeBalance()
-}
-
-class Administrator{
-    + privilegeLevel : Integer
-
-    + getLevelPrivileges()
-}
-
-class ShopManager{
-    + privilegeLevel : Integer
-
-    + getLevelPrivileges()
-}
-
-class Cashier{
-    + privilegeLevel : Integer
-
-    + getLevelPrivileges()
-}
-
-class User{
-    - username : String
-    - password : String
-    - status : Boolean
-
-    + getUsername()
-    + getStatus()
-    + setUsername()
-    + setStatus()
-    ~ setPassword()
-}
-
-class UserList{
-    - List : ArrayList<User>
-
-    + addUser()
-    + removeUser()
-    + listAll()
-    + searchUser()
-    + changeUserRights()
-}
-
-interface EZShopInterface{
+class Shop{
     + reset()
     + createUser()
     + deleteUser()
@@ -299,7 +236,7 @@ interface EZShopInterface{
     + getProductTypesByDescription()
     + updateQuantity()
     + updatePosition()
-    + issueReorder()
+    + issueOrder()
     + payOrderFor()
     + payOrder()
     + recordOrderArrival()
@@ -318,9 +255,8 @@ interface EZShopInterface{
     + applyDiscountRateToProduct()
     + applyDiscountRateToSale()
     + computePointsForSale()
-    + deleteSaleTicket()
-    + getSaleTicket()
-    + getTicketByNumber()
+    + deleteSaleTransactionId()
+    + SaleTransaction()
     + startReturnTransaction()
     + returnProduct()
     + endReturnTransaction()
@@ -332,10 +268,6 @@ interface EZShopInterface{
     + recordBalanceUpdate()
     + getCreditsAndDebits()
     + computeBalance()
-}
-
-class EZShopController {
-    
 }
 
 class Exception{
@@ -361,31 +293,24 @@ class Exception{
     + InvalidDiscountRateException()    
 }
 
-
 SaleTransaction -- ProductType
 LoyaltyCard -- SaleTransaction
-Catalog -- Inventory
-Catalog <-- Order
-ProductType -- SaleTransaction
 Quantity -- SaleTransaction
+FinancialTransaction -- Order
+LoyaltyCardList -- LoyaltyCard
+Inventory --> ProductType
 Position -- Inventory
-Debit -- Order
-Credit <-- SaleTransaction
 User --> UserList
 LoyaltyCard --> Customer
 Customer --> CustomerList
-Administrator --|> User
-Cashier --|> User
-ShopManager --|> User
-Debit --|> FinancialTransaction
-Credit --|> FinancialTransaction
+Order -- ProductType
+OrderList -- Order
 FinancialTransaction --> AccountBook
-SaleTransaction --> ManagePayment
-ProductType -- Inventory
-Quantity -- Inventory
-Order -- Inventory
-EZShopInterface --|> EZShopController
-Exception <-- EZShopController
+Exception <-- Shop
+ReturnTransaction -> FinancialTransaction
+SaleTransaction -> FinancialTransaction
+Shop --> ShopPackage
+
 @enduml
 ```
 
@@ -394,35 +319,16 @@ Exception <-- EZShopController
 
 \<for each functional requirement from the requirement document, list which classes concur to implement it>
 
-|FR |Customer|LoyaltyCard|SaleTransaction|Cashier|ShopManager|Administrator|
-|:-:|:------:|:---------:|:-------------:|:-----:|:---------:|:-----------:|
-|FR1|        |           |               |      x|          x|            x|
-|FR3|        |           |               |       |          x|            x|
-|FR4|        |           |              x|      x|          x|            x|
-|FR5|       x|          x|              x|      x|          x|            x|
-|FR6|       x|          x|              x|      x|          x|            x|
-|FR7|       x|          x|              x|      x|          x|            x|
-|FR8|        |           |              x|      x|          x|            x|
-|                                                                                        |
-|FR |Catalog|Inventory|Credit|Debit|Exception|ManagePayment|Quantity|Order|AccountBook   |
-|:-:|:-----:|:-------:|:----:|:---:|:-------:|:-----------:|:------:|:---:|:------------:|
-|FR1|       |         |      |     |        x|             |        |     |              |  
-|FR3|      x|        x|      |     |        x|             |        |    x|              |  
-|FR4|      x|        x|      |     |        x|             |        |    x|             x|  
-|FR5|       |         |      |     |        x|             |        |     |              |  
-|FR6|       |        x|     x|    x|        x|            x|       x|     |             x|  
-|FR7|       |         |     x|    x|        x|            x|       x|     |             x|  
-|FR8|       |         |     x|    x|        x|            x|        |     |             x|
-|                                                                                              |
-|FR |UserList|CustumerList|EZShopGUI      |EZShopController|Product|ReturnTransaction|Position |
-|:-:|:------:|:----------:|:-------------:|:--------------:|:-----:|:---------------:|:-------:|
-|FR1|       x|            |              x|               x|       |                 |         |
-|FR3|        |            |              x|               x|      x|                 |         |
-|FR4|        |            |              x|               x|      x|                x|        x|
-|FR5|        |           x|              x|               x|       |                x|         |
-|FR6|        |           x|              x|               x|      x|                x|         |
-|FR7|        |           x|              x|               x|       |                x|         |
-|FR8|        |            |              x|               x|       |                x|         |
+|FR |Customer|CustomerList|LoyaltyCard|LoyaltyCardList|Inventory|ProductType|Position |SaleTransaction|ReturnTransaction|AccountBook|Exception|Quantity|Order|User|UserList|Shop|
+|:-:|:------:|:----------:|:---------:|:-------------:|:-------:|:---------:|:-------:|:-------------:|:---------------:|:---------:|:-------:|:------:|:---:|:--:|:------:|:--:|
+|FR1|        |            |           |               |         |           |         |               |                 |           |        x|        |     |   x|       x|   x| 
+|FR3|        |            |           |               |        x|          x|         |               |                 |           |        x|        |    x|    |        |   x| 
+|FR4|        |            |           |               |        x|          x|        x|              x|                x|          x|        x|        |    x|    |        |   x| 
+|FR5|       x|           x|          x|              x|         |           |         |              x|                x|           |        x|        |     |    |        |   x| 
+|FR6|       x|           x|          x|              x|        x|          x|         |              x|                x|          x|        x|       x|     |    |        |   x| 
+|FR7|       x|           x|          x|              x|         |           |         |              x|                x|          x|        x|       x|     |    |        |   x| 
+|FR8|        |            |           |               |         |           |         |              x|                x|          x|        x|        |     |    |        |   x|
+
 
 # Verification sequence diagrams 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
@@ -445,7 +351,11 @@ Inventory -> Position : setPosition()
 ### Scenario 2-1
 ```plantuml
 @startuml
-
+autonumber
+ShopManager ->EZShopGui
+EZShopGui -> EZShopController
+EZShopController -> User : createUser()
+EZShopController -> User : updateUserRights()
 @enduml
 ```
 
@@ -458,8 +368,8 @@ actor Manager
 
 Manager -> EZShopGui
 EZShopGui -> EZShopController
-EZShopController -> ShopManager : getPrivilegeLevel()
-ShopManager --> EZShopController : privilegeLevel
+EZShopController -> ShopManager : getUserRight()
+ShopManager --> EZShopController : UserRight
 EZShopController -> Order : setProductToOrder()
 EZShopController -> Order : setQuantity()
 EZShopController -> Order : issueReorder()
@@ -472,28 +382,16 @@ EZShopController -> Order : sendAndPayOrderForProducType()
 @enduml
 ```
 
-## Use Case FR4
+## Use Case 4
 ### Scenario 4-1
 ```plantuml
 @startuml
+autonumber
 
-@enduml
-```
-### Scenario 4-2
-```plantuml
-@startuml
+User ->EZShopGui
+EZShopGui -> EZShopController
+EZShopController -> Customer : defineCustomer()
 
-@enduml
-```
-### Scenario 4-3
-```plantuml
-@startuml
-
-@enduml
-```
-### Scenario 4-4
-```plantuml
-@startuml
 
 @enduml
 ```
@@ -502,51 +400,34 @@ EZShopController -> Order : sendAndPayOrderForProducType()
 ### Scenario 5-1
 ```plantuml
 @startuml
+autonumber
+
+User -> EZShopGui
+EZShopGui -> EZShopController
+EZShopController -> User : login()
+EZShopController -> User : getUserRight()
+EZShopController <-- User : UserRight
+EZShopGui <- EZShopController
+User <- EZShopGui
 
 @enduml
 ```
-### Scenario 5-2
-```plantuml
-@startuml
-
-@enduml
-```
-
 
 ## Use Cases 6
 ### Scenario 6-1
 ```plantuml
 @startuml
-
-@enduml
-```
-### Scenario 6-2
-```plantuml
-@startuml
-
-@enduml
-```
-### Scenario 6-3
-```plantuml
-@startuml
-
-@enduml
-```
-### Scenario 6-4
-```plantuml
-@startuml
-
-@enduml
-```
-### Scenario 6-5
-```plantuml
-@startuml
-
-@enduml
-```
-### Scenario 6-6
-```plantuml
-@startuml
+autonumber
+Cashier -> EZShopGui
+EZShopGui -> EZShopController
+EZShopController -> SaleTransaction : startSaleTransaction()
+SaleTransaction -> Inventory : getProductTypeByBarCode()
+SaleTransaction <-- Inventory : ProductType
+EZShopController -> SaleTransaction : addProductToSale()
+SaleTransaction -> Inventory : updateQuantity()
+Cashier --> SaleTransaction : endSaleTransaction()
+EZShopController -> SaleTransaction : receiveCashPayment()/receiveCreditCardPayment()
+SaleTransaction -> Accounting : recordBalanceUpdate()
 
 @enduml
 ```
@@ -559,63 +440,52 @@ EZShopController -> Order : sendAndPayOrderForProducType()
 
 @enduml
 ```
-### Scenario 7-1
-```plantuml
-@startuml
 
-@enduml
-```
-### Scenario 7-2
-```plantuml
-@startuml
-
-@enduml
-```
-### Scenario 7-3
-```plantuml
-@startuml
-
-@enduml
-```
-### Scenario 7-4
-```plantuml
-@startuml
-
-@enduml
-```
-
-
-## Use Case FR8
+## Use Case 8
 ### Scenario 8-1
 ```plantuml
 @startuml
+autonumber
+Cashier -> EZShopGui
+EZShopGui -> EZShopController
+EZShopController -> Cashier :getSaleTransaction()
+EZShopController <-- Cashier :SaleTransactionId
+EZShopController -> ReturnTransaction : startReturnTransaction()
+ReturnTransaction -> Inventory : getProductTypeByBarCode()
+ReturnTransaction <-- Inventory : ProductType
+EZShopController -> ReturnTransaction : returnProduct()
+ReturnTransaction -> Inventory : updateQuantity()
+Cashier -> ReturnTransaction : endReturnTransaction()
+EZShopController -> ReturnTransaction : returnCreditCardPayment()
+ReturnTransaction -> Accounting : recordBalanceUpdate()
+
+
 
 @enduml
 ```
-### Scenario 8-2
-```plantuml
-@startuml
 
-@enduml
-```
-## Use Case FR9
+## Use Case 9
 ### Scenario 9-1
 ```plantuml
 @startuml
+autonumber
+ShopManager -> EZShopGui
+EZShopGui -> EZShopController
+EZShopController -> Accounting :getCreditsAndDebits()
+EZShopController <-- Accounting :ListCreditsAndDebits
+EZShopGui <- EZShopController
 
 @enduml
 ```
-## Use Case FR10
+## Use Case 10
 ### Scenario 10-1
 ```plantuml
 @startuml
+autonumber
+Cashier  -> EZShopGui
+EZShopGui -> EZShopController
 
 @enduml
 ```
-### Scenario 10-2
-```plantuml
-@startuml
 
-@enduml
-```
 

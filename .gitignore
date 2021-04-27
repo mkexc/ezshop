@@ -15,6 +15,7 @@ local.properties
 .recommenders
 data/*
 
+API_EZShopInterface.java
 
 # External tool builders
 .externalToolBuilders/
