@@ -2,9 +2,9 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 28/04/2021
+Date: 29/04/2021
 
-Version: 0.5
+Version: 0.6
 
 
 # Contents
@@ -59,9 +59,17 @@ it.polito.ezshop.exception <- it.polito.ezshop.data.Shop
 
 ```plantuml
 @startuml
-left to right direction
+top to bottom direction
+scale 1024 width 
+scale 768 height 
+note as Persistent
+  Persistent classes: 
+  UserList, Inventory, 
+  CustomerList, AccountBook, 
+  OrderList, LoyaltyCardList.
+end note
 
-package ShopPackage{
+package it.polito.ezshop.model{
 
     class User{
         - id : Integer
@@ -81,6 +89,7 @@ package ShopPackage{
         + updateUserRights()
         + login()
         + logout()
+        - savePersistent()
     }
 
     class ProductType{
@@ -91,18 +100,22 @@ package ShopPackage{
         - quantity : Integer
         - discountRate : Integer
         - notes : String
+        - position : ArrayList<Position>
     }
 
     class Inventory{
-        - list : HashMap<ProductType,Position>
-
-        + updateProduct()
+        - list : ArrayList<ProductType>
+        
+        + createProductType()
+        + updateProduct()®
         + deleteProductType()
         + getAllProductTypes()
         + getProductTypeByBarCode()
         + getProductTypesByDescription()
         + updateQuantity()
         + updatePosition()
+        + removePosition()
+        - savePersistent()
     }
 
     class Order{
@@ -116,12 +129,14 @@ package ShopPackage{
 
     class OrderList{    
         - orderList : ArrayList<Order>
-        
+
         + issueOrder()
         + payOrderFor()
         + payOrder()
         + getAllOrders()
         + recordOrderArrival()
+        - savePersistent()
+        
     }
 
     class Position{
@@ -135,21 +150,22 @@ package ShopPackage{
     }
 
     class LoyaltyCard{
+        - cardId : String
         - points : Integer
-        - id : String()
+        - customerId : String
     }
 
     class LoyaltyCardList{
         - LoyaltyCardList: ArrayList<LoyaltyCard>
 
         + createCard()
-        + attachCardToCustomer()
         + modifyPointsOnCard()
+        - savePersistant()
     }
 
     class Customer{
         - customerId : Integer
-        - loyaltyCardId : String
+        - loyaltyCardId : ArrayList<String>
         - name : String
         - surname : String
     }
@@ -163,6 +179,8 @@ package ShopPackage{
         + modifyCustomer()
         + getCustomer()
         + getAllCustomers()
+        + attachCardToCustomer()
+        - savePersistent()
     }
 
     class FinancialTransaction {
@@ -183,12 +201,6 @@ package ShopPackage{
         - paymentType : String
         - discountRate : Integer
         - returnedProducts : ArrayList<ReturnTransaction>
-
-        + addProductToSale()
-        + deleteProductFromSale()
-        + applyDiscountRateToProduct()
-        + applyDiscountRateToSale()
-        + computePointsForSale()
     }
 
     class ReturnTransaction {
@@ -208,7 +220,6 @@ package ShopPackage{
         + deleteSaleTransaction()
         + endSaleTransaction()
         + getSaleTransaction()
-
         + receivePaymentCash()
         + receivePaymentcreditCard()
         + returnPaymentCash()
@@ -216,104 +227,118 @@ package ShopPackage{
         + recordBalanceUpdate()
         + getCreditsAndDebits()
         + computeBalance()
+        + computePointsForSale()
+        + addProductToSale()
+        + deleteProductFromSale()
+        + applyDiscountRateToProduct()
+        + applyDiscountRateToSale()
+        - savePersistent()
+        
+
     }
 }
 
-class Shop{
-    + reset()
-    + createUser()
-    + deleteUser()
-    + getAllUsers()
-    + getUser()
-    + updateUserRights()
-    + login()
-    + logout()
-    + createProductType()
-    + updateProduct()
-    + deleteProductType()
-    + getAllProductTypes()
-    + getProductTypeByBarCode()
-    + getProductTypesByDescription()
-    + updateQuantity()
-    + updatePosition()
-    + issueOrder()
-    + payOrderFor()
-    + payOrder()
-    + recordOrderArrival()
-    + getAllOrders()
-    + defineCustomer()
-    + modifyCustomer()
-    + deleteCustomer()
-    + getCustomer()
-    + getAllCustomers()
-    + createCard()
-    + attachCardToCustomer()
-    + modifyPointsOnCard()
-    + startSaleTransaction()
-    + addProductToSale()
-    + deleteProductFromSale()
-    + applyDiscountRateToProduct()
-    + applyDiscountRateToSale()
-    + computePointsForSale()
-    + deleteSaleTransactionId()
-    + SaleTransaction()
-    + startReturnTransaction()
-    + returnProduct()
-    + endReturnTransaction()
-    + deleteReturnTransaction()
-    + receiveCashPayment()
-    + receiveCreditCardPayment()
-    + returnCashPayment()
-    + returnCreditCardPayment()
-    + recordBalanceUpdate()
-    + getCreditsAndDebits()
-    + computeBalance()
+package it.polito.ezshop.data{
+    class Shop{
+        + reset()
+        + createUser()
+        + deleteUser()
+        + getAllUsers()
+        + getUser()
+        + updateUserRights()
+        + login()
+        + logout()
+        + createProductType()
+        + updateProduct()
+        + deleteProductType()
+        + getAllProductTypes()
+        + getProductTypeByBarCode()
+        + getProductTypesByDescription()
+        + updateQuantity()
+        + updatePosition()
+        + removePosition()
+        + issueOrder()
+        + payOrderFor()
+        + payOrder()
+        + recordOrderArrival()
+        + getAllOrders()
+        + defineCustomer()
+        + modifyCustomer()
+        + deleteCustomer()
+        + getCustomer()
+        + getAllCustomers()
+        + createCard()
+        + attachCardToCustomer()
+        + modifyPointsOnCard()
+        + startSaleTransaction()
+        + addProductToSale()
+        + deleteProductFromSale()
+        + applyDiscountRateToProduct()
+        + applyDiscountRateToSale()
+        + computePointsForSale()
+        + deleteSaleTransactionId()
+        + endSaleTransaction()
+        + getSaleTransaction()
+        + startReturnTransaction()
+        + returnProduct()
+        + endReturnTransaction()
+        + deleteReturnTransaction()
+        + receiveCashPayment()
+        + receiveCreditCardPayment()
+        + returnCashPayment()
+        + returnCreditCardPayment()
+        + recordBalanceUpdate()
+        + getCreditsAndDebits()
+        + computeBalance()
+    }
 }
 
-class Exception{
-    + InvalidUsernameException()
-    + InvalidPasswordException()
-    + InvalidRoleException()
-    + InvalidUserIdException()
-    + UnauthorizedException()
-    + InvalidProductIdException()
-    + InvalidProductDescriptionException()
-    + InvalidProductCodeException()
-    + InvalidPricePerUnitException()
-    + InvalidLocationException()
-    + InvalidTicketNumberException()
-    + InvalidQuantityException()
-    + InvalidTransactionIdException()
-    + InvalidPaymentException()
-    + InvalidCreditCardException()
-    + InvalidOrderIdException()
-    + InvalidCustomerNameException()
-    + InvalidCustomerCardException()
-    + InvalidCustomerIdException()
-    + InvalidDiscountRateException()    
+package it.polito.ezshop.exception {
+    class Exception{
+        + InvalidUsernameException()
+        + InvalidPasswordException()
+        + InvalidRoleException()
+        + InvalidUserIdException()
+        + UnauthorizedException()
+        + InvalidProductIdException()
+        + InvalidProductDescriptionException()
+        + InvalidProductCodeException()
+        + InvalidPricePerUnitException()
+        + InvalidLocationException()
+        + InvalidTicketNumberException()
+        + InvalidQuantityException()
+        + InvalidTransactionIdException()
+        + InvalidPaymentException()
+        + InvalidCreditCardException()
+        + InvalidOrderIdException()
+        + InvalidCustomerNameException()
+        + InvalidCustomerCardException()
+        + InvalidCustomerIdException()
+        + InvalidDiscountRateException()    
+    }
 }
 
-SaleTransaction -- ProductType
-LoyaltyCard -- SaleTransaction
-Quantity -- SaleTransaction
-FinancialTransaction -- Order
-LoyaltyCardList -- LoyaltyCard
-Inventory --> ProductType
-Position -- Inventory
-User --> UserList
-LoyaltyCard --> Customer
-Customer --> CustomerList
-Order -- ProductType
-OrderList -- Order
-FinancialTransaction --> AccountBook
-Exception <-- Shop
-ReturnTransaction -> FinancialTransaction
-SaleTransaction -> FinancialTransaction
-Shop --> ShopPackage
 
+
+SaleTransaction "*" -- "*" ProductType
+FinancialTransaction <-- Order
+LoyaltyCardList "1"--> "*" LoyaltyCard
+Inventory "1" --> "*" ProductType
+Position "*"-- "1"ProductType
+User "*" <-- "1" UserList
+LoyaltyCard "*" -- " 1" Customer
+Customer "*" <-- "1" CustomerList
+Order "*" --> ProductType
+OrderList "1" --> "*" Order
+FinancialTransaction"1" ---> "*"AccountBook
+Exception "*"<-right-"1" Shop
+ReturnTransaction -|> FinancialTransaction
+SaleTransaction -|> FinancialTransaction
+Shop --> it.polito.ezshop.model
+(SaleTransaction, ProductType)  .. Quantity
+it.polito.ezshop.model -- Persistent
 @enduml
 ```
-
 
 # Verification traceability matrix
 
@@ -338,12 +363,16 @@ Shop --> ShopPackage
 ```plantuml
 @startuml
 autonumber
-actor User
-User -> EZShopGui
-EZShopGui -> EZShopController
-EZShopController -> Inventory
-Inventory -> ProductType : defineNewProductType()
-Inventory -> Position : setPosition()
+EZShopGui -> Shop
+Shop -> Inventory : createProductType()
+Inventory -> ProductType : createProductType()
+Inventory <-- ProductType : id
+Inventory -> ProductType : updatePosition()
+ProductType -> Position : getPosition()
+ProductType <-- Position : Position
+ProductType -> Position : Position.add()
+Inventory <-- ProductType : true
+Shop <-- Inventory : true
 @enduml
 ```
 
@@ -352,10 +381,14 @@ Inventory -> Position : setPosition()
 ```plantuml
 @startuml
 autonumber
-ShopManager ->EZShopGui
-EZShopGui -> EZShopController
-EZShopController -> User : createUser()
-EZShopController -> User : updateUserRights()
+EZShopGui -> Shop 
+Shop -> UserList : createUser()
+UserList -> User : createUser()
+UserList <-- User : User
+Shop <-- UserList : id
+Shop -> UserList : updateUserRights()
+UserList -> User : setRole()
+Shop <-- UserList : true
 @enduml
 ```
 
@@ -364,35 +397,42 @@ EZShopController -> User : updateUserRights()
 ```plantuml
 @startuml
 autonumber
-actor Manager
-
-Manager -> EZShopGui
-EZShopGui -> EZShopController
-EZShopController -> ShopManager : getUserRight()
-ShopManager --> EZShopController : UserRight
-EZShopController -> Order : setProductToOrder()
-EZShopController -> Order : setQuantity()
-EZShopController -> Order : issueReorder()
-EZShopController -> Catalog : getPrice()
-EZShopController <-- Catalog : price
-EZShopController -> Order : setPrice()
-EZShopController -> Order : setState()
-EZShopController -> Order : sendAndPayOrderForProducType()
-
+EZShopGui -> Shop
+Shop -> OrderList : issueOrder()
+OrderList -> Order : issueOrder()
+OrderList <-- Order : Order
+OrderList -> Order : setState()
+Shop <- OrderList : id
 @enduml
 ```
 
 ## Use Case 4
-### Scenario 4-1
+### Scenario 4-1 
 ```plantuml
 @startuml
 autonumber
+EZShopGui -> Shop
+Shop -> CustomerList : defineCustomer()
+CustomerList -> Customer: defineCustomer()
+CustomerList <-- Customer: Customer
+Shop <-- CustomerList : id
+@enduml
+```
 
-User ->EZShopGui
-EZShopGui -> EZShopController
-EZShopController -> Customer : defineCustomer()
-
-
+### Scenario 4-2 
+```plantuml
+@startuml
+autonumber
+EZShopGui -> Shop
+Shop -> LoyaltyCardList : createCard()
+LoyaltyCardList -> LoyaltyCard: createCard()
+LoyaltyCardList <-- LoyaltyCard: LoyaltyCard
+Shop <-- LoyaltyCardList : cardId
+Shop -> CustomerList : attachCardToCustomer()
+CustomerList -> Customer : getLoyaltyCardId()
+CustomerList <-- Customer : LoyaltyCardId
+CustomerList -> Customer : loyaltyCardId.add()
+Shop <-- CustomerList : true
 @enduml
 ```
 
@@ -401,15 +441,12 @@ EZShopController -> Customer : defineCustomer()
 ```plantuml
 @startuml
 autonumber
-
-User -> EZShopGui
-EZShopGui -> EZShopController
-EZShopController -> User : login()
-EZShopController -> User : getUserRight()
-EZShopController <-- User : UserRight
-EZShopGui <- EZShopController
-User <- EZShopGui
-
+EZShopGui -> Shop 
+Shop -> UserList : login()
+Shop <- UserList : User
+Shop -> User : getRole()
+Shop <-- User : Role
+EZShopGui <- Shop
 @enduml
 ```
 
@@ -418,26 +455,47 @@ User <- EZShopGui
 ```plantuml
 @startuml
 autonumber
-Cashier -> EZShopGui
-EZShopGui -> EZShopController
-EZShopController -> SaleTransaction : startSaleTransaction()
-SaleTransaction -> Inventory : getProductTypeByBarCode()
-SaleTransaction <-- Inventory : ProductType
-EZShopController -> SaleTransaction : addProductToSale()
-SaleTransaction -> Inventory : updateQuantity()
-Cashier --> SaleTransaction : endSaleTransaction()
-EZShopController -> SaleTransaction : receiveCashPayment()/receiveCreditCardPayment()
-SaleTransaction -> Accounting : recordBalanceUpdate()
-
+EZShopGui -> Shop
+Shop -> AccountBook : startSaleTransaction()
+Shop <-- AccountBook : id
+Shop -> Inventory : getProductTypeByBarCode()
+Shop <-- Inventory : ProductType
+Shop -> AccountBook : addProductToSale()
+Shop -> Inventory : updateQuantity()
+Inventory -> ProductType : setQuantity()
+Shop <- Inventory : true
+Shop <- AccountBook : true
+Shop -> AccountBook : endSaleTransaction()
+Shop -> AccountBook : UC7
+Shop <-- AccountBook : true
+Shop -> AccountBook : recordBalanceUpdate()
+Shop <-- AccountBook : true
 @enduml
 ```
 
-
-## Use Cases 7
-### Scenario 7-1
+### Scenario 6-2
 ```plantuml
 @startuml
-
+autonumber
+EZShopGui -> Shop
+Shop -> AccountBook : startSaleTransaction()
+Shop <-- AccountBook : id
+Shop -> Inventory : getProductTypeByBarCode()
+Shop <-- Inventory : ProductType
+Shop -> AccountBook : addProductToSale()
+Shop -> Inventory : updateQuantity()
+Inventory -> ProductType : setQuantity()
+Shop <-- Inventory : true
+EZShopGui <-- Shop : getDiscountRate()
+EZShopGui -> Shop : discountRate
+Shop -> AccountBook: applyDiscountRateToProduct()
+Shop <-- AccountBook: true
+Shop <-- AccountBook : true
+Shop -> AccountBook : endSaleTransaction()
+Shop -> AccountBook : UC7
+Shop <-- AccountBook : true
+Shop -> AccountBook : recordBalanceUpdate()
+Shop <-- AccountBook : true
 @enduml
 ```
 
@@ -446,21 +504,25 @@ SaleTransaction -> Accounting : recordBalanceUpdate()
 ```plantuml
 @startuml
 autonumber
-Cashier -> EZShopGui
-EZShopGui -> EZShopController
-EZShopController -> Cashier :getSaleTransaction()
-EZShopController <-- Cashier :SaleTransactionId
-EZShopController -> ReturnTransaction : startReturnTransaction()
-ReturnTransaction -> Inventory : getProductTypeByBarCode()
-ReturnTransaction <-- Inventory : ProductType
-EZShopController -> ReturnTransaction : returnProduct()
-ReturnTransaction -> Inventory : updateQuantity()
-Cashier -> ReturnTransaction : endReturnTransaction()
-EZShopController -> ReturnTransaction : returnCreditCardPayment()
-ReturnTransaction -> Accounting : recordBalanceUpdate()
 
-
-
+EZShopGui -> Shop
+Shop -> AccountBook : startReturnTransaction()
+Shop <-- AccountBook : id
+Shop -> Inventory : getProductTypeByBarCode()
+Shop <-- Inventory : ProductType
+Shop -> AccountBook : addProductToSale()
+Shop -> AccountBook : returnProduct()
+Shop <-- AccountBook : true
+Shop -> Inventory : updateQuantity()
+Inventory -> ProductType : setQuantity()
+Shop <-- Inventory : true
+Shop <-- AccountBook : true
+Shop -> AccountBook : endReturnTransaction()
+Shop <-- AccountBook : true
+Shop -> AccountBook : UC10
+Shop <-- AccountBook : true
+Shop -> AccountBook : recordBalanceUpdate()
+Shop <-- AccountBook : true
 @enduml
 ```
 
@@ -469,22 +531,14 @@ ReturnTransaction -> Accounting : recordBalanceUpdate()
 ```plantuml
 @startuml
 autonumber
-ShopManager -> EZShopGui
-EZShopGui -> EZShopController
-EZShopController -> Accounting :getCreditsAndDebits()
-EZShopController <-- Accounting :ListCreditsAndDebits
-EZShopGui <- EZShopController
-
-@enduml
-```
-## Use Case 10
-### Scenario 10-1
-```plantuml
-@startuml
-autonumber
-Cashier  -> EZShopGui
-EZShopGui -> EZShopController
-
+EZShopGui -> Shop
+EZShopGui <- Shop : getFromDate()
+EZShopGui --> Shop : fromDate
+EZShopGui <- Shop : getToDate()
+EZShopGui --> Shop : toDate
+Shop -> Accounting :getCreditsAndDebits()
+Shop <-- Accounting :balanceOperations
+EZShopGui <-- Shop  : balanceOperations
 @enduml
 ```
 
