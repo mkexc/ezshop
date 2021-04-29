@@ -40,7 +40,6 @@ package it.polito.ezshop {
         package it.polito.ezshop.model.Inventory
         package it.polito.ezshop.model.LoyaltyCardList
         package it.polito.ezshop.model.CustomerList
-        package it.polito.ezshop.model.AccountBook
     }
     package it.polito.ezshop.data {
         interface it.polito.ezshop.data.EZShopInterface
@@ -107,7 +106,7 @@ package it.polito.ezshop.model{
         - list : ArrayList<ProductType>
         
         + createProductType()
-        + updateProduct()®
+        + updateProduct()
         + deleteProductType()
         + getAllProductTypes()
         + getProductTypeByBarCode()
@@ -183,7 +182,7 @@ package it.polito.ezshop.model{
         - savePersistent()
     }
 
-    class FinancialTransaction {
+    class BalanceOperation {
         - description : String
         - amount : Double
         - date : Date
@@ -210,7 +209,7 @@ package it.polito.ezshop.model{
     }
 
     class AccountBook{
-        - listTransaction : List<FinancialTransaction>
+        - listTransaction : List<BalanceOperation>
 
         + startReturnTransaction()
         + returnProduct()
@@ -276,7 +275,7 @@ package it.polito.ezshop.data{
         + applyDiscountRateToProduct()
         + applyDiscountRateToSale()
         + computePointsForSale()
-        + deleteSaleTransactionId()
+        + deleteSaleTransaction()
         + endSaleTransaction()
         + getSaleTransaction()
         + startReturnTransaction()
@@ -321,7 +320,7 @@ package it.polito.ezshop.exception {
 
 
 SaleTransaction "*" -- "*" ProductType
-FinancialTransaction <-- Order
+BalanceOperation <-- Order
 LoyaltyCardList "1"--> "*" LoyaltyCard
 Inventory "1" --> "*" ProductType
 Position "*"-- "1"ProductType
@@ -330,10 +329,10 @@ LoyaltyCard "*" -- " 1" Customer
 Customer "*" <-- "1" CustomerList
 Order "*" --> ProductType
 OrderList "1" --> "*" Order
-FinancialTransaction"1" ---> "*"AccountBook
+BalanceOperation"1" ---> "*"AccountBook
 Exception "*"<-right-"1" Shop
-ReturnTransaction -|> FinancialTransaction
-SaleTransaction -|> FinancialTransaction
+ReturnTransaction -|> BalanceOperation
+SaleTransaction -|> BalanceOperation
 Shop --> it.polito.ezshop.model
 (SaleTransaction, ProductType)  .. Quantity
 it.polito.ezshop.model -- Persistent
@@ -376,6 +375,19 @@ Shop <-- Inventory : true
 @enduml
 ```
 
+### Scenario 1-3
+```plantuml
+@startuml
+autonumber
+EZShopGui -> Shop
+Shop -> Inventory : getProductTypeByBarcode()
+Inventory --> Shop : ProductType
+Inventory -> ProductType : updateProduct()
+Inventory <-- ProductType : true
+
+@enduml
+```
+
 ## Use Case 2
 ### Scenario 2-1
 ```plantuml
@@ -392,6 +404,19 @@ Shop <-- UserList : true
 @enduml
 ```
 
+### Scenario 2-2
+```plantuml
+@startuml
+autonumber
+EZShopGui -> Shop 
+Shop -> UserList : getUser()
+Shop <-- UserList : id
+UserList -> Shop : User
+Shop -> UserList : deleteUser()
+Shop <-- UserList : true
+@enduml
+```
+
 ## Use Case 3
 ### Scenario 3-1
 ```plantuml
@@ -403,6 +428,45 @@ OrderList -> Order : issueOrder()
 OrderList <-- Order : Order
 OrderList -> Order : setState()
 Shop <- OrderList : id
+@enduml
+```
+
+### Scenario 3-2
+```plantuml
+@startuml
+autonumber
+EZShopGui -> Shop
+Shop -> OrderList : getAllOrders()
+Shop <-- OrderList : orderList
+Shop --> EZShopGui : orderList
+Shop <-- EZShopGui : Order
+Shop -> Order : payOrder()
+Order -> Order : setState()
+Shop <-- Order : true
+@enduml
+```
+
+### Scenario 3-3
+```plantuml
+@startuml
+autonumber
+EZShopGui -> Shop
+
+Shop -> OrderList : getAllOrders()
+Shop <-- OrderList : orderList
+Shop --> EZShopGui : orderList
+Shop <-- EZShopGui : Order
+Shop -> OrderList : recordOrderArrival()
+OrderList -> Order : recordOrderArrival()
+Order -> Order : setState()
+OrderList <-- Order : true
+Shop <-- OrderList : true
+Shop -> Inventory : getProductType()
+Shop <-- Inventory : ProductType
+Shop -> Inventory : updateQuantity()
+Inventory -> ProductType : updateQuantity()
+ProductType -> ProductType : setQuantity()
+Inventory <-- ProductType : true
 @enduml
 ```
 
@@ -436,6 +500,20 @@ Shop <-- CustomerList : true
 @enduml
 ```
 
+### Scenario 4-4 
+```plantuml
+@startuml
+autonumber
+EZShopGui -> Shop
+Shop -> CustomerList : getAllCustomers()
+Shop <-- CustomerList : customerList
+Shop --> EZShopGui : customerList
+Shop <-- EZShopGui : Customer
+Shop -> Customer: modifyCustomer()
+Shop <-- Customer: true
+@enduml
+```
+
 ## Use Cases 5
 ### Scenario 5-1
 ```plantuml
@@ -446,6 +524,19 @@ Shop -> UserList : login()
 Shop <- UserList : User
 Shop -> User : getRole()
 Shop <-- User : Role
+EZShopGui <- Shop
+@enduml
+```
+
+### Scenario 5-2
+```plantuml
+@startuml
+autonumber
+EZShopGui -> Shop 
+Shop -> UserList : getUser()
+Shop <- UserList : User
+Shop -> User : logout()
+Shop <-- User : true
 EZShopGui <- Shop
 @enduml
 ```
@@ -462,12 +553,14 @@ Shop -> Inventory : getProductTypeByBarCode()
 Shop <-- Inventory : ProductType
 Shop -> AccountBook : addProductToSale()
 Shop -> Inventory : updateQuantity()
-Inventory -> ProductType : setQuantity()
+Inventory -> ProductType : updateQuantity()
+ProductType -> ProductType : setQuantity()
+Inventory <-- ProductType : true
 Shop <- Inventory : true
 Shop <- AccountBook : true
 Shop -> AccountBook : endSaleTransaction()
 Shop -> AccountBook : UC7
-Shop <-- AccountBook : true
+Shop <-- AccountBook : change>=0
 Shop -> AccountBook : recordBalanceUpdate()
 Shop <-- AccountBook : true
 @enduml
@@ -484,7 +577,9 @@ Shop -> Inventory : getProductTypeByBarCode()
 Shop <-- Inventory : ProductType
 Shop -> AccountBook : addProductToSale()
 Shop -> Inventory : updateQuantity()
-Inventory -> ProductType : setQuantity()
+Inventory -> ProductType : updateQuantity()
+ProductType -> ProductType : setQuantity()
+Inventory <-- ProductType : true
 Shop <-- Inventory : true
 EZShopGui <-- Shop : getDiscountRate()
 EZShopGui -> Shop : discountRate
@@ -493,9 +588,76 @@ Shop <-- AccountBook: true
 Shop <-- AccountBook : true
 Shop -> AccountBook : endSaleTransaction()
 Shop -> AccountBook : UC7
-Shop <-- AccountBook : true
+Shop <-- AccountBook : change>=0
 Shop -> AccountBook : recordBalanceUpdate()
 Shop <-- AccountBook : true
+@enduml
+```
+
+### Scenario 6-4
+```plantuml
+@startuml
+autonumber
+EZShopGui -> Shop
+Shop -> AccountBook : startSaleTransaction()
+Shop <-- AccountBook : id
+Shop -> Inventory : getProductTypeByBarCode()
+Shop <-- Inventory : ProductType
+Shop -> AccountBook : addProductToSale()
+Shop -> Inventory : updateQuantity()
+Inventory -> ProductType : setQuantity()
+Shop <-- Inventory : true
+Shop <-- AccountBook : true
+Shop -> AccountBook : endSaleTransaction()
+Shop -> AccountBook : UC7
+Shop <-- AccountBook : change>=0
+Shop -> AccountBook : recordBalanceUpdate()
+Shop <-- AccountBook : true
+Shop -> AccountBook : computePointsForSale()
+Shop <-- AccountBook : points
+Shop -> EZShopGui : getCardId()
+Shop <-- EZShopGui : cardId
+Shop -> LoyaltyCardList : modifyPointsOnCard()
+LoyaltyCardList -> LoyaltyCard : modifyPointsOnCard()
+LoyaltyCard -> LoyaltyCard : setPoints()
+LoyaltyCardList <-- LoyaltyCard : true
+Shop <-- LoyaltyCardList : true
+@enduml
+```
+
+### Scenario 6-5
+```plantuml
+@startuml
+autonumber
+EZShopGui -> Shop
+Shop -> AccountBook : startSaleTransaction()
+Shop <-- AccountBook : id
+Shop -> Inventory : getProductTypeByBarCode()
+Shop <-- Inventory : ProductType
+Shop -> AccountBook : addProductToSale()
+Shop -> Inventory : updateQuantity()
+Inventory -> ProductType : updateQuantity()
+ProductType -> ProductType : setQuantity()
+Inventory <-- ProductType : true
+Shop <- Inventory : true
+Shop <- AccountBook : true
+Shop -> AccountBook : endSaleTransaction()
+Shop -> AccountBook : UC7
+Shop <-- AccountBook : change=-1
+Shop -> AccountBook : deleteSaleTransaction()
+Shop <-- AccountBook : true
+@enduml
+```
+
+## Use Case 7
+### Scenario 7-4
+```plantuml
+@startuml
+autonumber
+EZShopGui -> Shop : receiveCashPayment()
+Shop -> AccountBook : receiveCashPayment()
+Shop <-- AccountBook : change
+Shop --> EZShopGui : change
 @enduml
 ```
 
@@ -504,7 +666,6 @@ Shop <-- AccountBook : true
 ```plantuml
 @startuml
 autonumber
-
 EZShopGui -> Shop
 Shop -> AccountBook : startReturnTransaction()
 Shop <-- AccountBook : id
@@ -514,13 +675,15 @@ Shop -> AccountBook : addProductToSale()
 Shop -> AccountBook : returnProduct()
 Shop <-- AccountBook : true
 Shop -> Inventory : updateQuantity()
-Inventory -> ProductType : setQuantity()
+Inventory -> ProductType : updateQuantity()
+ProductType -> ProductType : setQuantity()
+Inventory <-- ProductType : true
 Shop <-- Inventory : true
 Shop <-- AccountBook : true
 Shop -> AccountBook : endReturnTransaction()
 Shop <-- AccountBook : true
 Shop -> AccountBook : UC10
-Shop <-- AccountBook : true
+Shop <-- AccountBook : return>=0
 Shop -> AccountBook : recordBalanceUpdate()
 Shop <-- AccountBook : true
 @enduml
@@ -542,4 +705,14 @@ EZShopGui <-- Shop  : balanceOperations
 @enduml
 ```
 
-
+## Use Case 10
+### Scenario 10-2
+```plantuml
+@startuml
+autonumber
+EZShopGui -> Shop : returnCashPayment()
+Shop -> AccountBook : returnCashPayment()
+Shop <-- AccountBook : return
+Shop --> EZShopGui : return
+@enduml
+```
