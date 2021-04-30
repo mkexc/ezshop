@@ -63,13 +63,6 @@ top to bottom direction
 scale 1024 width 
 scale 768 height
 
-note as Persistent
-  Persistent classes: 
-  UserList, Inventory, 
-  CustomerList, AccountBook, 
-  OrderList, LoyaltyCardList.
-end note
-
 package it.polito.ezshop.model{
 
     class User{
@@ -98,8 +91,8 @@ package it.polito.ezshop.model{
         - productCode : String
         - description : String
         - pricePerUnit : double
-        - quantity : Integer
-        - discountRate : Integer
+        - quantity : integer
+        - discountRate : double
         - notes : String
         - position : ArrayList<Position>
     }
@@ -142,7 +135,7 @@ package it.polito.ezshop.model{
 
     class Position{
         + aisleID : Integer
-        + rackID : Integer
+        + rackID : String
         + levelID : Integer
     }
 
@@ -152,7 +145,7 @@ package it.polito.ezshop.model{
 
     class LoyaltyCard{
         - cardId : String
-        - points : Integer
+        - points : int
         - customerId : String
     }
 
@@ -185,33 +178,31 @@ package it.polito.ezshop.model{
     }
 
     class BalanceOperation {
+        - id : Integer
         - description : String
-        - amount : Double
-        - date : Date
-        - type : enum{DEBIT|CREDIT}
+        - amount : double        
+        - date : LocalDate
+        - time : LocalDateTime
+        - success : boolean
+        - type : enum{DEBIT|CREDIT} 
     }
-
 
     class SaleTransaction{
         - transactionElements : Map<ProductType,Integer>
-        - id : Integer
-        - points : Integer
-        - date : Date
-        - time : DateTime
-        - cost : Double
+        - points : int
         - paymentType : String
-        - discountRate : Integer
+        - discountRate : double
         - returnedProducts : ArrayList<ReturnTransaction>
     }
 
     class ReturnTransaction {
-        - quantity : Integer 
+        - quantity : int 
         - returnedValue : ProductType
         - idSaleTransaction : Integer
     }
 
     class AccountBook <<Persistent>> {
-        - listTransaction : List<BalanceOperation>
+        - balanceOperations : List<BalanceOperation>
 
         + startReturnTransaction()
         + returnProduct()
@@ -297,7 +288,6 @@ note as ShopConnections
     LoyaltyCardList, CustomerList and AccountBook
 end note
 
-
 SaleTransaction "*" -- "*" ProductType
 BalanceOperation <-- Order
 LoyaltyCardList "1" --> "*" LoyaltyCard
@@ -307,16 +297,14 @@ User "*" <- "1" UserList
 LoyaltyCard "*" -- " 1" Customer
 Customer "*" <-- "1" CustomerList
 Order "*" --> ProductType
-OrderList "1" --> "*" Order
+OrderList "1" -up-> "*" Order
 BalanceOperation"1" --> "*"AccountBook
 ReturnTransaction --|> BalanceOperation
 SaleTransaction -left-|> BalanceOperation
 Shop -up-> it.polito.ezshop.model
 Shop .. ShopConnections
+Quantity -[hidden]left-> SaleTransaction
 (SaleTransaction, ProductType)  .left. Quantity
-it.polito.ezshop.model -- Persistent
-
-
 @enduml
 ```
 
@@ -553,8 +541,8 @@ Shop -> Inventory : updateQuantity()
 Inventory -> ProductType : updateQuantity()
 ProductType -> ProductType : setQuantity()
 Inventory <-- ProductType : true
-Shop <- Inventory : true
-Shop <- AccountBook : true
+Shop <-- Inventory : true
+Shop <-- AccountBook : true
 Shop -> AccountBook : endSaleTransaction()
 Shop -> AccountBook : UC7
 Shop <-- AccountBook : change>=0
@@ -579,8 +567,8 @@ Inventory -> ProductType : updateQuantity()
 ProductType -> ProductType : setQuantity()
 Inventory <-- ProductType : true
 Shop <-- Inventory : true
-EZShopGui <-- Shop : getDiscountRate()
-EZShopGui -> Shop : discountRate
+EZShopGui <- Shop : getDiscountRate()
+EZShopGui --> Shop : discountRate
 Shop -> AccountBook: applyDiscountRateToProduct()
 Shop <-- AccountBook: true
 Shop <-- AccountBook : true
@@ -686,10 +674,10 @@ ProductType -> ProductType : setQuantity()
 Inventory <-- ProductType : true
 Shop <-- Inventory : true
 Shop <-- AccountBook : true
-Shop -> AccountBook : endReturnTransaction()
-Shop <-- AccountBook : true
 Shop -> AccountBook : UC10
 Shop <-- AccountBook : return>=0
+Shop -> AccountBook : endReturnTransaction()
+Shop <-- AccountBook : true
 Shop -> AccountBook : recordBalanceUpdate()
 Shop <-- AccountBook : true
 @enduml
