@@ -2,17 +2,15 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 29/04/2021
+Date: 30/04/2021
 
-Version: 0.2
+Version: 1.0
 
 # Contents
-- [Estimate by product decomposition]
-- [Estimate by activity decomposition]
+- [Estimate by product decomposition](#estimate-by-product-decomposition)
+- [Estimate by activity decomposition](#estimate-by-activity-decomposition)
 
 # Estimation approach
-
-<Consider the EZShop project as described in YOUR requirement document, assume that you are going to develop the project INDEPENDENT of the deadlines of the course>
 
 ## Estimate by product decomposition
 
@@ -47,38 +45,62 @@ Version: 0.2
 | Risk management                       | 10                                |
 | **Total**                             | 240                               |
 
-
-###
-
-<Insert here Gantt chart with above activities>
+### Gantt Diagram
 
 ```plantuml
 @startgantt
-[Analysis of requirements] lasts 1 days
-[Requirements document] lasts 2 days
-[GUI design] lasts 1 days
-[Planning and work assignments] lasts 1 days
-[Analysis of system design] lasts 2 days
-[Analysis of requirements] -> [GUI design]
-[Analysis of requirements] -> [Planning and work assignments]
-[Analysis of requirements] -> [Analysis of system design]
-[Design document] lasts 2 days
-[Planning and work assignments] -> [Design document]
-[Brainstorming] lasts 1 days
-[Analysis of system design] -> [Brainstorming]
-[Coding] lasts 2 days
-[Analysis of system design] -> [Coding]
-[Database creation] lasts 2 days
-[Brainstorming] -> [Database creation]
-[Testing and bug fixing] lasts 2 days
-[Coding] -> [Testing and bug fixing]
-[Validation and Integration] lasts 1 days
-[Database creation] -> [Validation and Integration]
-[Deployment] lasts 2 days
-[Database creation] -> [Deployment]
-[End project self-evaluation] lasts 1 days
-[Validation and Integration] -> [End project self-evaluation] 
-[Risk management] lasts 1 days
-[Validation and Integration] -> [Risk management]
+scale 1.5
+printscale monthly
+<style>
+ganttDiagram {
+    note {
+		FontColor Black
+		FontSize 9
+        FontStyle bold
+        BackGroundColor Bisque
+		LineColor Black
+	}
+}
+</style>
+-- Start project--
+
+[Analysis of requirements (12 person hours)] lasts 1 days
+[Requirements document (20 + 16 person hours)] lasts 2 days
+[GUI design (8 person hours)] lasts 1 days
+[Planning and work assignments (4 person hours)] lasts 1 days
+
+[Analysis of system design(4 + 8 person hours)] lasts 2 days
+[Analysis of requirements (12 person hours)] -[#FFFFFF00]-> [GUI design (8 person hours)]
+[Analysis of requirements (12 person hours)] -[#FFFFFF00]-> [Planning and work assignments (4 person hours)]
+[Requirements completed] happens at [Planning and work assignments (4 person hours)]'s end
+[Analysis of requirements (12 person hours)] -[#FFFFFF00]-> [Analysis of system design(4 + 8 person hours)]
+[Design document (24 + 16 person hours)] lasts 2 days
+[Planning and work assignments (4 person hours)] -[#FFFFFF00]-> [Design document (24 + 16 person hours)]
+[Brainstorming (2 person hours)] lasts 1 days
+[Analysis of system design(4 + 8 person hours)] -[#FFFFFF00]-> [Brainstorming (2 person hours)]
+[Coding (14 + 28 person hours)] lasts 2 days
+[Design completed] happens at [Brainstorming (2 person hours)]'s end
+[Analysis of system design(4 + 8 person hours)] -[#FFFFFF00]-> [Coding (14 + 28 person hours)]
+[Database creation (4 + 6 person hours)] lasts 2 days
+[Brainstorming (2 person hours)] -[#FFFFFF00]-> [Database creation (4 + 6 person hours)]
+[Testing and bug fixing (26 + 10 person hours)] lasts 2 days
+[Coding (14 + 28 person hours)] -[#FFFFFF00]-> [Testing and bug fixing (26 + 10 person hours)]
+[Coding and Testing completed] happens at [Testing and bug fixing (26 + 10 person hours)]'s end
+[Validation and Integration (20 person hours)] lasts 1 days
+[Database creation (4 + 6 person hours)] -[#FFFFFF00]-> [Validation and Integration (20 person hours)]
+[Integration and GUI Testing completed] happens at [Validation and Integration (20 person hours)]'s end
+[Deployment (2 + 2 person hours)] lasts 2 days
+[Database creation (4 + 6 person hours)] -[#FFFFFF00]-> [Deployment (2 + 2 person hours)]
+[End project self-evaluation (4 person hours)] lasts 1 days
+[Validation and Integration (20 person hours)] -[#FFFFFF00]-> [End project self-evaluation (4 person hours)] 
+[Risk management (10 person hours)] lasts 1 days
+[Validation and Integration (20 person hours)] -[#FFFFFF00]-> [Risk management (10 person hours)]
+-- End project --
+[ ] lasts 25 days
+[ ] is colored in #FFFFFF00
+note bottom
+  The days are 32 person hours long
+  (4 people working for 8 hours).
+end note
 @endgantt
 ```

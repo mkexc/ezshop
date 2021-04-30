@@ -2,9 +2,9 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 29/04/2021
+Date: 30/04/2021
 
-Version: 0.6
+Version: 1.0
 
 
 # Contents
@@ -19,17 +19,17 @@ Version: 0.6
 The design must satisfy the Official Requirements document, notably functional and non functional requirements
 
 # High level design
-<discuss architectural styles used, if any>
-The model used is MVC (Model-View-Controller) since is a standalone application working on each cash register separately. The façade class is Shop.
+
+The model used is MVC (Model-View-Controller) since is a standalone application working on a single cash register. The façade class is Shop.
 
 ```plantuml
 @startuml
+scale 1024 width
 top to bottom direction
 allow_mixing
 
 package it.polito.ezshop {
-    package it.polito.ezshop.gui {
-    }
+    package it.polito.ezshop.gui {}
     
     package it.polito.ezshop.exception {}
     
@@ -41,6 +41,7 @@ package it.polito.ezshop {
         package it.polito.ezshop.model.LoyaltyCardList
         package it.polito.ezshop.model.CustomerList
     }
+
     package it.polito.ezshop.data {
         interface it.polito.ezshop.data.EZShopInterface
         class it.polito.ezshop.data.Shop
@@ -60,7 +61,8 @@ it.polito.ezshop.exception <- it.polito.ezshop.data.Shop
 @startuml
 top to bottom direction
 scale 1024 width 
-scale 768 height 
+scale 768 height
+
 note as Persistent
   Persistent classes: 
   UserList, Inventory, 
@@ -78,7 +80,7 @@ package it.polito.ezshop.model{
         - status : Boolean
     }
 
-    class UserList{
+    class UserList <<Persistent>> {
         - List : ArrayList<User>
         
         + createUser()
@@ -102,7 +104,7 @@ package it.polito.ezshop.model{
         - position : ArrayList<Position>
     }
 
-    class Inventory{
+    class Inventory <<Persistent>> {
         - list : ArrayList<ProductType>
         
         + createProductType()
@@ -126,7 +128,7 @@ package it.polito.ezshop.model{
         - status: enum{ISSUED|ORDERED|COMPLETED}
     }
 
-    class OrderList{    
+    class OrderList  <<Persistent>> {    
         - orderList : ArrayList<Order>
 
         + issueOrder()
@@ -154,7 +156,7 @@ package it.polito.ezshop.model{
         - customerId : String
     }
 
-    class LoyaltyCardList{
+    class LoyaltyCardList  <<Persistent>> {
         - LoyaltyCardList: ArrayList<LoyaltyCard>
 
         + createCard()
@@ -169,7 +171,7 @@ package it.polito.ezshop.model{
         - surname : String
     }
 
-    class CustomerList{
+    class CustomerList <<Persistent>> {
         - customersList : ArrayList<Customer>
 
         + defineCustomer()
@@ -208,7 +210,7 @@ package it.polito.ezshop.model{
         - idSaleTransaction : Integer
     }
 
-    class AccountBook{
+    class AccountBook <<Persistent>> {
         - listTransaction : List<BalanceOperation>
 
         + startReturnTransaction()
@@ -232,8 +234,6 @@ package it.polito.ezshop.model{
         + applyDiscountRateToProduct()
         + applyDiscountRateToSale()
         - savePersistent()
-        
-
     }
 }
 
@@ -292,56 +292,35 @@ package it.polito.ezshop.data{
     }
 }
 
-package it.polito.ezshop.exception {
-    class Exception{
-        + InvalidUsernameException()
-        + InvalidPasswordException()
-        + InvalidRoleException()
-        + InvalidUserIdException()
-        + UnauthorizedException()
-        + InvalidProductIdException()
-        + InvalidProductDescriptionException()
-        + InvalidProductCodeException()
-        + InvalidPricePerUnitException()
-        + InvalidLocationException()
-        + InvalidTicketNumberException()
-        + InvalidQuantityException()
-        + InvalidTransactionIdException()
-        + InvalidPaymentException()
-        + InvalidCreditCardException()
-        + InvalidOrderIdException()
-        + InvalidCustomerNameException()
-        + InvalidCustomerCardException()
-        + InvalidCustomerIdException()
-        + InvalidDiscountRateException()    
-    }
-}
-
+note as ShopConnections
+    Shop class is connected with UserList, Inventory, OrderList, 
+    LoyaltyCardList, CustomerList and AccountBook
+end note
 
 
 SaleTransaction "*" -- "*" ProductType
 BalanceOperation <-- Order
-LoyaltyCardList "1"--> "*" LoyaltyCard
+LoyaltyCardList "1" --> "*" LoyaltyCard
 Inventory "1" --> "*" ProductType
 Position "*"-- "1"ProductType
-User "*" <-- "1" UserList
+User "*" <- "1" UserList
 LoyaltyCard "*" -- " 1" Customer
 Customer "*" <-- "1" CustomerList
 Order "*" --> ProductType
 OrderList "1" --> "*" Order
-BalanceOperation"1" ---> "*"AccountBook
-Exception "*"<-right-"1" Shop
-ReturnTransaction -|> BalanceOperation
-SaleTransaction -|> BalanceOperation
-Shop --> it.polito.ezshop.model
-(SaleTransaction, ProductType)  .. Quantity
+BalanceOperation"1" --> "*"AccountBook
+ReturnTransaction --|> BalanceOperation
+SaleTransaction -left-|> BalanceOperation
+Shop -up-> it.polito.ezshop.model
+Shop .. ShopConnections
+(SaleTransaction, ProductType)  .left. Quantity
 it.polito.ezshop.model -- Persistent
+
+
 @enduml
 ```
 
 # Verification traceability matrix
-
-\<for each functional requirement from the requirement document, list which classes concur to implement it>
 
 |FR |Customer|CustomerList|LoyaltyCard|LoyaltyCardList|Inventory|ProductType|Position |SaleTransaction|ReturnTransaction|AccountBook|Exception|Quantity|Order|User|UserList|Shop|
 |:-:|:------:|:----------:|:---------:|:-------------:|:-------:|:---------:|:-------:|:-------------:|:---------------:|:---------:|:-------:|:------:|:---:|:--:|:------:|:--:|
@@ -355,10 +334,11 @@ it.polito.ezshop.model -- Persistent
 
 
 # Verification sequence diagrams 
-\<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
 
 ## Use Case 1
+
 ### Scenario 1-1
+
 ```plantuml
 @startuml
 autonumber
@@ -376,6 +356,7 @@ Shop <-- Inventory : true
 ```
 
 ### Scenario 1-3
+
 ```plantuml
 @startuml
 autonumber
@@ -389,7 +370,9 @@ Inventory <-- ProductType : true
 ```
 
 ## Use Case 2
+
 ### Scenario 2-1
+
 ```plantuml
 @startuml
 autonumber
@@ -405,6 +388,7 @@ Shop <-- UserList : true
 ```
 
 ### Scenario 2-2
+
 ```plantuml
 @startuml
 autonumber
@@ -418,7 +402,9 @@ Shop <-- UserList : true
 ```
 
 ## Use Case 3
+
 ### Scenario 3-1
+
 ```plantuml
 @startuml
 autonumber
@@ -432,6 +418,7 @@ Shop <- OrderList : id
 ```
 
 ### Scenario 3-2
+
 ```plantuml
 @startuml
 autonumber
@@ -447,6 +434,7 @@ Shop <-- Order : true
 ```
 
 ### Scenario 3-3
+
 ```plantuml
 @startuml
 autonumber
@@ -471,7 +459,9 @@ Inventory <-- ProductType : true
 ```
 
 ## Use Case 4
+
 ### Scenario 4-1 
+
 ```plantuml
 @startuml
 autonumber
@@ -483,7 +473,8 @@ Shop <-- CustomerList : id
 @enduml
 ```
 
-### Scenario 4-2 
+### Scenario 4-2
+
 ```plantuml
 @startuml
 autonumber
@@ -500,7 +491,8 @@ Shop <-- CustomerList : true
 @enduml
 ```
 
-### Scenario 4-4 
+### Scenario 4-4
+
 ```plantuml
 @startuml
 autonumber
@@ -515,7 +507,9 @@ Shop <-- Customer: true
 ```
 
 ## Use Cases 5
+
 ### Scenario 5-1
+
 ```plantuml
 @startuml
 autonumber
@@ -529,6 +523,7 @@ EZShopGui <- Shop
 ```
 
 ### Scenario 5-2
+
 ```plantuml
 @startuml
 autonumber
@@ -542,7 +537,9 @@ EZShopGui <- Shop
 ```
 
 ## Use Cases 6
+
 ### Scenario 6-1
+
 ```plantuml
 @startuml
 autonumber
@@ -567,6 +564,7 @@ Shop <-- AccountBook : true
 ```
 
 ### Scenario 6-2
+
 ```plantuml
 @startuml
 autonumber
@@ -595,6 +593,7 @@ Shop <-- AccountBook : true
 ```
 
 ### Scenario 6-4
+
 ```plantuml
 @startuml
 autonumber
@@ -605,7 +604,9 @@ Shop -> Inventory : getProductTypeByBarCode()
 Shop <-- Inventory : ProductType
 Shop -> AccountBook : addProductToSale()
 Shop -> Inventory : updateQuantity()
-Inventory -> ProductType : setQuantity()
+Inventory -> ProductType : updateQuantity()
+ProductType -> ProductType : setQuantity()
+Inventory <-- ProductType :true
 Shop <-- Inventory : true
 Shop <-- AccountBook : true
 Shop -> AccountBook : endSaleTransaction()
@@ -626,6 +627,7 @@ Shop <-- LoyaltyCardList : true
 ```
 
 ### Scenario 6-5
+
 ```plantuml
 @startuml
 autonumber
@@ -650,7 +652,9 @@ Shop <-- AccountBook : true
 ```
 
 ## Use Case 7
+
 ### Scenario 7-4
+
 ```plantuml
 @startuml
 autonumber
@@ -662,7 +666,9 @@ Shop --> EZShopGui : change
 ```
 
 ## Use Case 8
+
 ### Scenario 8-1
+
 ```plantuml
 @startuml
 autonumber
@@ -690,7 +696,9 @@ Shop <-- AccountBook : true
 ```
 
 ## Use Case 9
+
 ### Scenario 9-1
+
 ```plantuml
 @startuml
 autonumber
@@ -706,7 +714,9 @@ EZShopGui <-- Shop  : balanceOperations
 ```
 
 ## Use Case 10
+
 ### Scenario 10-2
+
 ```plantuml
 @startuml
 autonumber
