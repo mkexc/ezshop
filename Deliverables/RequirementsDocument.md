@@ -304,7 +304,7 @@ package use_cases{
 
 | Scenario 1.3   |                                                |
 | -------------- |:----------------------------------------------:|
-| Preconition   | Cash register tablet is ON                     |
+| Precondition   | Cash register tablet is ON                     |
 | ^              | Barcode scanner is ready                       |
 | ^              | Item’s barcode is not valid                    |
 | ^              | POS is connected                               |
