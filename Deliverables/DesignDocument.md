@@ -85,7 +85,7 @@ package it.polito.ezshop.model{
         + logout()
         - savePersistent()
     }
-
+    
     class ProductType{
         - id : Integer
         - productCode : String
@@ -196,11 +196,28 @@ package it.polito.ezshop.model{
     }
 
     class ReturnTransaction {
-        - quantity : int 
+        - quantity : int
         - returnedValue : ProductType
         - idSaleTransaction : Integer
     }
 
+    class CreditCard{
+        - cardNumber : id
+        - balance : double
+        
+        + validateWithLuhn()
+        + computeOperation()
+    }
+    
+    class CreditCardList <<Persistent>> {
+        - CreditCards : ArrayList<CreditCard>
+
+        + getAllCreditCards()
+        + addNewCreditCard()
+        + deleteCreditCard()
+        - savePersistent()
+    }
+    
     class AccountBook <<Persistent>> {
         - balanceOperations : List<BalanceOperation>
 
@@ -280,16 +297,22 @@ package it.polito.ezshop.data{
         + recordBalanceUpdate()
         + getCreditsAndDebits()
         + computeBalance()
+        + getAllCreditCards()
+        + addNewCreditCard()
+        + deleteCreditCard()
     }
 }
 
 note as ShopConnections
-    Shop class is connected with UserList, Inventory, OrderList, 
-    LoyaltyCardList, CustomerList and AccountBook
+    Shop class is connected with 
+    UserList, Inventory, 
+    OrderList, LoyaltyCardList, 
+    CustomerList, CreditCardList 
+    and AccountBook
 end note
 
 SaleTransaction "*" -- "*" ProductType
-BalanceOperation <-- Order
+BalanceOperation <|-- Order
 LoyaltyCardList "1" --> "*" LoyaltyCard
 Inventory "1" --> "*" ProductType
 Position "*"-- "1"ProductType
@@ -304,6 +327,7 @@ SaleTransaction -left-|> BalanceOperation
 Shop -up-> it.polito.ezshop.model
 Shop .. ShopConnections
 Quantity -[hidden]left-> SaleTransaction
+CreditCardList "*" --> "1" CreditCard
 (SaleTransaction, ProductType)  .left. Quantity
 @enduml
 ```
