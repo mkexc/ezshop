@@ -16,6 +16,7 @@ local.properties
 data/*
 .vscode
 
+API_EZShopInterface.java
 
 # External tool builders
 .externalToolBuilders/
