@@ -38,7 +38,7 @@ package it.polito.ezshop {
         package it.polito.ezshop.model.LoyalityCard
         package it.polito.ezshop.model.UserList
         package it.polito.ezshop.model.Inventory
-        package it.polito.ezshop.model.LoyaltyCardList
+        package it.polito.ezshop.model.loyaltycardlist
         package it.polito.ezshop.model.CustomerList
     }
 

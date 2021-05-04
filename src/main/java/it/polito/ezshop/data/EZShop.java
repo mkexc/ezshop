@@ -7,7 +7,11 @@ import java.util.List;
 
 
 public class EZShop implements EZShopInterface {
+    public LoyaltyCardList loyaltyCards;
 
+    public EZShop() {
+        this.loyaltyCards = new LoyaltyCardList();
+    }
 
     @Override
     public void reset() {
