@@ -1,5 +1,11 @@
 package it.polito.ezshop.data;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+
 import it.polito.ezshop.exceptions.*;
 import it.polito.ezshop.model.inventory.*;
 import it.polito.ezshop.model.userlist.*;
@@ -10,10 +16,28 @@ import java.util.List;
 public class EZShop implements EZShopInterface {
     private User loggedUser;
     private Inventory inventory = new Inventory();
-    private UserList userList = new UserList();
-
-    public EZShop() {
+    //private UserList userList = new UserList();
+    private Connection connection;
+    
+    
+    public EZShop() throws SQLException {
         //assegnare user(solo riferimento no nuova istanza) che si logga a loggedUser
+        
+        try {
+            connection = DriverManager.getConnection("jdbc:sqlite:ezshop_db.sqlite");
+            String sql="SELECT 'username' FROM user;";
+            PreparedStatement st = connection.prepareStatement(sql);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                System.out.println(rs.getString("username"));
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+
     }
 
     @Override
@@ -44,7 +68,8 @@ public class EZShop implements EZShopInterface {
         }
         else if(loggedUser.getRole().equals("Administrator"))
         {
-            return userList.getUser(id);
+            //return userList.getUser(id);
+            return null;
         }
         else
             throw new UnauthorizedException();
@@ -62,7 +87,8 @@ public class EZShop implements EZShopInterface {
         }
         else if(loggedUser.getRole().equals("Administrator"))
         {
-            return userList.updateUserRights(id,role);
+            //return userList.updateUserRights(id,role);
+            return true;
         }
         else
             throw new UnauthorizedException();
@@ -112,9 +138,9 @@ public class EZShop implements EZShopInterface {
     @Override
     public List<ProductType> getAllProductTypes() throws UnauthorizedException {
         if(loggedUser.getRole().equals("Administrator") || loggedUser.getRole().equals("ShopManager"))
-            throw new UnauthorizedException
-        List<ProductType> res = inventory.listAllProductTypes();
-        return res;
+            throw new UnauthorizedException();
+        //List<ProductType> res = inventory.listAllProductTypes();
+        return null;
     }
 
     @Override

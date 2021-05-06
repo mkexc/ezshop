@@ -1,6 +1,6 @@
 package it.polito.ezshop.model.accountbook;
 
-public class Order extends it.polito.ezshop.model.accountbook.BalanceOperation implements it.polito.ezshop.data.Order {
+public class Order extends it.polito.ezshop.model.accountbook.BalanceOperation  implements it.polito.ezshop.data.Order{
 
     private Integer id;
     private String productId;
@@ -9,9 +9,8 @@ public class Order extends it.polito.ezshop.model.accountbook.BalanceOperation i
     private int quantity;
     private String status;
 
-    @Override
-    public Integer getBalanceId(){
-        return new Integer(super.getBalanceId());
+     Integer i=null;
+        return i;
     }
 
     @Override

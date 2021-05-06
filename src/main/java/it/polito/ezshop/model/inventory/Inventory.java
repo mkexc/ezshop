@@ -57,7 +57,7 @@ public class Inventory {
             throw new InvalidProductIdException("Product's id isn't valid");
         }
 
-        list.remove(productType)
+        list.remove(productType);
         return true;
     }
 

@@ -1,6 +1,5 @@
 package it.polito.ezshop.model.customerlist;
 
-import apple.laf.JRSUIConstants;
 import it.polito.ezshop.exceptions.InvalidCustomerCardException;
 import it.polito.ezshop.exceptions.InvalidCustomerIdException;
 import it.polito.ezshop.exceptions.InvalidCustomerNameException;
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 //extends LoyaltyCardList possible solution
 public class CustomerList {
     private ArrayList<Customer> customerList;
-
     public CustomerList(){
         this.customerList=new ArrayList<>();
     }
@@ -75,7 +73,9 @@ public class CustomerList {
         return true;
     }
 
-    public boolean modifyPointsOnCard(String customerCard, int pointsToBeAdded) throws InvalidCustomerCardException, UnauthorizedException{}
+    public boolean modifyPointsOnCard(String customerCard, int pointsToBeAdded) throws InvalidCustomerCardException, UnauthorizedException{
+        return true;
+    }
 
     private void savePersistent(){}
 }
