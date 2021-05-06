@@ -1,3 +1,4 @@
+
 package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.*;

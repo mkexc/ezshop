@@ -1,5 +1,10 @@
 package it.polito.ezshop.model.inventory;
 
+import it.polito.ezshop.exceptions.InvalidPricePerUnitException;
+import it.polito.ezshop.exceptions.InvalidProductCodeException;
+import it.polito.ezshop.exceptions.InvalidPricePerUnitException;
+import it.polito.ezshop.exceptions.InvalidProductDescriptionException;
+
 public class ProductType implements it.polito.ezshop.data.ProductType{
     private Integer id;
     private String productCode;
@@ -10,7 +15,22 @@ public class ProductType implements it.polito.ezshop.data.ProductType{
     private String notes;
     private Position position;
 
-    public ProductType(Integer id, String productCode, String description, double pricePerUnit, Integer quantity, double discountRate, String notes, Position position) {
+    public ProductType(Integer id, String productCode, String description, double pricePerUnit, Integer quantity, double discountRate, String notes, Position position) throws InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException {
+
+
+        if(pricePerUnit<=0){
+            throw new InvalidPricePerUnitException("The price isn't valid");
+        }
+        if(description==null || description.equals("")){
+            throw new InvalidProductDescriptionException("The description isn't valid");
+        }
+        if(id==null || id<0 || !Integer.TYPE.isInstance(id) ){
+            throw new InvalidProductCodeException("The product code isn't valid");
+        }
+
+
+
+
         this.id = id;
         this.productCode = productCode;
         this.description = description;
@@ -99,4 +119,7 @@ public class ProductType implements it.polito.ezshop.data.ProductType{
         this.discountRate=discountRate;
     }
 
+    public Position getPosition() {
+        return position;
+    }
 }

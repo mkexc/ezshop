@@ -3,18 +3,22 @@ package it.polito.ezshop.model.customerlist;
 public class Customer implements it.polito.ezshop.data.Customer {
 
      private Integer customerId;
-     private String loyaltyCardId;
-     private String name;
-     private String surname;
+     private String loyaltyCardId="";
+     private String customerName;
+     private int points=0;
+
+     Customer(String customerName) {
+         this.customerName=customerName;
+     }
 
     @Override
     public String getCustomerName() {
-        return this.name;
+        return this.customerName;
     }
 
     @Override
     public void setCustomerName(String customerName) {
-        this.name=customerName;
+        this.customerName=customerName;
     }
 
     @Override
@@ -39,12 +43,11 @@ public class Customer implements it.polito.ezshop.data.Customer {
 
     @Override
     public Integer getPoints() {
-
-        return null;
+        return points;
     }
 
     @Override
     public void setPoints(Integer points) {
-
+        this.points=points;
     }
 }

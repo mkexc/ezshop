@@ -1,16 +1,19 @@
 package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.*;
-
+import it.polito.ezshop.model.inventory.*;
+import it.polito.ezshop.model.userlist.*;
 import java.time.LocalDate;
 import java.util.List;
 
 
 public class EZShop implements EZShopInterface {
-    public LoyaltyCardList loyaltyCards;
+    private User loggedUser;
+    private Inventory inventory = new Inventory();
+    private UserList userList = new UserList();
 
     public EZShop() {
-        this.loyaltyCards = new LoyaltyCardList();
+        //assegnare user(solo riferimento no nuova istanza) che si logga a loggedUser
     }
 
     @Override
@@ -34,13 +37,35 @@ public class EZShop implements EZShopInterface {
     }
 
     @Override
-    public User getUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
-        return null;
+    public User getUser(Integer id) throws InvalidUserIdException, UnauthorizedException{
+        if (id.intValue()<=0 || id==null)
+        {
+            throw new InvalidUserIdException();
+        }
+        else if(loggedUser.getRole().equals("Administrator"))
+        {
+            return userList.getUser(id);
+        }
+        else
+            throw new UnauthorizedException();
     }
 
     @Override
     public boolean updateUserRights(Integer id, String role) throws InvalidUserIdException, InvalidRoleException, UnauthorizedException {
-        return false;
+        if (id.intValue()<=0 || id==null)
+        {
+            throw new InvalidUserIdException();
+        }
+        else if (!role.equals("Administrator") || !role.equals("ShopManager") || !role.equals("Cashier"))
+        {
+            throw new InvalidRoleException();
+        }
+        else if(loggedUser.getRole().equals("Administrator"))
+        {
+            return userList.updateUserRights(id,role);
+        }
+        else
+            throw new UnauthorizedException();
     }
 
     @Override
@@ -55,22 +80,41 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public Integer createProductType(String description, String productCode, double pricePerUnit, String note) throws InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, UnauthorizedException {
-        return null;
+        if(loggedUser.getRole().equals("Administrator") || loggedUser.getRole().equals("ShopManager"))
+            throw new UnauthorizedException();
+
+
+        inventory.createProductType(description,productCode,pricePerUnit,note);
+
+        return getProductTypeByBarCode(productCode).getId();
     }
 
     @Override
     public boolean updateProduct(Integer id, String newDescription, String newCode, double newPrice, String newNote) throws InvalidProductIdException, InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, UnauthorizedException {
-        return false;
+        if(loggedUser.getRole().equals("Administrator") || loggedUser.getRole().equals("ShopManager"))
+            throw new UnauthorizedException();
+
+        boolean res =inventory.updateProduct(id, newDescription, newCode, newPrice, newNote);
+
+        return res;
     }
 
     @Override
     public boolean deleteProductType(Integer id) throws InvalidProductIdException, UnauthorizedException {
-        return false;
+        if(loggedUser.getRole().equals("Administrator") || loggedUser.getRole().equals("ShopManager"))
+            throw new UnauthorizedException();
+
+        boolean res = inventory.deleteProductType(id);
+
+        return res;
     }
 
     @Override
     public List<ProductType> getAllProductTypes() throws UnauthorizedException {
-        return null;
+        if(loggedUser.getRole().equals("Administrator") || loggedUser.getRole().equals("ShopManager"))
+            throw new UnauthorizedException
+        List<ProductType> res = inventory.listAllProductTypes();
+        return res;
     }
 
     @Override

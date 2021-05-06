@@ -14,9 +14,6 @@ Version: 1.0
 - [Verification traceability matrix](#verification-traceability-matrix)
 - [Verification sequence diagrams](#verification-sequence-diagrams)
 
-# Instructions
-
-The design must satisfy the Official Requirements document, notably functional and non functional requirements
 
 # High level design
 
@@ -34,12 +31,11 @@ package it.polito.ezshop {
     package it.polito.ezshop.exception {}
     
     package it.polito.ezshop.model {
-        package it.polito.ezshop.model.AccountBook
-        package it.polito.ezshop.model.LoyalityCard
-        package it.polito.ezshop.model.UserList
-        package it.polito.ezshop.model.Inventory
-        package it.polito.ezshop.model.loyaltycardlist
-        package it.polito.ezshop.model.CustomerList
+        package it.polito.ezshop.model.accountBook
+        package it.polito.ezshop.model.loyalityCard
+        package it.polito.ezshop.model.userList
+        package it.polito.ezshop.model.inventory
+        package it.polito.ezshop.model.customerList
     }
 
     package it.polito.ezshop.data {
@@ -143,23 +139,10 @@ package it.polito.ezshop.model{
         - quantity : HashMap<Integer,Integer>
     }
 
-    class LoyaltyCard{
-        - cardId : String
-        - points : int
-        - customerId : String
-    }
-
-    class LoyaltyCardList  <<Persistent>> {
-        - LoyaltyCardList: ArrayList<LoyaltyCard>
-
-        + createCard()
-        + modifyPointsOnCard()
-        - savePersistant()
-    }
-
     class Customer{
         - customerId : Integer
-        - loyaltyCardId : ArrayList<String>
+        - cardId : String
+        - points : int
         - name : String
         - surname : String
     }
@@ -306,18 +289,15 @@ package it.polito.ezshop.data{
 note as ShopConnections
     Shop class is connected with 
     UserList, Inventory, 
-    OrderList, LoyaltyCardList, 
     CustomerList, CreditCardList 
     and AccountBook
 end note
 
 SaleTransaction "*" -- "*" ProductType
 BalanceOperation <|-- Order
-LoyaltyCardList "1" --> "*" LoyaltyCard
 Inventory "1" --> "*" ProductType
 Position "*"-- "1"ProductType
 User "*" <- "1" UserList
-LoyaltyCard "*" -- " 1" Customer
 Customer "*" <-- "1" CustomerList
 Order "*" --> ProductType
 OrderList "1" -up-> "*" Order
@@ -334,15 +314,15 @@ CreditCardList "*" --> "1" CreditCard
 
 # Verification traceability matrix
 
-|FR |Customer|CustomerList|LoyaltyCard|LoyaltyCardList|Inventory|ProductType|Position |SaleTransaction|ReturnTransaction|AccountBook|Exception|Quantity|Order|User|UserList|Shop|
-|:-:|:------:|:----------:|:---------:|:-------------:|:-------:|:---------:|:-------:|:-------------:|:---------------:|:---------:|:-------:|:------:|:---:|:--:|:------:|:--:|
-|FR1|        |            |           |               |         |           |         |               |                 |           |        x|        |     |   x|       x|   x| 
-|FR3|        |            |           |               |        x|          x|         |               |                 |           |        x|        |    x|    |        |   x| 
-|FR4|        |            |           |               |        x|          x|        x|              x|                x|          x|        x|        |    x|    |        |   x| 
-|FR5|       x|           x|          x|              x|         |           |         |              x|                x|           |        x|        |     |    |        |   x| 
-|FR6|       x|           x|          x|              x|        x|          x|         |              x|                x|          x|        x|       x|     |    |        |   x| 
-|FR7|       x|           x|          x|              x|         |           |         |              x|                x|          x|        x|       x|     |    |        |   x| 
-|FR8|        |            |           |               |         |           |         |              x|                x|          x|        x|        |     |    |        |   x|
+|FR |Customer|CustomerList|Inventory|ProductType|Position |SaleTransaction|ReturnTransaction|AccountBook|Exception|Quantity|Order|User|UserList|Shop|
+|:-:|:------:|:----------:|:-------:|:---------:|:-------:|:-------------:|:---------------:|:---------:|:-------:|:------:|:---:|:--:|:------:|:--:|
+|FR1|        |            |         |           |         |               |                 |           |        x|        |     |   x|       x|   x| 
+|FR3|        |            |        x|          x|         |               |                 |           |        x|        |    x|    |        |   x| 
+|FR4|        |            |        x|          x|        x|              x|                x|          x|        x|        |    x|    |        |   x| 
+|FR5|       x|           x|         |           |         |              x|                x|           |        x|        |     |    |        |   x| 
+|FR6|       x|           x|        x|          x|         |              x|                x|          x|        x|       x|     |    |        |   x| 
+|FR7|       x|           x|         |           |         |              x|                x|          x|        x|       x|     |    |        |   x| 
+|FR8|        |            |         |           |         |              x|                x|          x|        x|        |     |    |        |   x|
 
 
 # Verification sequence diagrams 
