@@ -16,6 +16,7 @@ local.properties
 .recommenders
 data/*
 .vscode
+ezshop.iml
 
 API_EZShopInterface.java
 
