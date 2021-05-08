@@ -5,38 +5,105 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
-
 import it.polito.ezshop.exceptions.*;
-import it.polito.ezshop.model.inventory.*;
-import it.polito.ezshop.model.userlist.*;
+import it.polito.ezshop.model.inventory.ProductType;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-
 public class EZShop implements EZShopInterface {
+    private Connection conn;
     private User loggedUser;
-    private Inventory inventory = new Inventory();
-    //private UserList userList = new UserList();
-    private Connection connection;
-    
-    
-    public EZShop() throws SQLException {
+
+    private List<ProductType> inventory = new ArrayList<ProductType>();
+    private List<Customer> customerList = new ArrayList<Customer>();
+    private List<User> userList = new ArrayList<User>();
+    private List<BalanceOperation> balanceOperations = new ArrayList<BalanceOperation>();
+    private List<Order> orderList = new ArrayList<>();
+    private boolean isOrderListValid = false;
+
+
+    public EZShop() throws SQLException, InvalidCustomerNameException {
         //assegnare user(solo riferimento no nuova istanza) che si logga a loggedUser
-        
+        //String sql="SELECT 'username' FROM user ";
         try {
-            connection = DriverManager.getConnection("jdbc:sqlite:ezshop_db.sqlite");
-            String sql="SELECT 'username' FROM user;";
-            PreparedStatement st = connection.prepareStatement(sql);
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-                System.out.println(rs.getString("username"));
+            // db parameters
+            String url = "jdbc:sqlite:ezshop_db.sqlite";
+            // create a connection to the database
+            conn = DriverManager.getConnection(url);
+
+            System.out.println("Connection to SQLite has been established.");
+
+        } catch (SQLException  e) {
+            System.out.println(e.getMessage());
+        }
+        //CREATE CUSTOMERLIST
+        String sql="SELECT customerId, loyaltyCardId, customerName, points  FROM customer " ;
+        try {
+
+          PreparedStatement st = conn.prepareStatement(sql);
+          ResultSet rs = st.executeQuery();
+          while (rs.next()) {
+                customerList.add( new Customer (rs.getInt("customerId"),
+                                                rs.getString("loyaltyCardId"),
+                                                rs.getString("customerName"),
+                                                rs.getInt("points")
+                                                )
+                                );
             }
+          System.out.println("Lista di customer:");
+          System.out.println(customerList.toString());
         }
         catch (SQLException e) {
             e.printStackTrace();
             throw e;
         }
 
+        //CREATE USERLIST
+        sql="SELECT id, username, password, role, status  FROM user " ;
+        try {
+
+            PreparedStatement st = conn.prepareStatement(sql);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+               userList.add ( new User   (   rs.getInt("id"),
+                                            rs.getString("username"),
+                                            rs.getString("password"),
+                                            rs.getString("role"),
+                                            rs.getBoolean("status")
+                                         )
+                            );
+            }
+            System.out.println("Lista di user:");
+            System.out.println(userList.toString());
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+        //CREATE INVENTORY
+        sql="SELECT   FROM inventory " ;
+        try {
+
+            PreparedStatement st = conn.prepareStatement(sql);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                userList.add( new User (    rs.getInt(""),
+                                            rs.getString(""),
+                                            rs.getString(""),
+                                            rs.getString(""),
+                                            rs.getBoolean("")
+                                        )
+                            );
+            }
+            System.out.println("Lista di productType:");
+            System.out.println(inventory.toString());
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
 
     }
 

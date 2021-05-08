@@ -1,6 +1,7 @@
 package it.polito.ezshop.model.userlist;
 import it.polito.ezshop.exceptions.*;
 import it.polito.ezshop.data.EZShop;
+import it.polito.ezshop.model.customerlist.Customer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,8 +11,12 @@ import java.util.stream.Collectors;
 public class UserList {
     private List<User> userList;
 
-    UserList (){
+    public UserList (){
         userList = new ArrayList<User>();
+    }
+
+    public void add(User u){
+        userList.add(u);
     }
 
     public Integer createUser(String username, String password, String role) throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
@@ -81,6 +86,14 @@ public class UserList {
             return u;
         }
 
+    }
+
+    public String toString(){
+        String res="";
+        for(User u : userList){
+            res+="name: " + u.getUsername() + "pwd: "+ u.getPassword() +"\n" ;
+        }
+        return res;
     }
 
     public void logout(){

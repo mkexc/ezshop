@@ -9,10 +9,17 @@ public class Order extends it.polito.ezshop.model.accountbook.BalanceOperation  
     private int quantity;
     private String status;
 
-     Integer i=null;
-        return i;
+    Order(Integer id){
+        super();
+         this.id=id;
     }
 
+     @Override
+    public int getBalanceId()
+     {
+         Integer out = super.getBalanceId();
+         return out;
+     }
     @Override
     public void setBalanceId(Integer balanceId){
         super.setBalanceId(balanceId);

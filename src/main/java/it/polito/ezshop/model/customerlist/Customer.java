@@ -5,10 +5,18 @@ public class Customer implements it.polito.ezshop.data.Customer {
      private Integer customerId;
      private String loyaltyCardId="";
      private String customerName;
-     private int points=0;
+     private Integer points=0;
 
-     Customer(String customerName) {
+     public Customer(String customerName) {
          this.customerName=customerName;
+     }
+
+
+     public Customer (Integer customerId,String loyaltyCardId, String customerName,Integer points){
+         this.customerId=customerId;
+         this.loyaltyCardId=loyaltyCardId;
+         this.customerName=customerName;
+         this.points=points;
      }
 
     @Override
