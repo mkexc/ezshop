@@ -5,23 +5,12 @@ public class User implements it.polito.ezshop.data.User{
     private String username;
     private String password;
     private String role;
-    Boolean status;
-
-
-    public Boolean getStatus() {
-        return status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
-    }
 
     public User(Integer id, String username, String password, String role, Boolean status){
         this.id=id;
         this.username=username;
         this.password=password;
         this.role=role;
-        this.status=status;
     }
 
     @Override

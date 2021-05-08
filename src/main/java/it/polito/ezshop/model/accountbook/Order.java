@@ -3,7 +3,7 @@ package it.polito.ezshop.model.accountbook;
 public class Order extends it.polito.ezshop.model.accountbook.BalanceOperation  implements it.polito.ezshop.data.Order{
 
     private Integer id;
-    private String productId;
+    private String productCode;    // barcode of product
     private String supplier;
     private double pricePerUnit;
     private int quantity;
@@ -27,12 +27,12 @@ public class Order extends it.polito.ezshop.model.accountbook.BalanceOperation  
 
     @Override
     public String getProductCode() {
-        return this.productId;
+        return this.productCode;
     }
 
     @Override
     public void setProductCode(String productCode) {
-        this.productId=this.productId;
+        this.productCode=productCode;
     }
 
     @Override
@@ -80,6 +80,6 @@ public class Order extends it.polito.ezshop.model.accountbook.BalanceOperation  
     }
 
     public void setSupplier(String supplier) {
-        this.supplier = supplier;
+        this.supplier=supplier;
     }
 }

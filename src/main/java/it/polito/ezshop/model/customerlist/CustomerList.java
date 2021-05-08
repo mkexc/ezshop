@@ -13,19 +13,19 @@ import java.util.stream.Collectors;
 public class CustomerList {
     private List<Customer> customerList=new ArrayList<>();
 
-//    public Integer defineCustomer(String customerName) throws InvalidCustomerNameException {
-//
-//        if (customerName!=null && !customerName.equals("") && customerList.stream().noneMatch(c-> c.getCustomerName().equals(customerName))){
-//            Customer c = new Customer(customerName);
-//            // TODO qua creo una riga nel db, prendo il nuovo id e faccio customer.setId()
-//            customerList.add(c);
-//        }
-//        else{
-//            throw new InvalidCustomerNameException();
-//        }
-//        // TODO restituire l'id
-//        return 0;
-//    }
+    public Integer defineCustomer(String customerName) throws InvalidCustomerNameException {
+
+        if (customerName!=null && !customerName.equals("") && customerList.stream().noneMatch(c-> c.getCustomerName().equals(customerName))){
+            Customer c = new Customer(customerName);
+            // TODO qua creo una riga nel db, prendo il nuovo id e faccio customer.setId()
+            customerList.add(c);
+        }
+        else{
+            throw new InvalidCustomerNameException();
+        }
+        // TODO restituire l'id
+        return 0;
+    }
     public Integer defineCustomer(Integer customerId, String loyaltyCardId, String customerName, Integer points) throws InvalidCustomerNameException {
 
         if (customerName!=null && !customerName.equals("") && customerList.stream().noneMatch(c-> c.getCustomerName().equals(customerName))){
