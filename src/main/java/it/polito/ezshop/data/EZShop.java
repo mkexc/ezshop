@@ -5,7 +5,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
+
 import it.polito.ezshop.exceptions.*;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +21,11 @@ public class EZShop implements EZShopInterface {
     private List<User> userList = new ArrayList<User>();
     private List<BalanceOperation> balanceOperations = new ArrayList<BalanceOperation>();
     private List<Order> orderList = new ArrayList<>();
-    private boolean isOrderListValid = false;
-    private boolean isBalanceOperationValid = false;
-    private boolean isCustomerListValid = false;
-    private boolean isUserListValid = false;
-    private boolean isInventoryValid = false;
+    private boolean isOrderListUpdated = false;
+    private boolean isBalanceOperationUpdated = false;
+    private boolean isCustomerListUpdated = false;
+    private boolean isUserListUpdated = false;
+    private boolean isInventoryUpdated = false;
 
 
     public EZShop() throws SQLException, InvalidCustomerNameException {
@@ -33,6 +35,7 @@ public class EZShop implements EZShopInterface {
             String url = "jdbc:sqlite:ezshop_db.sqlite";
             // create a connection to the database
             conn = DriverManager.getConnection(url);
+            conn.setAutoCommit(false);
             System.out.println("Connection to SQLite has been established.");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -86,6 +89,7 @@ public class EZShop implements EZShopInterface {
             st.setString(3, role);
             st.executeUpdate();
             conn.commit();
+            isUserListUpdated = false;
             return st.getGeneratedKeys().getInt(1);
         } catch (SQLException e) {
             return -1;
@@ -112,6 +116,7 @@ public class EZShop implements EZShopInterface {
             st.setInt(1, id);
             st.executeUpdate();
             conn.commit();
+            isUserListUpdated = false;
             return true;
         } catch (SQLException e) {
             return false;
@@ -120,44 +125,55 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public List<User> getAllUsers() throws UnauthorizedException {
+        // check role of the user (only administrator)
         if (!loggedUser.getRole().equals("Administrator")) {
             throw new UnauthorizedException();
         }
 
-        String sql = "SELECT id, password, role, username FROM user";
-        List<User> list = null;
-        try {
-            PreparedStatement st = conn.prepareStatement(sql);
-            ResultSet rs = st.executeQuery();
+        // if cached userList is not updated, download from db
+        if(!isUserListUpdated) {
+            String sql = "SELECT id, password, role, username FROM user";
+            List<User> list = null;
+            try {
+                PreparedStatement st = conn.prepareStatement(sql);
+                ResultSet rs = st.executeQuery();
 
-            while (rs.next()) {
-                list.add(new it.polito.ezshop.model.userlist.User(rs.getInt("id"),
-                        rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getString("role")
-                ));
+                while (rs.next()) {
+                    list.add(new it.polito.ezshop.model.userlist.User(rs.getInt("id"),
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("role")
+                    ));
+                }
+                userList = list;
+                isUserListUpdated = true;
+                return userList;
+            } catch (SQLException e) {
+                return null;
             }
-            userList = list;
-            return list;
-        } catch (SQLException e) {
-            return null;
         }
+        else
+            return userList;
     }
 
     @Override
     public User getUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
-        if (id == null || id <= 0) {
-            throw new InvalidUserIdException();
-        } else if (!loggedUser.getRole().equals("Administrator")) {
+        // check role of the user (only administrator)
+        if (!loggedUser.getRole().equals("Administrator")) {
             throw new UnauthorizedException();
         }
 
-        String sql = "SELECT id, password, 'role', username FROM user WHERE id=? ";
+        // id not null, not <= 0
+        if (id == null || id <= 0) {
+            throw new InvalidUserIdException();
+        }
+
+        String sql = "SELECT id, password, role, username FROM user WHERE id=?";
         User user=null;
         try {
             PreparedStatement st = conn.prepareStatement(sql);
 
-            st.setString(1, String.valueOf(id));
+            st.setInt(1, id);
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
@@ -166,69 +182,68 @@ public class EZShop implements EZShopInterface {
                         rs.getString("password"),
                         rs.getString("role")
                 );
-
             }
+            return user;
         } catch (SQLException e) {
             return null;
         }
-        return user;
     }
 
     @Override
     public boolean updateUserRights(Integer id, String role) throws InvalidUserIdException, InvalidRoleException, UnauthorizedException {
-        if (id==null || id<=0)
-        {
-            throw new InvalidUserIdException();
-        }
-        else if (!role.equals("Administrator") && !role.equals("ShopManager") && !role.equals("Cashier"))
-        {
-            throw new InvalidRoleException();
-        }
-        else if(loggedUser.getRole().equals("Administrator")) {
+        // check role of the user (only administrator)
+        if(loggedUser.getRole().equals("Administrator")) {
             throw new UnauthorizedException();
         }
 
+        // id not null, not <= 0
+        if (id == null || id <= 0) {
+            throw new InvalidUserIdException();
+        }
+
+        // role is Administrator||ShopManager||Cashier
+        if (!role.equals("Administrator") && !role.equals("ShopManager") && !role.equals("Cashier")) {
+            throw new InvalidRoleException();
+        }
+
         String sql = "UPDATE user SET role=? WHERE id=?";
-
         try {
-
             PreparedStatement st = conn.prepareStatement(sql);
             st.setString(1, role);
-            st.setString(2, String.valueOf(id));
-            ResultSet rs = st.executeQuery();
-
+            st.setInt(2, id);
+            st.executeUpdate();
             return true;
-
         } catch (SQLException e) {
             return false;
         }
-
     }
 
     @Override
     public User login(String username, String password) throws InvalidUsernameException, InvalidPasswordException {
+        // there is already a logged user
         if(loggedUser!=null)
             return null;
 
-        String sql = "SELECT id, password, 'role', username FROM user WHERE username=?";
-        User user=null;
+        String sql = "SELECT id, password, role, username FROM user WHERE username=?";
+        User user = null;
         try {
-
             PreparedStatement st = conn.prepareStatement(sql);
             st.setString(1, username);
             ResultSet rs = st.executeQuery();
 
+            // TODO mettere classe User dentro il package data chiamandola UserImpl?
+            // TODO cancellare classi "lista"
             user = new it.polito.ezshop.model.userlist.User(rs.getInt("id"),
                     rs.getString("username"),
                     rs.getString("password"),
                     rs.getString("role")
             );
 
+            // check password
             if(rs.getString("password").equals(password))
                 return user;
             else
                 throw new InvalidPasswordException();
-
         } catch (SQLException e) {
             throw new InvalidUsernameException();
         }
@@ -308,7 +323,7 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public boolean updateProduct(Integer id, String newDescription, String newCode, double newPrice, String newNote) throws InvalidProductIdException, InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, UnauthorizedException {
-        // check role of the user (only administrator and shopmanager)
+        // check role of the user (only administrator and shopManager)
         if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
            throw new UnauthorizedException();
 
@@ -594,6 +609,8 @@ public class EZShop implements EZShopInterface {
         } catch (SQLException e) {
             return false;
         }
+
+
     }
 
     @Override
@@ -632,42 +649,190 @@ public class EZShop implements EZShopInterface {
         // check role of the user (only administrator, cashier and shopManager)
         if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
+        //check if the product exist
+        ProductType product = this.getProductTypeByBarCode(productCode);
+        if(product==null)
+            return -1;
+        //check quantity is not <=0
+        if(quantity<=0)
+            throw new InvalidQuantityException();
+        //check pricePerUnit is not <=0
+        if(pricePerUnit<=0)
+            throw new InvalidPricePerUnitException();
 
-        return null;
+        // insert the new productType
+        String sql="INSERT INTO order(productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?)";
+        try {
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, productCode);
+            st.setDouble(2, pricePerUnit);
+            st.setInt(3, quantity);
+            st.setString(4,"PAYED");
+            Boolean out = this.recordBalanceUpdate(-pricePerUnit*quantity);
+            if(!out){
+                return -1;
+            }
+            st.executeUpdate();
+            return st.getGeneratedKeys().getInt(1);
+        } catch (SQLException e) {
+            return -1;
+        }
     }
 
     @Override
     public boolean payOrder(Integer orderId) throws InvalidOrderIdException, UnauthorizedException {
-        return false;
+        // check role of the user (only administrator, cashier and shopManager)
+        if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
+            throw new UnauthorizedException();
+        if(orderId==null||orderId<=0){
+            throw new InvalidOrderIdException();
+        }
+
+        String sql2="SELECT quantity, pricePerUnit, status FROM order WHERE id=? " ;
+        String actualStatus;
+        double toBeAdded=0.0;
+
+        try {
+            PreparedStatement st = conn.prepareStatement(sql2);
+
+            st.setInt(1,orderId);
+            ResultSet rs = st.executeQuery();
+            actualStatus = rs.getString("status");
+            toBeAdded=-rs.getDouble("pricePerUnit")*rs.getInt("quantity");
+        } catch (SQLException e) {
+            return false;
+        }
+
+        if(actualStatus.equals("PAYED"))
+            return false;
+
+        String sql3="UPDATE order SET status=? WHERE id=? " ;
+        try {
+            PreparedStatement st = conn.prepareStatement(sql3);
+
+            st.setString(1,"PAYED");
+            st.setInt(2,orderId);
+            recordBalanceUpdate(toBeAdded);
+            st.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+
+
+
     }
 
     @Override
     public boolean recordOrderArrival(Integer orderId) throws InvalidOrderIdException, UnauthorizedException, InvalidLocationException {
-        return false;
+        // check role of the user (only administrator, cashier and shopManager)
+        if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
+            throw new UnauthorizedException();
+        if(orderId==null||orderId<=0){
+            throw new InvalidOrderIdException();
+        }
+
+
+
+        String sql="SELECT quantity, productCode, status FROM order WHERE id=? " ;
+        int quantity=0;
+        String productCode;
+        ProductType product;
+        String actualStatus;
+        try {
+            PreparedStatement st = conn.prepareStatement(sql);
+
+            st.setInt(1,orderId);
+            ResultSet rs = st.executeQuery();
+            quantity = rs.getInt("quantity");
+            productCode= rs.getString("productCode");
+            actualStatus = rs.getString("status");
+            product=this.getProductTypeByBarCode(productCode);
+        } catch (Exception e) {
+            return false;
+        }
+
+        if(product.getLocation().equals("")){
+            throw new InvalidLocationException();
+        }
+        if(actualStatus.equals("COMPLETED"))
+            return false;
+
+
+        try {
+            this.updateQuantity(product.getId(), quantity);
+        }catch(Exception e){
+            return false;
+        }
+
+        String sql3="UPDATE order SET status=? WHERE id=? " ;
+        try {
+            PreparedStatement st = conn.prepareStatement(sql3);
+
+            st.setString(1,"COMPLETED");
+            st.setInt(2,orderId);
+            st.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+
     }
 
     @Override
     public List<Order> getAllOrders() throws UnauthorizedException {
-        return null;
+        // check role of the user (only administrator, cashier and shopManager)
+        if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
+            throw new UnauthorizedException();
+
+        String sql3="SELECT * FROM order" ;
+        try {
+            PreparedStatement st = conn.prepareStatement(sql3);
+
+            ResultSet rs = st.executeQuery();
+            while(rs.next()){
+                this.orderList.add( new it.polito.ezshop.model.accountbook.Order(
+                                                rs.getInt("id"),
+                                                rs.getString("productCode"),
+                                                rs.getDouble("pricePerUnit"),
+                                                rs.getInt("quantity"),
+                                                rs.getString("status")
+                ));
+            }
+            return orderList;
+        } catch (SQLException e) {
+            return null;
+        }
+
     }
 
     @Override
     public Integer defineCustomer(String customerName) throws InvalidCustomerNameException, UnauthorizedException {
-        this.isCustomerListValid = false;
+        this.isCustomerListUpdated = false;
         if(!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier"))
             throw new UnauthorizedException();
         else if (customerName==null || customerName.isEmpty())
             throw new InvalidCustomerNameException();
         else
         {
-            //SQL
+            String sql = "INSERT INTO customer(customerName, loyaltyCardId, points) VALUES (?, ?, ?)";
+            try {
+                PreparedStatement st = conn.prepareStatement(sql);
+                st.setString(1,customerName);
+                st.setString(2,"");
+                st.setInt(3,0);
+                st.executeUpdate();
+                conn.commit();
+                return st.getGeneratedKeys().getInt(1);
+            } catch (SQLException e) {
+                return -1;
+            }
         }
-        return -1;
     }
 
     @Override
     public boolean modifyCustomer(Integer id, String newCustomerName, String newCustomerCard) throws InvalidCustomerNameException, InvalidCustomerCardException, InvalidCustomerIdException, UnauthorizedException {
-        this.isCustomerListValid = false;
+        this.isCustomerListUpdated = false;
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
         else if (newCustomerName==null || newCustomerName.isEmpty())
@@ -686,17 +851,25 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public boolean deleteCustomer(Integer id) throws InvalidCustomerIdException, UnauthorizedException {
-        this.isCustomerListValid = false;
+        this.isCustomerListUpdated = false;
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
         else if ( id== null || id<=0) {
             throw new InvalidCustomerIdException();
         }
         else {
-            //SQL
+            String sql = "DELETE FROM customer WHERE id=?";
+            try {
+                PreparedStatement st = conn.prepareStatement(sql);
+                st.setInt(1,id);
+                st.executeUpdate();
+                return true;
+            }
+            catch (SQLException e)
+            {
+                return false;
+            }
         }
-
-        return false;
     }
 
     @Override
@@ -707,36 +880,110 @@ public class EZShop implements EZShopInterface {
             throw new InvalidCustomerIdException();
         }
         else {
-            //SQL
+            // Da sistemare con join Customer loyaltyCard
+            try {
+                String sql = "SELECT * FROM customer WHERE id=?";
+                PreparedStatement st = conn.prepareStatement(sql);
+                st.setInt(1,id);
+                ResultSet rs = st.executeQuery();
+                return new it.polito.ezshop.model.customerlist.Customer(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getInt(4)
+                );
+            } catch (SQLException e)
+            {
+                return null;
+            }
         }
-        return null;
     }
 
     @Override
     public List<Customer> getAllCustomers() throws UnauthorizedException {
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-        else if (this.isCustomerListValid)
+        else if (this.isCustomerListUpdated)
             return this.customerList;
         else {
-            //SQL
-            this.isCustomerListValid=true;
+            this.customerList.clear();
+            try {
+                String sql = "SELECT * FROM customer";
+                PreparedStatement st = conn.prepareStatement(sql);
+                ResultSet rs = st.executeQuery();
+                while(rs.next()){
+                    customerList.add(new it.polito.ezshop.model.customerlist.Customer(
+                       rs.getInt(1),
+                       rs.getString(2),
+                       rs.getString(3),
+                       rs.getInt(4)
+                    ));
+                }
+                this.isCustomerListUpdated=true;
+
+            } catch (SQLException e) {
+                //return null; ???
+            }
+            return this.customerList;
+
         }
-        return null;
+
     }
 
     @Override
     public String createCard() throws UnauthorizedException {
-        return null;
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
+            throw new UnauthorizedException();
+        else{
+            try{
+                String sql = "INSERT INTO loyaltyCard(points) VALUES (?)";
+                PreparedStatement st = conn.prepareStatement(sql);
+                st.setInt(1,0);
+                st.executeUpdate();
+                conn.commit();
+                return st.getGeneratedKeys().getString("id");
+            }catch (SQLException e)
+            {
+                return new String();
+            }
+        }
     }
 
     @Override
     public boolean attachCardToCustomer(String customerCard, Integer customerId) throws InvalidCustomerIdException, InvalidCustomerCardException, UnauthorizedException {
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
+            throw new UnauthorizedException();
+        else if (customerCard==null || customerCard.length()!=10 || !customerCard.matches("[0-9]+") ) {
+            throw new InvalidCustomerCardException();
+        }
+        else if ( customerId== null || customerId<=0) {
+            throw new InvalidCustomerIdException();
+        }
+        else
+        {
+            // SQL
+        }
         return false;
     }
 
     @Override
     public boolean modifyPointsOnCard(String customerCard, int pointsToBeAdded) throws InvalidCustomerCardException, UnauthorizedException {
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
+            throw new UnauthorizedException();
+        else if (customerCard==null || customerCard.length()!=10 || !customerCard.matches("[0-9]+") ) {
+            throw new InvalidCustomerCardException();
+        }
+        else {
+            try {
+                String sql = "UPDATE customer SET points = points + ? WHERE loyaltyCardId=? ";
+                PreparedStatement st = conn.prepareStatement(sql);
+                st.setInt(1,pointsToBeAdded);
+
+            } catch(SQLException e)
+            {
+
+            }
+        }
         return false;
     }
 

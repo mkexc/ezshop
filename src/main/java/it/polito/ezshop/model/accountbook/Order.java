@@ -3,23 +3,29 @@ package it.polito.ezshop.model.accountbook;
 public class Order extends it.polito.ezshop.model.accountbook.BalanceOperation  implements it.polito.ezshop.data.Order{
 
     private Integer id;
-    private String productCode;    // barcode of product
-    private String supplier;
+    private String productCode;    // barcode of pro
     private double pricePerUnit;
-    private int quantity;
+    private Integer quantity;
     private String status;
 
-    Order(Integer id){
+    public Order(Integer id){
         super();
          this.id=id;
     }
 
+    public Order(Integer id, String productCode, double pricePerUnit, Integer quantity, String status){
+        super();
+        this.id = id;
+        this.productCode = productCode;
+        this.pricePerUnit = pricePerUnit;
+        this.quantity = quantity;
+        this.status = status;
+    }
+
      @Override
-    public int getBalanceId()
-     {
-         Integer out = super.getBalanceId();
-         return out;
-     }
+    public int getBalanceId(){
+         return super.getBalanceId();
+    }
     @Override
     public void setBalanceId(Integer balanceId){
         super.setBalanceId(balanceId);
@@ -72,14 +78,6 @@ public class Order extends it.polito.ezshop.model.accountbook.BalanceOperation  
 
     @Override
     public void setOrderId(Integer orderId) {
-        this.id=id;
-    }
-
-    public String getSupplier(){
-        return this.supplier;
-    }
-
-    public void setSupplier(String supplier) {
-        this.supplier=supplier;
+        this.id=orderId;
     }
 }

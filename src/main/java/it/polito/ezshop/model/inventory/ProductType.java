@@ -8,9 +8,9 @@ public class ProductType implements it.polito.ezshop.data.ProductType{
     private Integer quantity;
     private double discountRate;
     private String notes;
-    private String position;
+    private String location;
 
-    public ProductType(Integer id, String productCode, String description, double pricePerUnit, Integer quantity, double discountRate, String notes, String position){
+    public ProductType(Integer id, String productCode, String description, double pricePerUnit, Integer quantity, double discountRate, String notes, String location){
         this.id = id;
         this.productCode = productCode;
         this.description = description;
@@ -18,7 +18,7 @@ public class ProductType implements it.polito.ezshop.data.ProductType{
         this.quantity = quantity;
         this.discountRate = discountRate;
         this.notes = notes;
-        this.position = position;
+        this.location = location;
     }
 
     @Override
@@ -33,12 +33,12 @@ public class ProductType implements it.polito.ezshop.data.ProductType{
 
     @Override
     public String getLocation() {
-        return this.position.toString();
+        return location;
     }
 
     @Override
     public void setLocation(String location) {
-        this.position = location;
+        this.location = location;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ProductType implements it.polito.ezshop.data.ProductType{
 
     @Override
     public void setNote(String note) {
-        this.notes=notes;
+        this.notes=note;
     }
 
     @Override
@@ -99,7 +99,4 @@ public class ProductType implements it.polito.ezshop.data.ProductType{
         this.discountRate=discountRate;
     }
 
-    public String getPosition() {
-        return position;
-    }
 }
