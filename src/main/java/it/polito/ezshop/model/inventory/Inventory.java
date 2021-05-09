@@ -42,7 +42,7 @@ public class Inventory {
         }
 
         boolean clean = deleteProductType(id);
-        productType = new ProductType(id, newCode, newDescription, newPrice, productType.getQuantity(), productType.getDiscountRate(), newNote, productType.getPosition());
+        //productType = new ProductType(id, newCode, newDescription, newPrice, productType.getQuantity(), productType.getDiscountRate(), newNote, productType.getPosition());
 
 
         return true;

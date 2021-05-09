@@ -20,9 +20,9 @@ public class UserList {
     }
 
     public Integer createUser(String username, String password, String role) throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
-        userList.add(new User(
-           userList.size()+1,username,password,role,false
-        ));
+        //userList.add(new User(
+           //userList.size()+1,username,password,role,false
+        //));
         return 0;
     }
 
@@ -82,18 +82,18 @@ public class UserList {
         {
             User u = userList.stream().filter(x-> x.getUsername().equals(username) && x.getPassword().equals(password)).collect(Collectors.toList()).get(0);
             if (u != null)
-                u.setStatus(true);
+                //u.setStatus(true);
             return u;
         }
 
     }
 
     public String toString(){
-        String res="";
-        for(User u : userList){
-            res+="name: " + u.getUsername() + "pwd: "+ u.getPassword() +"\n" ;
-        }
-        return res;
+        //String res="";
+        //for(User u : userList){
+          //  res+="name: " + u.getUsername() + "pwd: "+ u.getPassword() +"\n" ;
+        //}
+        return "";
     }
 
     public void logout(){

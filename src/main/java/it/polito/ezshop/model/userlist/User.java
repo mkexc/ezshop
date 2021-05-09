@@ -6,7 +6,7 @@ public class User implements it.polito.ezshop.data.User{
     private String password;
     private String role;
 
-    public User(Integer id, String username, String password, String role, Boolean status){
+    public User(Integer id, String username, String password, String role){
         this.id=id;
         this.username=username;
         this.password=password;
