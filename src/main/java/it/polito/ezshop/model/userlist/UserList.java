@@ -83,9 +83,9 @@ public class UserList {
             User u = userList.stream().filter(x-> x.getUsername().equals(username) && x.getPassword().equals(password)).collect(Collectors.toList()).get(0);
             if (u != null)
                 //u.setStatus(true);
+                return u;
             return u;
         }
-
     }
 
     public String toString(){

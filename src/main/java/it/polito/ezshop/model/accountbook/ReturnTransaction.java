@@ -1,16 +1,25 @@
 package it.polito.ezshop.model.accountbook;
 
-import it.polito.ezshop.model.inventory.ProductType;
+import it.polito.ezshop.data.TicketEntry;
 
-public class ReturnTransaction {
+import java.util.List;
+
+public class ReturnTransaction extends BalanceOperation implements it.polito.ezshop.data.SaleTransaction{
     private int quantity;
-    private ProductType product;
+    private List<TicketEntry> returnedEntries;
     private Integer idSaleTransaction;
+    private Integer returnTransactionId;
+    private double discountRate;
+    private double returnedPrice;
 
-    public ReturnTransaction(int quantity, ProductType product, Integer idSaleTransaction){
+    public ReturnTransaction(int quantity, List<TicketEntry> returnedEntries, Integer idSaleTransaction, Integer returnTransactionId, double discountRate, double returnedPrice){
+        super();
         this.quantity=quantity;
-        this.product=product;
         this.idSaleTransaction=idSaleTransaction;
+        this.returnedEntries=returnedEntries;
+        this.returnTransactionId=returnTransactionId;
+        this.discountRate=discountRate;
+        this.returnedPrice=returnedPrice;
     }
 
     public int getQuantity() {
@@ -21,14 +30,6 @@ public class ReturnTransaction {
         this.quantity = quantity;
     }
 
-    public ProductType getProduct() {
-        return product;
-    }
-
-    public void setProduct(ProductType product) {
-        this.product = product;
-    }
-
     public Integer getIdSaleTransaction() {
         return idSaleTransaction;
     }
@@ -37,4 +38,43 @@ public class ReturnTransaction {
         this.idSaleTransaction = idSaleTransaction;
     }
 
+    @Override
+    public Integer getTicketNumber() {
+        return returnTransactionId;
+    }
+
+    @Override
+    public void setTicketNumber(Integer ticketNumber) {
+        this.returnTransactionId = ticketNumber;
+    }
+
+    @Override
+    public List<TicketEntry> getEntries() {
+        return returnedEntries;
+    }
+
+    @Override
+    public void setEntries(List<TicketEntry> entries) {
+        this.returnedEntries = entries;
+    }
+
+    @Override
+    public double getDiscountRate() {
+        return discountRate;
+    }
+
+    @Override
+    public void setDiscountRate(double discountRate) {
+        this.discountRate = discountRate;
+    }
+
+    @Override
+    public double getPrice() {
+        return returnedPrice;
+    }
+
+    @Override
+    public void setPrice(double price) {
+        this.returnedPrice = price;
+    }
 }

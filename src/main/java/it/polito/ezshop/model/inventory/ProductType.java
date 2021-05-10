@@ -6,17 +6,15 @@ public class ProductType implements it.polito.ezshop.data.ProductType{
     private String description;
     private double pricePerUnit;
     private Integer quantity;
-    private double discountRate;
     private String notes;
     private String location;
 
-    public ProductType(Integer id, String productCode, String description, double pricePerUnit, Integer quantity, double discountRate, String notes, String location){
+    public ProductType(Integer id, String productCode, String description, double pricePerUnit, Integer quantity, String notes, String location){
         this.id = id;
         this.productCode = productCode;
         this.description = description;
         this.pricePerUnit = pricePerUnit;
         this.quantity = quantity;
-        this.discountRate = discountRate;
         this.notes = notes;
         this.location = location;
     }
@@ -90,13 +88,4 @@ public class ProductType implements it.polito.ezshop.data.ProductType{
     public void setId(Integer id) {
         this.id=id;
     }
-
-    public double getDiscountRate(){
-        return this.discountRate;
-    }
-
-    public void setDiscountRate(double discountRate){
-        this.discountRate=discountRate;
-    }
-
 }

@@ -23,9 +23,9 @@ public class Inventory {
         if(product!=null){
             return -1;
         }
-        product = new ProductType(id, productCode, description, pricePerUnit, quantity, discountRate, note, null);
-        id++;
-        list.add(product);
+        //product = new ProductType(id, productCode, description, pricePerUnit, quantity, discountRate, note, null);
+        //id++;
+        //list.add(product);
 
 
 
