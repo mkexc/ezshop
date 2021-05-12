@@ -3,6 +3,7 @@ package it.polito.ezshop.data;
 import java.sql.*;
 
 import it.polito.ezshop.exceptions.*;
+import it.polito.ezshop.model.CreditCard;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -172,7 +173,7 @@ public class EZShop implements EZShopInterface {
                 ResultSet rs = st.executeQuery();
 
                 while (rs.next()) {
-                    list.add(new it.polito.ezshop.model.userlist.User(rs.getInt("id"),
+                    list.add(new it.polito.ezshop.model.User(rs.getInt("id"),
                             rs.getString("username"),
                             rs.getString("password"),
                             rs.getString("role")
@@ -213,7 +214,7 @@ public class EZShop implements EZShopInterface {
                 // no product with the given code
                 return null;
 
-            user = new it.polito.ezshop.model.userlist.User(rs.getInt("id"),
+            user = new it.polito.ezshop.model.User(rs.getInt("id"),
                         rs.getString("username"),
                         rs.getString("password"),
                         rs.getString("role")
@@ -273,7 +274,7 @@ public class EZShop implements EZShopInterface {
 
             // TODO mettere classe User dentro il package data chiamandola UserImpl?
             // TODO cancellare classi "lista"
-            user = new it.polito.ezshop.model.userlist.User(rs.getInt("id"),
+            user = new it.polito.ezshop.model.User(rs.getInt("id"),
                     rs.getString("username"),
                     rs.getString("password"),
                     rs.getString("role")
@@ -281,6 +282,7 @@ public class EZShop implements EZShopInterface {
 
             // check password
             if(rs.getString("password").equals(password)) {
+                // do the login
                 loggedUser = user;
                 return user;
             }
@@ -312,7 +314,7 @@ public class EZShop implements EZShopInterface {
             throw new InvalidProductCodeException();
         try {
             Integer.parseInt(productCode);
-            // throws numberformatexception if not valid number
+            // throws numberFormatException if not valid number
 
             if(productCode.length()>14 || productCode.length()<12) {
                 throw new InvalidProductCodeException();
@@ -348,7 +350,7 @@ public class EZShop implements EZShopInterface {
 //        }
 
         // insert the new productType
-        String sql="INSERT INTO productType(productCode, description, pricePerUnit, quantity, notes) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql="INSERT INTO productType(productCode, description, pricePerUnit, quantity, notes) VALUES (?, ?, ?, ?, ?)";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.setString(1, productCode);
@@ -392,22 +394,19 @@ public class EZShop implements EZShopInterface {
             throw new InvalidPricePerUnitException();
         }
 
-//        // check if productCode is already present
-//        String sql = "SELECT productCode FROM ProductType WHERE productCode=?";
-//        try {
-//
-//            PreparedStatement st = conn.prepareStatement(sql);
-//            st.setString(1, newCode);
-//            ResultSet rs = st.executeQuery();
-//
-//            if(rs.getString("productCode").equals(newCode)) {
-//                // product already present
-//                return false;
-//            }
-//        } catch (SQLException e) {
-//            // problems with db connection
-//            return false;
-//        }
+        // barCode not null, not empty, 12<=length(barCode)<=14, is a number
+        if(newCode == null || newCode.equals(""))
+            throw  new InvalidProductCodeException();
+        try{
+            Integer.parseInt(newCode);
+            // throws numberFormatException if not valid number
+
+            if(newCode.length()>14 || newCode.length()<12){
+                throw  new InvalidProductCodeException();
+            }
+        }catch (NumberFormatException e) {
+            throw new InvalidProductCodeException();
+        }
 
         String sql = "UPDATE productType SET productCode=?, description=?, pricePerUnit=?, notes=? WHERE id=?";
 
@@ -473,7 +472,7 @@ public class EZShop implements EZShopInterface {
                 PreparedStatement st = conn.prepareStatement(sql);
                 ResultSet rs = st.executeQuery();
                 while (rs.next()) {
-                    list.add(new it.polito.ezshop.model.inventory.ProductType(
+                    list.add(new it.polito.ezshop.model.ProductType(
                             rs.getInt("id"),
                             rs.getString("productCode"),
                             rs.getString("description"),
@@ -506,7 +505,7 @@ public class EZShop implements EZShopInterface {
             throw  new InvalidProductCodeException();
         try{
             Integer.parseInt(barCode);
-            // throws numberformatexception if not valid number
+            // throws numberFormatException if not valid number
 
             if(barCode.length()>14 || barCode.length()<12){
                 throw  new InvalidProductCodeException();
@@ -531,7 +530,7 @@ public class EZShop implements EZShopInterface {
 //            return null;
 //        }
 
-        ProductType product = null;
+        ProductType product;
         String sql = "SELECT id, productCode, description, pricePerUnit, quantity, notes, position FROM productType WHERE productCode=?";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
@@ -542,7 +541,7 @@ public class EZShop implements EZShopInterface {
                 // no product with the given code
                 return null;
 
-            product = new it.polito.ezshop.model.inventory.ProductType(
+            product = new it.polito.ezshop.model.ProductType(
                     rs.getInt("id"),
                     rs.getString("productCode"),
                     rs.getString("description"),
@@ -580,7 +579,7 @@ public class EZShop implements EZShopInterface {
                 return null;
 
             while (rs.next()){
-                list.add(new it.polito.ezshop.model.inventory.ProductType(
+                list.add(new it.polito.ezshop.model.ProductType(
                         rs.getInt("id"),
                         rs.getString("productCode"),
                         rs.getString("description"),
@@ -636,6 +635,7 @@ public class EZShop implements EZShopInterface {
             int updatedRows = st.executeUpdate();
 
             if(updatedRows == 0)
+                // quantity would be negative or productType has not an assigned location
                 return false;
 
             isInventoryUpdated = false;
@@ -663,7 +663,7 @@ public class EZShop implements EZShopInterface {
         }
 
         // query for checking the uniqueness of position
-        String sql="SELECT position FROM productType WHERE position=? " ;
+        String sql="SELECT position FROM productType WHERE position=?" ;
 
         try {
             PreparedStatement st = conn.prepareStatement(sql);
@@ -710,7 +710,7 @@ public class EZShop implements EZShopInterface {
             throw new InvalidPricePerUnitException();
 
         // insert the new productType
-        String sql="INSERT INTO order(productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?)";
+        String sql="INSERT INTO 'order'(productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?)";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.setString(1, productCode);
@@ -741,14 +741,14 @@ public class EZShop implements EZShopInterface {
             throw new InvalidPricePerUnitException();
 
         // insert the new productType
-        String sql="INSERT INTO order(productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?)";
+        String sql="INSERT INTO 'order'(productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?)";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.setString(1, productCode);
             st.setDouble(2, pricePerUnit);
             st.setInt(3, quantity);
             st.setString(4,"PAYED");
-            Boolean out = this.recordBalanceUpdate(-pricePerUnit*quantity);
+            boolean out = this.recordBalanceUpdate(-pricePerUnit*quantity);
             if(!out){
                 return -1;
             }
@@ -770,7 +770,7 @@ public class EZShop implements EZShopInterface {
 
         String sql2="SELECT quantity, pricePerUnit, status FROM 'order' WHERE id=? " ;
         String actualStatus;
-        double toBeAdded=0.0;
+        double toBeAdded;
 
         try {
             PreparedStatement st = conn.prepareStatement(sql2);
@@ -786,7 +786,7 @@ public class EZShop implements EZShopInterface {
         if(actualStatus.equals("PAYED"))
             return false;
 
-        String sql3="UPDATE order SET status=? WHERE id=? " ;
+        String sql3="UPDATE 'order' SET status=? WHERE id=? " ;
         try {
             PreparedStatement st = conn.prepareStatement(sql3);
 
@@ -814,8 +814,8 @@ public class EZShop implements EZShopInterface {
 
 
 
-        String sql="SELECT quantity, productCode, status FROM order WHERE id=? " ;
-        int quantity=0;
+        String sql="SELECT quantity, productCode, status FROM 'order' WHERE id=? " ;
+        int quantity;
         String productCode;
         ProductType product;
         String actualStatus;
@@ -845,7 +845,7 @@ public class EZShop implements EZShopInterface {
             return false;
         }
 
-        String sql3="UPDATE order SET status=? WHERE id=?" ;
+        String sql3="UPDATE 'order' SET status=? WHERE id=?" ;
         try {
             PreparedStatement st = conn.prepareStatement(sql3);
 
@@ -865,12 +865,12 @@ public class EZShop implements EZShopInterface {
         if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
 
-        String sql3="SELECT * FROM order" ;
+        String sql3="SELECT * FROM 'order'" ;
         try {
             PreparedStatement st = conn.prepareStatement(sql3);
             ResultSet rs = st.executeQuery();
             while(rs.next()){
-                this.orderList.add( new it.polito.ezshop.model.accountbook.Order(
+                this.orderList.add( new it.polito.ezshop.model.Order(
                                                 rs.getInt("id"),
                                                 rs.getString("productCode"),
                                                 rs.getDouble("pricePerUnit"),
@@ -925,7 +925,19 @@ public class EZShop implements EZShopInterface {
         else {
             try{
 
-                if(newCustomerCard.isEmpty())
+                if(newCustomerCard==null)
+                {
+                    String sql = "UPDATE customer SET customerName = ? WHERE id=?";
+                    PreparedStatement st = conn.prepareStatement(sql);
+                    st.setString(1,newCustomerName);
+                    st.setInt(2,id);
+                    if(st.executeUpdate()>0)
+                    {
+                        this.isCustomerListUpdated = false;
+                        return true;
+                    }
+                }
+                else if(newCustomerCard.isEmpty())
                 {
                     String sql = "UPDATE customer SET loyaltyCardId=NULL, customerName = ? WHERE id=?";
                     PreparedStatement st = conn.prepareStatement(sql);
@@ -937,18 +949,6 @@ public class EZShop implements EZShopInterface {
                         return true;
                     }
                     
-                }
-                else if(newCustomerCard==null)
-                {
-                    String sql = "UPDATE customer SET customerName = ? WHERE id=?";
-                    PreparedStatement st = conn.prepareStatement(sql);
-                    st.setString(1,newCustomerName);
-                    st.setInt(2,id);
-                    if(st.executeUpdate()>0)
-                    {
-                        this.isCustomerListUpdated = false;
-                        return true;
-                    }
                 }
                 else
                 {
@@ -995,10 +995,7 @@ public class EZShop implements EZShopInterface {
             try {
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setInt(1,id);
-                if(st.executeUpdate()>0)
-                    return true;
-                else
-                    return false;
+                return (st.executeUpdate()>0);
             }
             catch (SQLException e)
             {
@@ -1021,7 +1018,7 @@ public class EZShop implements EZShopInterface {
                 st.setInt(1,id);
                 ResultSet rs = st.executeQuery();
                 if(rs.next())
-                    return new it.polito.ezshop.model.customerlist.Customer(
+                    return new it.polito.ezshop.model.Customer(
                         rs.getInt("customerId"),
                         rs.getString("customerName"),
                         rs.getString("loyaltyCardId"),
@@ -1049,7 +1046,7 @@ public class EZShop implements EZShopInterface {
                 ResultSet rs = st.executeQuery();
                 this.customerList.clear();
                 while(rs.next()){
-                    customerList.add(new it.polito.ezshop.model.customerlist.Customer(
+                    customerList.add(new it.polito.ezshop.model.Customer(
                             rs.getInt("customerId"),
                             rs.getString("customerName"),
                             rs.getString("loyaltyCardId"),
@@ -1058,7 +1055,7 @@ public class EZShop implements EZShopInterface {
                 }
                 this.isCustomerListUpdated=true;
 
-            } catch (SQLException e) {
+            } catch (SQLException ignored) {
 
             }
             return this.customerList;
@@ -1080,7 +1077,7 @@ public class EZShop implements EZShopInterface {
                 return st.getGeneratedKeys().getString("id");
             }catch (SQLException e)
             {
-                return new String();
+                return "";
             }
         }
     }
@@ -1175,8 +1172,8 @@ public class EZShop implements EZShopInterface {
         // check authorization
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-        Integer res;
-        String sql = "INSERT INTO saleTransaction (DiscountRate, balanceId, total) VALUES (0.0,null,0.0) ";
+        int res;
+        String sql = "INSERT INTO saleTransaction (DiscountRate, balanceId, total, status) VALUES (0.0,'',0.0,'OPEN')";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.executeUpdate();
@@ -1204,7 +1201,7 @@ public class EZShop implements EZShopInterface {
         //check productCode
         if(productCode==null||productCode.equals("")||productCode.length()<12||productCode.length()>14)
             throw new InvalidProductCodeException();
-        ProductType product=null;
+        ProductType product;
 
         //check id
         String sql = "SELECT id from SaleTransaction WHERE id=? ";
@@ -1238,7 +1235,6 @@ public class EZShop implements EZShopInterface {
             st.setInt(1,transactionId);
             st.setString(2,productCode);
             st.setInt(3,amount);
-
             st.executeUpdate();
 
         }catch(SQLException e){
@@ -1408,7 +1404,7 @@ public class EZShop implements EZShopInterface {
         if(transactionId==null||transactionId<=0)
             throw new InvalidTransactionIdException();
         int points;
-        String sql="SELECT PE.amount, PE.discountRate, PT.pricePerUnit, ST.discountRate FROM productEntry PE,saleTransaction ST, productType PT WHERE ST.id=PE.transactionId AND id=? AND PE.barcode=PT.productCode ";
+        String sql="SELECT PE.amount, PE.discountRate, PT.pricePerUnit, ST.discountRate FROM productEntry PE,saleTransaction ST, productType PT WHERE ST.id=PE.transactionId AND ST.id=? AND PE.barcode=PT.productCode ";
         try {
             double priceWithoutSaleDiscount=0.0;
             PreparedStatement st = conn.prepareStatement(sql);
@@ -1437,8 +1433,8 @@ public class EZShop implements EZShopInterface {
             throw new InvalidTransactionIdException();
         
         //compute total price
-        String sql="SELECT PE.amount, PE.discountRate, PT.pricePerUnit, ST.discountRate, ST.status FROM productEntry PE,saleTransaction ST, productType PT WHERE ST.id=PE.transactionId AND id=? AND PE.barcode=PT.productCode ";
-        Double total=0.0;
+        String sql="SELECT PE.amount, PE.discountRate, PT.pricePerUnit, ST.discountRate, ST.status FROM productEntry PE,saleTransaction ST, productType PT WHERE ST.id=PE.transactionId AND ST.id=? AND PE.barcode=PT.productCode ";
+        double total;
         try {
             double priceWithoutSaleDiscount=0.0;
             PreparedStatement st = conn.prepareStatement(sql);
@@ -1506,7 +1502,7 @@ public class EZShop implements EZShopInterface {
         String sql3 = "DELETE FROM productEntry WHERE transactionId=?";
         try {
 
-            PreparedStatement st = conn.prepareStatement(sql2);
+            PreparedStatement st = conn.prepareStatement(sql3);
             st.setInt(1,saleNumber);
             st.executeUpdate();
 
@@ -1530,13 +1526,13 @@ public class EZShop implements EZShopInterface {
         String sql="SELECT ST.id, ST.balanceId, ST.discountRate, ST.total, PE.barcode, PE.amount, PE.discountRate, PT.description, PT.pricePerUnit FROM saleTransaction ST, productEntry PE, productType PT WHERE PE.transactionId=ST.id AND ST.id=? AND PE.barcode=PT.productCode";
         List<TicketEntry> entries;
         try {
-            entries = new ArrayList<TicketEntry>();
+            entries = new ArrayList<>();
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,transactionId);
             ResultSet rs = st.executeQuery();
 
             while(rs.next()){
-                entries.add(new it.polito.ezshop.model.accountbook.TicketEntry(
+                entries.add(new it.polito.ezshop.model.TicketEntry(
                                                 rs.getString("PE.barcode"),
                                                 rs.getString("PT.productDescription"),
                                                 rs.getInt("PE.amount"),
@@ -1545,13 +1541,11 @@ public class EZShop implements EZShopInterface {
                                                                                 ));
             }
 
-            SaleTransaction saleTransaction= new it.polito.ezshop.model.accountbook.SaleTransaction(
-                                                    rs.getInt("ST.id"),
-                                                    entries,
-                                                    rs.getDouble("ST.discountRate"),
-                                                    rs.getDouble("ST.total")
-            );
-            return saleTransaction;
+            return new it.polito.ezshop.model.SaleTransaction(
+                    rs.getInt("ST.id"),
+                    entries,
+                    rs.getDouble("ST.discountRate"),
+                    rs.getDouble("ST.total"));
         }catch(SQLException e){
             return null;
         }
@@ -1565,9 +1559,9 @@ public class EZShop implements EZShopInterface {
         //check id
         if(saleNumber==null||saleNumber<=0)
             throw new InvalidTransactionIdException();
-        Integer res=null;
+        int res;
 
-        String sql = "INSERT INTO returnTransaction (quantity,saleTransactionId,discountRate,returnedPrice) VALUES (0,?,0.0,0.0)";
+        String sql = "INSERT INTO returnTransaction (quantity,saleTransactionId,discountRate,returnedPrice,total,status) VALUES (0,?,0.0,0.0,0.0,'OPEN')";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,saleNumber);
@@ -1595,8 +1589,7 @@ public class EZShop implements EZShopInterface {
         //check productCode
         if(productCode==null||productCode.equals("")||productCode.length()<12||productCode.length()>14)
             throw new InvalidProductCodeException();
-        ProductType product=null;
-        
+
         String sql2 = "INSERT INTO productEntry (transactionId, barcode, amount) VALUES (?,?,?) ";
         try {
             PreparedStatement st = conn.prepareStatement(sql2);
@@ -1626,7 +1619,7 @@ public class EZShop implements EZShopInterface {
 
         //check status
         String sql="SELECT status, barcode, amount FROM returnTransaction, productEntry WHERE id=? ";
-        String productCode="";
+        String productCode;
 
         int amount;
         try {
@@ -1786,7 +1779,7 @@ public class EZShop implements EZShopInterface {
         //check id
         if(transactionId==null||transactionId<=0)
             throw new InvalidTransactionIdException();
-        if(creditCard==null || creditCard.isEmpty() || !it.polito.ezshop.model.accountbook.CreditCard.luhnValidation(creditCard))
+        if(creditCard==null || creditCard.isEmpty() || !CreditCard.luhnValidation(creditCard))
             throw new InvalidCreditCardException();
 
         String sql="SELECT total FROM saleTransaction WHERE id=? AND status='CLOSE' ";
@@ -1848,7 +1841,7 @@ public class EZShop implements EZShopInterface {
 
 
         String sql="SELECT total FROM returnTransaction WHERE id=? AND status='CLOSE'";
-        double total=0.0;
+        double total;
         try {
 
             PreparedStatement st = conn.prepareStatement(sql);
@@ -1883,7 +1876,7 @@ public class EZShop implements EZShopInterface {
         //check id
         if(returnId==null||returnId<=0)
             throw new InvalidTransactionIdException();
-        if(creditCard==null || creditCard.isEmpty() || !it.polito.ezshop.model.accountbook.CreditCard.luhnValidation(creditCard))
+        if(creditCard==null || creditCard.isEmpty() || !CreditCard.luhnValidation(creditCard))
             throw new InvalidCreditCardException();
 
         String sql="SELECT total FROM returnTransaction WHERE id=? AND status='CLOSE' ";
@@ -1963,30 +1956,7 @@ public class EZShop implements EZShopInterface {
         ResultSet rs;
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager")))
             throw new UnauthorizedException();
-        else if(from==null && to!=null) {
-            try {
-                String sql = "SELECT * FROM balanceOperation WHERE date < ? ";
-                PreparedStatement st = conn.prepareStatement(sql);
-                st.setDate(1,java.sql.Date.valueOf(to));
-                st.executeQuery();
-                rs = st.getResultSet();
-            } catch (SQLException e) {
-                return null;
-            }
-        }
-        else if(to==null && from!=null)
-        {
-            try {
-                String sql = "SELECT * FROM balanceOperation WHERE date > ? ";
-                PreparedStatement st = conn.prepareStatement(sql);
-                st.setDate(1, java.sql.Date.valueOf(from));
-                st.executeQuery();
-                rs = st.getResultSet();
-            } catch (SQLException e) {
-                return null;
-            }
-        }
-        else if (to!=null && from!=null)
+        if (to!=null && from!=null)
         {
             LocalDate realFrom=from, realTo=to;
             if (to.isBefore(from))
@@ -2002,18 +1972,10 @@ public class EZShop implements EZShopInterface {
                 st.setDate(2, java.sql.Date.valueOf(realTo));
                 st.executeQuery();
                 rs = st.getResultSet();
-            } catch (SQLException e) {
-                return null;
-            }
-        }
-        else{
-            return l;
-        }
-            try{
                 while (rs.next())
                 {
                     l.add(
-                            new it.polito.ezshop.model.accountbook.BalanceOperation(
+                            new it.polito.ezshop.model.BalanceOperation(
                                     rs.getInt("id"),
                                     Instant.ofEpochMilli(rs.getDate("date").getTime())
                                             .atZone(ZoneId.systemDefault())
@@ -2023,10 +1985,60 @@ public class EZShop implements EZShopInterface {
                             )
                     );
                 }
-            } catch (SQLException e)
-            {
-                return null;
+            } catch (SQLException ignored) {
+
             }
+        }
+        else if(from==null && to!=null) {
+            try {
+                String sql = "SELECT * FROM balanceOperation WHERE date < ? ";
+                PreparedStatement st = conn.prepareStatement(sql);
+                st.setDate(1,java.sql.Date.valueOf(to));
+                st.executeQuery();
+                rs = st.getResultSet();
+                while (rs.next())
+                {
+                    l.add(
+                            new it.polito.ezshop.model.BalanceOperation(
+                                    rs.getInt("id"),
+                                    Instant.ofEpochMilli(rs.getDate("date").getTime())
+                                            .atZone(ZoneId.systemDefault())
+                                            .toLocalDate(),
+                                    rs.getDouble("money"),
+                                    rs.getString("type")
+                            )
+                    );
+                }
+            } catch (SQLException ignored) {
+
+            }
+        }
+        else if(from!=null)
+        {
+            try {
+                String sql = "SELECT * FROM balanceOperation WHERE date > ? ";
+
+                PreparedStatement st = conn.prepareStatement(sql);
+                st.setDate(1, java.sql.Date.valueOf(from));
+                st.executeQuery();
+                rs = st.getResultSet();
+                while (rs.next())
+                {
+                    l.add(
+                            new it.polito.ezshop.model.BalanceOperation(
+                                    rs.getInt("id"),
+                                    Instant.ofEpochMilli(rs.getDate("date").getTime())
+                                            .atZone(ZoneId.systemDefault())
+                                            .toLocalDate(),
+                                    rs.getDouble("money"),
+                                    rs.getString("type")
+                            )
+                    );
+                }
+            } catch (SQLException ignored) {
+
+            }
+        }
         return l;
     }
 

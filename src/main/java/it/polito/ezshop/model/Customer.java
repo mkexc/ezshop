@@ -1,4 +1,4 @@
-package it.polito.ezshop.model.customerlist;
+package it.polito.ezshop.model;
 
 public class Customer implements it.polito.ezshop.data.Customer {
 
@@ -13,6 +13,7 @@ public class Customer implements it.polito.ezshop.data.Customer {
 
 
      public Customer (Integer customerId, String customerName, String loyaltyCardId, Integer points){
+         super();
          this.customerId=customerId;
          this.loyaltyCardId=loyaltyCardId;
          this.customerName=customerName;

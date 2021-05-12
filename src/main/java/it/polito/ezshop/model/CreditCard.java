@@ -1,10 +1,11 @@
-package it.polito.ezshop.model.accountbook;
+package it.polito.ezshop.model;
 
 public class CreditCard {
     private String cardNumber;
     private double balance;
 
     public CreditCard(String cardNumber, double balance) {
+        super();
         this.cardNumber = cardNumber;
         this.balance = balance;
     }

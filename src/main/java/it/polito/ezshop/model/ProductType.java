@@ -1,4 +1,4 @@
-package it.polito.ezshop.model.inventory;
+package it.polito.ezshop.model;
 
 public class ProductType implements it.polito.ezshop.data.ProductType{
     private Integer id;

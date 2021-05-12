@@ -1,6 +1,6 @@
-package it.polito.ezshop.model.accountbook;
+package it.polito.ezshop.model;
 
-public class Order extends it.polito.ezshop.model.accountbook.BalanceOperation  implements it.polito.ezshop.data.Order{
+public class Order extends BalanceOperation implements it.polito.ezshop.data.Order{
 
     private Integer id;
     private String productCode;    // barcode of pro
@@ -10,7 +10,7 @@ public class Order extends it.polito.ezshop.model.accountbook.BalanceOperation  
 
     public Order(Integer id){
         super();
-         this.id=id;
+        this.id=id;
     }
 
     public Order(Integer id, String productCode, double pricePerUnit, Integer quantity, String status){

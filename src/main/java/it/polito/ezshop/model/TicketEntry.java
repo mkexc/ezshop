@@ -1,4 +1,4 @@
-package it.polito.ezshop.model.accountbook;
+package it.polito.ezshop.model;
 
 public class TicketEntry implements it.polito.ezshop.data.TicketEntry{
     private String barCode;

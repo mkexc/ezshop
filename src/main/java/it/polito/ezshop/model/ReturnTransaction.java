@@ -1,4 +1,4 @@
-package it.polito.ezshop.model.accountbook;
+package it.polito.ezshop.model;
 
 import it.polito.ezshop.data.TicketEntry;
 
