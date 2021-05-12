@@ -1,10 +1,10 @@
 # Unit Testing Documentation
 
-Authors:
+Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date:
+Date: 12/05/2021
 
-Version:
+Version: 0.1
 
 # Contents
 
@@ -16,7 +16,7 @@ Version:
 - [White Box Unit Tests](#white-box-unit-tests)
 
 
-# Black Box Unit Tests
+# Black Box Unit Tests - EZShop
 
     <Define here criteria, predicates and the combination of predicates for each function of each class.
     Define test cases to cover all equivalence classes and boundary conditions.
@@ -26,30 +26,30 @@ Version:
     to start tests
     >
 
- ### **Class *class_name* - method *name***
+ ### **Class *ezshop.java* - method *createUser***
 
 
 
-**Criteria for method *name*:**
+**Criteria for method *createUser*:**
 	
 
- - 
- - 
+ - Validity of username
+ - Validity of password
+ - Role
 
 
 
 
+**Predicates for method *createUser*:**
 
-**Predicates for method *name*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-|          |           |
-|          |           |
-|          |           |
-|          |           |
-
-
+| Criteria             | Predicate      |
+| -------------------- | -------------- |
+| Validity of username |      valid     |
+|                      |       null     |
+| Validity of password |      valid     |
+|                      |       null     |
+| Role                 |      valid     |
+|                      |       null     |
 
 
 
@@ -65,13 +65,13 @@ Version:
 **Combination of predicates**:
 
 
-| Criteria 1 | Criteria 2 | ... | Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|-------|-------|
-|||||||
-|||||||
-|||||||
-|||||||
-|||||||
+| Validity of username | Validity of password | Role  | Valid / Invalid | Description of the test case | JUnit test case |
+|----------------------|----------------------|------ |-----------------|------------------------------|-----------------|
+|  Invalid             |                    * |     * |   Invalid       |                              |                 |
+|                     *|          Invalid     |     * |   Invalid       |                              |                 |
+|                     *|                     *|Invalid|   Invalid       |                              |                 |
+|  Valid               |          Valid       |Valid  |   Valid         |                              |                 |
+|                      |                      |       |                 |                              |                 |
 
 
 
@@ -86,10 +86,10 @@ Version:
 
 
 | Unit name | JUnit test case |
-|--|--|
-|||
-|||
-||||
+|-----------|-----------------|
+|           |                 |
+|           |                 |
+|           |                 |
 
 ### Code coverage report
 
@@ -103,10 +103,10 @@ Version:
     developed to cover zero, one or multiple iterations >
 
 |Unit name | Loop rows | Number of iterations | JUnit test case |
-|---|---|---|---|
-|||||
-|||||
-||||||
+|----------|-----------|----------------------|-----------------|
+|          |           |                      |                 |
+|          |           |                      |                 |
+|          |           |                      |                 |
 
 
 

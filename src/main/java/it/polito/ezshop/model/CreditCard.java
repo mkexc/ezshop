@@ -26,16 +26,7 @@ public class CreditCard {
         this.balance = balance;
     }
 
-    public boolean validateWithLuhn() {
-        return false;
-    }
-
-    public Integer computeOperation() {
-        return null;
-    }
-
-    public static boolean luhnValidation(String creditCard)
-    {
+    public static boolean validateWithLuhn(String creditCard) {
         int dimension = creditCard.length();
         boolean isSecond = false;
         int temp,sum = 0;
@@ -51,5 +42,10 @@ public class CreditCard {
         }
         return (sum%10 == 0);
     }
+
+    public Integer computeOperation() {
+        return null;
+    }
+
 
 }

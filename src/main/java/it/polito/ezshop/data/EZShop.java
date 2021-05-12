@@ -648,8 +648,8 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public boolean updatePosition(Integer productId, String newPos) throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
-        if(newPos==null){
-            newPos="";
+        if(newPos == null){
+            newPos = "";
         }
         // check role of the user (only administrator, cashier and shopManager)
         if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
@@ -1779,7 +1779,7 @@ public class EZShop implements EZShopInterface {
         //check id
         if(transactionId==null||transactionId<=0)
             throw new InvalidTransactionIdException();
-        if(creditCard==null || creditCard.isEmpty() || !CreditCard.luhnValidation(creditCard))
+        if(creditCard==null || creditCard.isEmpty() || !CreditCard.validateWithLuhn(creditCard))
             throw new InvalidCreditCardException();
 
         String sql="SELECT total FROM saleTransaction WHERE id=? AND status='CLOSE' ";
@@ -1876,7 +1876,7 @@ public class EZShop implements EZShopInterface {
         //check id
         if(returnId==null||returnId<=0)
             throw new InvalidTransactionIdException();
-        if(creditCard==null || creditCard.isEmpty() || !CreditCard.luhnValidation(creditCard))
+        if(creditCard==null || creditCard.isEmpty() || !CreditCard.validateWithLuhn(creditCard))
             throw new InvalidCreditCardException();
 
         String sql="SELECT total FROM returnTransaction WHERE id=? AND status='CLOSE' ";
