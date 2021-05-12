@@ -4,6 +4,7 @@ import java.sql.*;
 
 import it.polito.ezshop.exceptions.*;
 import it.polito.ezshop.model.CreditCard;
+import org.sqlite.SQLiteException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.time.*;
 import java.util.Date;
 
-public class EZShop implements EZShopInterface {
+public class EZShop implements EZShopInterface, AutoCloseable{
     private Connection conn;
     private User loggedUser;
 
@@ -26,7 +27,7 @@ public class EZShop implements EZShopInterface {
     private boolean isUserListUpdated = false;
     private boolean isInventoryUpdated = false;
 
-    public EZShop() throws SQLException, InvalidCustomerNameException {
+    public EZShop()  {
         // open db connection
         try {
             // db parameters
@@ -36,7 +37,8 @@ public class EZShop implements EZShopInterface {
             //conn.setAutoCommit(false);
             System.out.println("Connection to SQLite has been established.");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Database connection fail. Aborting...");
+            System.exit(-1);
         }
     }
 
@@ -85,7 +87,7 @@ public class EZShop implements EZShopInterface {
         }
 
         // role not null, not empty, not Administrator&&ShopManager&&Cashier
-        if(role == null || role.equals("") || (!role.equals("Administrator") && !role.equals("ShopManager") && !role.equals("Cashier"))){
+        if(role == null || role.isEmpty() || (!role.equals("Administrator") && !role.equals("ShopManager") && !role.equals("Cashier"))){
             throw new InvalidRoleException();
         }
 
@@ -112,16 +114,17 @@ public class EZShop implements EZShopInterface {
             st.setString(1, username);
             st.setString(2, password);
             st.setString(3, role);
-            int updatedRows = st.executeUpdate();
-            //conn.commit();
 
-            if(updatedRows == 0)
+            int updatedRows = st.executeUpdate();
+            if(updatedRows==0){
                 return -1;
+            }
 
             isUserListUpdated = false;
+            st.close();
             return st.getGeneratedKeys().getInt(1);
         } catch (SQLException e) {
-            // user already present or db not reachable
+
             return -1;
         }
     }
@@ -151,6 +154,7 @@ public class EZShop implements EZShopInterface {
                 return false;
 
             isUserListUpdated = false;
+            st.close();
             return true;
         } catch (SQLException e) {
             return false;
@@ -160,7 +164,7 @@ public class EZShop implements EZShopInterface {
     @Override
     public List<User> getAllUsers() throws UnauthorizedException {
         // check role of the user (only administrator)
-        if (!loggedUser.getRole().equals("Administrator")) {
+        if (loggedUser==null || !loggedUser.getRole().equals("Administrator")) {
             throw new UnauthorizedException();
         }
 
@@ -255,6 +259,7 @@ public class EZShop implements EZShopInterface {
             isUserListUpdated = false;
             return true;
         } catch (SQLException e) {
+
             return false;
         }
     }
@@ -837,7 +842,6 @@ public class EZShop implements EZShopInterface {
         }
         if(actualStatus.equals("COMPLETED"))
             return false;
-
 
         try {
             this.updateQuantity(product.getId(), quantity);
@@ -2063,6 +2067,16 @@ public class EZShop implements EZShopInterface {
             {
                 return 0.0;
             }
+        }
+    }
+
+
+    public void close()
+    {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+
         }
     }
 }
