@@ -33,4 +33,22 @@ public class CreditCard {
         return null;
     }
 
+    public static boolean luhnValidation(String creditCard)
+    {
+        int dimension = creditCard.length();
+        boolean isSecond = false;
+        int temp,sum = 0;
+        for(int i = dimension-1; i>=0; --i)
+        {
+            if(isSecond)
+            {
+                temp=Character.getNumericValue((creditCard.charAt(i)))*2;
+                sum += temp / 10;
+                sum += temp % 10;
+            }
+            isSecond=!isSecond;
+        }
+        return (sum%10 == 0);
+    }
+
 }
