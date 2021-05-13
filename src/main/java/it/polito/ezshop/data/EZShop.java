@@ -653,45 +653,56 @@ public class EZShop implements EZShopInterface, AutoCloseable{
 
     @Override
     public boolean updatePosition(Integer productId, String newPos) throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
+        // if newPos is null, position should be empty
         if(newPos == null){
             newPos = "";
         }
+
         // check role of the user (only administrator, cashier and shopManager)
-        if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && (!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
+
         // check id of the product (not <=0)
-        if(productId==null||productId<=0)
+        if(productId == null || productId <= 0)
             throw new InvalidProductIdException();
+
         // check position format (number-string-number)
         if(!newPos.equals("") && !newPos.matches("[0-9]+-[a-zA-Z]+-[0-9]+")){
             throw new InvalidLocationException();
         }
 
-        // query for checking the uniqueness of position
-        String sql="SELECT position FROM productType WHERE position=?" ;
+//        // query for checking the uniqueness of position
+//        String sql="SELECT position FROM productType WHERE position=?" ;
+//
+//        try {
+//            PreparedStatement st = conn.prepareStatement(sql);
+//
+//            st.setString(1,newPos);
+//            ResultSet rs = st.executeQuery();
+//
+//            if(rs.getString("position").equals(newPos)){
+//                return false;
+//            }
+//        } catch (SQLException e) {
+//            return false;
+//        }
 
+        String sql="UPDATE productType SET position=? WHERE id=?" ;
         try {
             PreparedStatement st = conn.prepareStatement(sql);
 
             st.setString(1,newPos);
-            ResultSet rs = st.executeQuery();
-
-            if(rs.getString("position").equals(newPos)){
-                return false;
-            }
-        } catch (SQLException e) {
-            return false;
-        }
-
-        String sql2="UPDATE productType SET position=? WHERE id=? " ;
-        try {
-            PreparedStatement st = conn.prepareStatement(sql2);
-
-            st.setString(1,newPos);
             st.setInt(2,productId);
-            st.executeUpdate();
+            int updatedRows = st.executeUpdate();
+
+            if(updatedRows == 0)
+                // productId not exist
+                return false;
+
+            isInventoryUpdated = false;
             return true;
         } catch (SQLException e) {
+            // db problem or position not unique
             return false;
         }
 
@@ -701,17 +712,20 @@ public class EZShop implements EZShopInterface, AutoCloseable{
     @Override
     public Integer issueOrder(String productCode, int quantity, double pricePerUnit) throws InvalidProductCodeException, InvalidQuantityException, InvalidPricePerUnitException, UnauthorizedException {
         // check role of the user (only administrator, cashier and shopManager)
-        if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && (!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
-        //check if the product exist
+
+        //check if the product exist and if barcode is valid
         ProductType product = this.getProductTypeByBarCode(productCode);
-        if(product==null)
+        if(product == null)
             return -1;
+
         //check quantity is not <=0
-        if(quantity<=0)
+        if(quantity <= 0)
             throw new InvalidQuantityException();
+
         //check pricePerUnit is not <=0
-        if(pricePerUnit<=0)
+        if(pricePerUnit <= 0)
             throw new InvalidPricePerUnitException();
 
         // insert the new productType
@@ -722,9 +736,17 @@ public class EZShop implements EZShopInterface, AutoCloseable{
             st.setDouble(2, pricePerUnit);
             st.setInt(3, quantity);
             st.setString(4,"ISSUED");
-            st.executeUpdate();
+            int updatedRows = st.executeUpdate();
+
+            if(updatedRows == 0)
+                // cannot update order
+                return -1;
+
+            isOrderListUpdated = false;
+            // new id of the order created
             return st.getGeneratedKeys().getInt(1);
         } catch (SQLException e) {
+            // db problem
             return -1;
         }
     }
