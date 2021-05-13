@@ -1,5 +1,7 @@
 package it.polito.ezshop.model;
 
+import static java.lang.Math.abs;
+
 public class ProductType implements it.polito.ezshop.data.ProductType{
     private Integer id;
     private String productCode;
@@ -87,5 +89,48 @@ public class ProductType implements it.polito.ezshop.data.ProductType{
     @Override
     public void setId(Integer id) {
         this.id=id;
+    }
+
+    public static boolean validateProductCode(String barcode)
+    {
+        int sum=0,multiplier,ret;
+        // 12<=length(barcode)<=14
+        if(barcode.length()<12 || barcode.length()>14)
+            return false;
+        if(barcode.length() % 2 == 0)
+        {
+            // even length
+            for (int i=barcode.length()-1; i>=0; i--)
+            {
+                if(i!=barcode.length()-1) {
+                    if (i % 2 == 0) {
+                        sum += (barcode.charAt(i) - '0') * 3;
+                    } else {
+                        sum += barcode.charAt(i) - '0';
+                    }
+                }
+            }
+        }
+        else
+        {
+            // odd length
+            for (int i=barcode.length()-1; i>=0; i--)
+            {
+                if(i!=barcode.length()-1) {
+                    if (i % 2 == 0) {
+                        sum += barcode.charAt(i) - '0';
+                    } else {
+                        sum += (barcode.charAt(i) - '0')*3;
+                    }
+                }
+            }
+        }
+
+        multiplier = sum/10;
+        ret = sum % 10;
+        if(ret>0)
+            multiplier++;
+
+        return 10*multiplier-sum == (barcode.charAt(barcode.length()-1)-'0');
     }
 }

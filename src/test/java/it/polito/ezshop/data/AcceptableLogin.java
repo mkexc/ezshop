@@ -18,7 +18,7 @@ public class AcceptableLogin {
         assertThrows(InvalidUsernameException.class, ()->
                 shop.login(null, "password")
         );
-        shop.close();
+        //shop.close();
 
     }
     @Test
@@ -30,7 +30,7 @@ public class AcceptableLogin {
         assertThrows(InvalidPasswordException.class, ()->
                 shop.login("Carlo", null)
         );
-        shop.close();
+        //shop.close();
 
     }
 
@@ -41,7 +41,7 @@ public class AcceptableLogin {
         shop.login("admin","ciao");
         assertEquals(null,shop.login("23","1234"));
 
-        shop.close();
+        //shop.close();
 
     }
 }

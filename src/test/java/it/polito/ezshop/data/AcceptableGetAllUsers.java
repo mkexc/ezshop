@@ -1,10 +1,9 @@
 package it.polito.ezshop.data;
-import it.polito.ezshop.exceptions.InvalidRoleException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
 import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import it.polito.ezshop.data.User;
-import java.util.ArrayList;
+
+
 
 public class AcceptableGetAllUsers {
 
@@ -14,17 +13,16 @@ public class AcceptableGetAllUsers {
 
         EZShop shop = new EZShop();
         shop.login("23", "12345");
-        assertThrows(UnauthorizedException.class, () -> {
-            shop.getAllUsers();
-        });
-        shop.close();
+        assertThrows(UnauthorizedException.class, shop::getAllUsers
+        );
+        //shop.close();
     }
         @Test
         public void testCorrect() throws Exception {
             EZShop shop = new EZShop();
             shop.login("admin","ciao");
             assertInstanceOf(java.util.ArrayList.class, shop.getAllUsers());
-            shop.close();
+          //  shop.close();
          }
     }
 

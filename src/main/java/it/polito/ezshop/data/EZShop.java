@@ -4,7 +4,6 @@ import java.sql.*;
 
 import it.polito.ezshop.exceptions.*;
 import it.polito.ezshop.model.CreditCard;
-import org.sqlite.SQLiteException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,8 +11,10 @@ import java.util.List;
 import java.time.*;
 import java.util.Date;
 
-public class EZShop implements EZShopInterface, AutoCloseable{
-    private Connection conn;
+import static it.polito.ezshop.model.ProductType.validateProductCode;
+
+public class EZShop implements EZShopInterface{
+    private static Connection conn;
     private User loggedUser;
 
     private List<ProductType> inventory = new ArrayList<>();
@@ -33,9 +34,12 @@ public class EZShop implements EZShopInterface, AutoCloseable{
             // db parameters
             String url = "jdbc:sqlite:ezshop_db.sqlite";
             // create a connection to the database
-            conn = DriverManager.getConnection(url);
-            //conn.setAutoCommit(false);
-            System.out.println("Connection to SQLite has been established.");
+            if(conn==null)
+            {
+                conn = DriverManager.getConnection(url);
+                System.out.println("Connection to SQLite has been established.");
+            }
+
         } catch (SQLException e) {
             System.out.println("Database connection fail. Aborting...");
             System.exit(-1);
@@ -121,7 +125,7 @@ public class EZShop implements EZShopInterface, AutoCloseable{
             }
 
             isUserListUpdated = false;
-            st.close();
+
             return st.getGeneratedKeys().getInt(1);
         } catch (SQLException e) {
 
@@ -154,7 +158,7 @@ public class EZShop implements EZShopInterface, AutoCloseable{
                 return false;
 
             isUserListUpdated = false;
-            st.close();
+            //st.close();
             return true;
         } catch (SQLException e) {
             return false;
@@ -277,8 +281,6 @@ public class EZShop implements EZShopInterface, AutoCloseable{
             st.setString(1, username);
             ResultSet rs = st.executeQuery();
 
-            // TODO mettere classe User dentro il package data chiamandola UserImpl?
-            // TODO cancellare classi "lista"
             user = new it.polito.ezshop.model.User(rs.getInt("id"),
                     rs.getString("username"),
                     rs.getString("password"),
@@ -314,17 +316,12 @@ public class EZShop implements EZShopInterface, AutoCloseable{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && (!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
 
-        // productCode not null, not empty, 12<=length(productCode)<=14, is a number
+        // productCode not null, not empty
         if(productCode == null || productCode.equals(""))
             throw new InvalidProductCodeException();
-        try {
-            Integer.parseInt(productCode);
-            // throws numberFormatException if not valid number
 
-            if(productCode.length()>14 || productCode.length()<12) {
-                throw new InvalidProductCodeException();
-            }
-        } catch (NumberFormatException e) {
+        // check if productCode is valid
+        if(!validateProductCode(productCode)) {
             throw new InvalidProductCodeException();
         }
 
@@ -399,17 +396,12 @@ public class EZShop implements EZShopInterface, AutoCloseable{
             throw new InvalidPricePerUnitException();
         }
 
-        // barCode not null, not empty, 12<=length(barCode)<=14, is a number
+        // barCode not null, not empty
         if(newCode == null || newCode.equals(""))
             throw  new InvalidProductCodeException();
-        try{
-            Integer.parseInt(newCode);
-            // throws numberFormatException if not valid number
 
-            if(newCode.length()>14 || newCode.length()<12){
-                throw  new InvalidProductCodeException();
-            }
-        }catch (NumberFormatException e) {
+        // check if newCode is valid
+        if(!validateProductCode(newCode)) {
             throw new InvalidProductCodeException();
         }
 
@@ -505,18 +497,13 @@ public class EZShop implements EZShopInterface, AutoCloseable{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && (!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
 
-        // barCode not null, not empty, 12<=length(barCode)<=14, is a number
+        // barCode not null, not empty
         if(barCode == null || barCode.equals(""))
             throw  new InvalidProductCodeException();
-        try{
-            Integer.parseInt(barCode);
-            // throws numberFormatException if not valid number
 
-            if(barCode.length()>14 || barCode.length()<12){
-                throw  new InvalidProductCodeException();
-            }
-        }catch (NumberFormatException e){
-            throw  new InvalidProductCodeException();
+        // check if barCode is valid
+        if(!validateProductCode(barCode)) {
+            throw new InvalidProductCodeException();
         }
 
 //        // check if productCode is already present
@@ -576,12 +563,8 @@ public class EZShop implements EZShopInterface, AutoCloseable{
         List<ProductType> list = new ArrayList<>();
         try {
             PreparedStatement st = conn.prepareStatement(sql);
-            st.setString(1, description);
+            st.setString(1, '%' + description + '%');
             ResultSet rs = st.executeQuery();
-
-            if(!rs.isBeforeFirst())
-                // no product with the given description
-                return null;
 
             while (rs.next()){
                 list.add(new it.polito.ezshop.model.ProductType(
@@ -599,7 +582,7 @@ public class EZShop implements EZShopInterface, AutoCloseable{
             return list;
         } catch (SQLException e) {
             // problems with db connection
-            return null;
+            return list;
         }
     }
 
@@ -705,8 +688,6 @@ public class EZShop implements EZShopInterface, AutoCloseable{
             // db problem or position not unique
             return false;
         }
-
-
     }
 
     @Override
@@ -729,7 +710,7 @@ public class EZShop implements EZShopInterface, AutoCloseable{
             throw new InvalidPricePerUnitException();
 
         // insert the new productType
-        String sql="INSERT INTO 'order'(productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO 'order'(productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?)";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.setString(1, productCode);
@@ -751,97 +732,123 @@ public class EZShop implements EZShopInterface, AutoCloseable{
         }
     }
 
+    // issue order + pay order
     @Override
     public Integer payOrderFor(String productCode, int quantity, double pricePerUnit) throws InvalidProductCodeException, InvalidQuantityException, InvalidPricePerUnitException, UnauthorizedException {
         // check role of the user (only administrator, cashier and shopManager)
-        if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && (!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
+
         //check if the product exist
         ProductType product = this.getProductTypeByBarCode(productCode);
-        if(product==null)
+        if(product == null)
             return -1;
+
         //check quantity is not <=0
-        if(quantity<=0)
+        if(quantity <= 0)
             throw new InvalidQuantityException();
+
         //check pricePerUnit is not <=0
-        if(pricePerUnit<=0)
+        if(pricePerUnit <= 0)
             throw new InvalidPricePerUnitException();
 
         // insert the new productType
-        String sql="INSERT INTO 'order'(productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO 'order'(productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?)";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.setString(1, productCode);
             st.setDouble(2, pricePerUnit);
             st.setInt(3, quantity);
             st.setString(4,"PAYED");
+            int updatedRows = st.executeUpdate();
+
+            if(updatedRows == 0)
+                return -1;
+
+            // record the order on the balance
             boolean out = this.recordBalanceUpdate(-pricePerUnit*quantity);
-            if(!out){
+            if(!out) {
+                // not enough balance to pay for order
                 return -1;
             }
-            st.executeUpdate();
+
+            isOrderListUpdated = false;
             return st.getGeneratedKeys().getInt(1);
         } catch (SQLException e) {
             return -1;
         }
     }
 
+    // TODO da checkare
     @Override
     public boolean payOrder(Integer orderId) throws InvalidOrderIdException, UnauthorizedException {
         // check role of the user (only administrator, cashier and shopManager)
-        if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && (!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
-        if(orderId==null||orderId<=0){
+
+        // orderId not null, not <=0
+        if(orderId == null || orderId <= 0){
             throw new InvalidOrderIdException();
         }
 
-        String sql2="SELECT quantity, pricePerUnit, status FROM 'order' WHERE id=? " ;
+        String sql2 = "SELECT quantity, pricePerUnit, status FROM 'order' WHERE id=?" ;
         String actualStatus;
         double toBeAdded;
 
         try {
             PreparedStatement st = conn.prepareStatement(sql2);
 
-            st.setInt(1,orderId);
+            st.setInt(1, orderId);
             ResultSet rs = st.executeQuery();
+
+            if(!rs.next())
+                // no orderId found
+                return false;
+
             actualStatus = rs.getString("status");
-            toBeAdded=-rs.getDouble("pricePerUnit")*rs.getInt("quantity");
+            toBeAdded = -rs.getDouble("pricePerUnit") * rs.getInt("quantity");
         } catch (SQLException e) {
             return false;
         }
 
         if(actualStatus.equals("PAYED"))
+            // order not in ISSUED state
             return false;
 
-        String sql3="UPDATE 'order' SET status=? WHERE id=? " ;
+        // change status to PAYED
+        String sql3 = "UPDATE 'order' SET status=? WHERE id=?";
         try {
             PreparedStatement st = conn.prepareStatement(sql3);
 
-            st.setString(1,"PAYED");
-            st.setInt(2,orderId);
+            st.setString(1, "PAYED");
+            st.setInt(2, orderId);
+            int updatedRows = st.executeUpdate();
+
+            if(updatedRows == 0)
+                return false;
+
+            // record order on balance
             recordBalanceUpdate(toBeAdded);
-            st.executeUpdate();
+            isOrderListUpdated = false;
             return true;
         } catch (SQLException e) {
             return false;
         }
-
-
-
     }
 
+    // TODO da checkare
     @Override
     public boolean recordOrderArrival(Integer orderId) throws InvalidOrderIdException, UnauthorizedException, InvalidLocationException {
         // check role of the user (only administrator, cashier and shopManager)
-        if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && (!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
-        if(orderId==null||orderId<=0){
+
+        // orderId not null, not <=0
+        if(orderId == null || orderId <= 0){
             throw new InvalidOrderIdException();
         }
 
-
-
-        String sql="SELECT quantity, productCode, status FROM 'order' WHERE id=? " ;
+        String sql = "SELECT quantity, productCode, status FROM 'order' WHERE id=?";
         int quantity;
         String productCode;
         ProductType product;
@@ -849,17 +856,22 @@ public class EZShop implements EZShopInterface, AutoCloseable{
         try {
             PreparedStatement st = conn.prepareStatement(sql);
 
-            st.setInt(1,orderId);
+            st.setInt(1, orderId);
             ResultSet rs = st.executeQuery();
+
+            if(!rs.next())
+                // no orderId found
+                return false;
+
             quantity = rs.getInt("quantity");
-            productCode= rs.getString("productCode");
+            productCode = rs.getString("productCode");
             actualStatus = rs.getString("status");
-            product=this.getProductTypeByBarCode(productCode);
+            product = this.getProductTypeByBarCode(productCode);
         } catch (Exception e) {
             return false;
         }
 
-        if(product.getLocation()==null){
+        if(product.getLocation() == null){
             throw new InvalidLocationException();
         }
         if(actualStatus.equals("COMPLETED"))
@@ -877,7 +889,12 @@ public class EZShop implements EZShopInterface, AutoCloseable{
 
             st.setString(1,"COMPLETED");
             st.setInt(2,orderId);
-            st.executeUpdate();
+            int updatedRows = st.executeUpdate();
+
+            if(updatedRows == 0)
+                return false;
+
+            isOrderListUpdated = false;
             return true;
         } catch (SQLException e) {
             return false;
@@ -1224,9 +1241,16 @@ public class EZShop implements EZShopInterface, AutoCloseable{
         //check amount
         if(amount<=0)
             throw new InvalidQuantityException();
-        //check productCode
-        if(productCode==null||productCode.equals("")||productCode.length()<12||productCode.length()>14)
+
+        // productCode not null, not empty
+        if(productCode == null|| productCode.equals("") )
             throw new InvalidProductCodeException();
+
+        // check if productCode is valid
+        if(!validateProductCode(productCode)) {
+            throw new InvalidProductCodeException();
+        }
+
         ProductType product;
 
         //check id
@@ -1285,10 +1309,15 @@ public class EZShop implements EZShopInterface, AutoCloseable{
         //check amount
         if(amount<=0)
             throw new InvalidQuantityException();
-        //check productCode
-        if(productCode==null||productCode.equals("")||productCode.length()<12||productCode.length()>14)
+
+        // productCode not null, not empty
+        if(productCode == null|| productCode.equals("") )
             throw new InvalidProductCodeException();
 
+        // check if productCode is valid
+        if(!validateProductCode(productCode)) {
+            throw new InvalidProductCodeException();
+        }
 
         //check id
         String sql = "SELECT id from SaleTransaction WHERE id=? ";
@@ -1337,9 +1366,15 @@ public class EZShop implements EZShopInterface, AutoCloseable{
         //check discountRate
         if(discountRate>=0.0 && discountRate<=1.0)
             throw new InvalidDiscountRateException();
-        //check productCode
-        if(productCode==null||productCode.equals("")||productCode.length()<12||productCode.length()>14)
+
+        // productCode not null, not empty
+        if(productCode == null|| productCode.equals("") )
             throw new InvalidProductCodeException();
+
+        // check if productCode is valid
+        if(!validateProductCode(productCode)) {
+            throw new InvalidProductCodeException();
+        }
 
         //check status
         String sql = "SELECT status FROM SaleTransaction WHERE id=?";
@@ -1612,9 +1647,14 @@ public class EZShop implements EZShopInterface, AutoCloseable{
         if(amount<=0)
             throw new InvalidQuantityException();
 
-        //check productCode
-        if(productCode==null||productCode.equals("")||productCode.length()<12||productCode.length()>14)
+        // productCode not null, not empty
+        if(productCode == null|| productCode.equals("") )
             throw new InvalidProductCodeException();
+
+        // check if productCode is valid
+        if(!validateProductCode(productCode)) {
+            throw new InvalidProductCodeException();
+        }
 
         String sql2 = "INSERT INTO productEntry (transactionId, barcode, amount) VALUES (?,?,?) ";
         try {
@@ -2093,12 +2133,12 @@ public class EZShop implements EZShopInterface, AutoCloseable{
     }
 
 
-    public void close()
-    {
-        try {
-            conn.close();
-        } catch (SQLException e) {
-
-        }
-    }
+//    public void close()
+//    {
+//        try {
+//            conn.close();
+//        } catch (SQLException ignored) {
+//
+//        }
+//    }
 }

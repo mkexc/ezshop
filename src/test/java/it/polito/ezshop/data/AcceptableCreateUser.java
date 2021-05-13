@@ -19,7 +19,7 @@ public class AcceptableCreateUser {
         assertThrows(InvalidUsernameException.class, ()->
             shop.createUser(null, "password", "Cashier")
         );
-        shop.close();
+        //shop.close();
 
     }
     @Test
@@ -31,7 +31,7 @@ public class AcceptableCreateUser {
         assertThrows(InvalidPasswordException.class, ()->
             shop.createUser("Carlo", null, "Cashier")
         );
-        shop.close();
+        //shop.close();
 
     }
 
@@ -47,7 +47,7 @@ public class AcceptableCreateUser {
         assertThrows(InvalidRoleException.class, ()->
             shop.createUser("Carlo", "1234", "asd")
         );
-        shop.close();
+        //shop.close();
 
     }
 
@@ -61,7 +61,7 @@ public class AcceptableCreateUser {
 
             }
         assertEquals(-1, shop.createUser("Carlo", "sadF", "Cashier"));
-        shop.close();
+        //shop.close();
 
     }
 
@@ -70,7 +70,7 @@ public class AcceptableCreateUser {
         EZShop shop = new EZShop();
 
         assertInstanceOf(Integer.class, shop.createUser("Carlo", "sadF", "Cashier"));
-        shop.close();
+        //shop.close();
     }
 
 }

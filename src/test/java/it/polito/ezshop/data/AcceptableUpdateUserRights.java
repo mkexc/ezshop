@@ -10,7 +10,7 @@ public class AcceptableUpdateUserRights {
     {
         EZShop shop = new EZShop();
         assertThrows(UnauthorizedException.class, ()->shop.updateUserRights(1, "Cashier"));
-        shop.close();
+        //shop.close();
     }
 
 
@@ -20,7 +20,7 @@ public class AcceptableUpdateUserRights {
         shop.login("23","12345");
         assertThrows(UnauthorizedException.class, ()->shop.updateUserRights(1, "Cashier"));
         shop.logout();
-        shop.close();
+        //shop.close();
     }
 
     @Test
@@ -29,7 +29,7 @@ public class AcceptableUpdateUserRights {
         shop.login("admin","ciao");
         assertThrows(InvalidUserIdException.class, ()->shop.updateUserRights(0, "Cashier"));
         shop.logout();
-        shop.close();
+        //shop.close();
     }
 
     @Test
@@ -38,7 +38,7 @@ public class AcceptableUpdateUserRights {
         shop.login("admin","ciao");
         assertThrows(InvalidRoleException.class, ()->shop.updateUserRights(1, "Boh"));
         shop.logout();
-        shop.close();
+        //shop.close();
     }
 
     @Test
@@ -47,6 +47,6 @@ public class AcceptableUpdateUserRights {
         shop.login("admin","ciao");
         assertFalse(shop.updateUserRights(999, "Cashier"));
         shop.logout();
-        shop.close();
+        //shop.close();
     }
 }

@@ -15,7 +15,7 @@ public class AcceptableDeleteUser {
             shop.deleteUser(1)
         );
         shop.logout();
-        shop.close();
+        //shop.close();
     }
 
     @Test
@@ -24,7 +24,7 @@ public class AcceptableDeleteUser {
         shop.login("admin","ciao");
         assertFalse(shop.deleteUser(3));
         shop.logout();
-        shop.close();
+        //shop.close();
     }
 
     @Test
@@ -33,7 +33,7 @@ public class AcceptableDeleteUser {
         assertThrows(UnauthorizedException.class, ()->
             shop.deleteUser(1)
         );
-        shop.close();
+        //shop.close();
     }
 
     @Test
@@ -44,7 +44,7 @@ public class AcceptableDeleteUser {
             shop.deleteUser(-1)
         );
         shop.logout();
-        shop.close();
+        //shop.close();
     }
 
     @Test
@@ -53,7 +53,7 @@ public class AcceptableDeleteUser {
         shop.login("admin","ciao");
         assertTrue(shop.deleteUser(shop.createUser("temp","temp","Administrator")));
         shop.logout();
-        shop.close();
+        //shop.close();
     }
 
 
