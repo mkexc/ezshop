@@ -2,19 +2,15 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 12/05/2021
+Date: 15/05/2021
 
-Version: 0.1
+Version: 0.2
 
 # Contents
 
 - [Black Box Unit Tests](#black-box-unit-tests)
 
-
-
-
 - [White Box Unit Tests](#white-box-unit-tests)
-
 
 # Black Box Unit Tests - EZShop
 
@@ -26,87 +22,68 @@ Version: 0.1
     to start tests
     >
 
- ### **Class *ezshop.java* - method *createUser***
+ ### **Class *it.polito.ezshop.model.ProductType* - method *validateProductCode***
 
-
-
-**Criteria for method *createUser*:**
+**Criteria for method *validateProductCode*:**
 	
+ - Validity of productCode
 
- - Validity of username
- - Validity of password
- - Role
+**Predicates for method *validateProductCode*:**
 
-
-
-
-**Predicates for method *createUser*:**
-
-| Criteria             | Predicate      |
-| -------------------- | -------------- |
-| Validity of username |      valid     |
-|                      |       null     |
-| Validity of password |      valid     |
-|                      |       null     |
-| Role                 |      valid     |
-|                      |       null     |
-
-
+| Criteria                | Predicate      |
+| ----------------------  | -------------- |
+| Validity of productCode |      true      |
+|                         |      false     |
 
 **Boundaries**:
 
-| Criteria | Boundary values |
-| -------- | --------------- |
-|          |                 |
-|          |                 |
-
-
+| Criteria                | Boundary values |
+| ----------------------- | --------------- |
+| Validity of productCode | none            |
 
 **Combination of predicates**:
+| Validity of productCode | Valid / Invalid | Description of the test case   | JUnit test case           |
+|-------------------------|-----------------|--------------------------------|---------------------------|
+|  Valid(14)              |   Valid         | T1("11234567890125")   ->true  | testValidationProductCode |
+|  Invalid(14)            |   Invalid       | T2("12345678901234")   ->false | testValidationProductCode |
+|  Valid(13)              |   Valid         | T3("1234567890128")    ->true  | testValidationProductCode |
+|  Valid(12)              |   Valid         | T4("123456789012")     ->true  | testValidationProductCode |
+|  Invalid(9)             |   Invalid       | T5("123456789")        ->false | testValidationProductCode |
+|  Invalid(17)            |   Invalid       | T6("12345678901111112")->false | testValidationProductCode |
+|  Valid(14)              |   Valid         | T7("11234567890200")   ->true  | testValidationProductCode |
 
 
-| Validity of username | Validity of password | Role  | Valid / Invalid | Description of the test case | JUnit test case |
-|----------------------|----------------------|------ |-----------------|------------------------------|-----------------|
-|  Invalid             |                    * |     * |   Invalid       |                              |                 |
-|                     *|          Invalid     |     * |   Invalid       |                              |                 |
-|                     *|                     *|Invalid|   Invalid       |                              |                 |
-|  Valid               |          Valid       |Valid  |   Valid         |                              |                 |
-|                      |                      |       |                 |                              |                 |
+### **Class *it.polito.ezshop.model.CreditCard* - method *validateWithLuhn***
 
+**Criteria for method *validateWithLuhn*:**
+	
+ - Validity of cardNumber
 
+**Predicates for method *validateWithLuhn*:**
 
+| Criteria                | Predicate      |
+| ----------------------  | -------------- |
+| Validity of cardNumber  |      true      |
+|                         |      false     |
 
-# White Box Unit Tests
+**Boundaries**:
 
-### Test cases definition
-    
-    <JUnit test classes must be in src/test/java/it/polito/ezshop>
-    <Report here all the created JUnit test cases, and the units/classes under test >
-    <For traceability write the class and method name that contains the test case>
+| Criteria               | Boundary values |
+| ---------------------- | --------------- |
+| Validity of cardNumber | none            |
 
+**Combination of predicates**:
+| Validity of cardNumber  | Valid / Invalid | Description of the test case | JUnit test case           |
+|-------------------------|-----------------|------------------------------|---------------------------|
+|  Valid                  |   Valid         | T1("4556737586899855")->true | testValidationWithLuhn    |
+|  Invalid                |   Invalid       | T2("4324332424")      ->false| testValidationWithLuhn    |
 
-| Unit name | JUnit test case |
-|-----------|-----------------|
-|           |                 |
-|           |                 |
-|           |                 |
+# White Box Unit Tests - EZShop
 
-### Code coverage report
+ ### **Class *it.polito.ezshop.model.ProductType* - method *validateProductCode***
 
-    <Add here the screenshot report of the statement and branch coverage obtained using
-    the Eclemma tool. >
+There's no need to execute White Box tests for this method because with BlackBox testing we can reach the 100% coverage of the method's code.
 
+### **Class *it.polito.ezshop.model.CreditCard* - method *validateWithLuhn***
 
-### Loop coverage analysis
-
-    <Identify significant loops in the units and reports the test cases
-    developed to cover zero, one or multiple iterations >
-
-|Unit name | Loop rows | Number of iterations | JUnit test case |
-|----------|-----------|----------------------|-----------------|
-|          |           |                      |                 |
-|          |           |                      |                 |
-|          |           |                      |                 |
-
-
-
+There's no need to execute White Box tests for this method because with BlackBox testing we can reach the 100% coverage of the method's code.
