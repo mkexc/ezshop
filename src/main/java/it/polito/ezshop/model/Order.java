@@ -22,10 +22,11 @@ public class Order extends BalanceOperation implements it.polito.ezshop.data.Ord
         this.status = status;
     }
 
-     @Override
+    @Override
     public int getBalanceId(){
          return super.getBalanceId();
     }
+
     @Override
     public void setBalanceId(Integer balanceId){
         super.setBalanceId(balanceId);

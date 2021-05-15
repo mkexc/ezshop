@@ -10,11 +10,13 @@ public class BalanceOperation implements it.polito.ezshop.data.BalanceOperation 
     private String type;
 
     public BalanceOperation(){
-
+        this.balanceId=0;
+        this.date=null;
+        this.money=0.0;
+        this.type="";
     }
 
     public BalanceOperation(int balanceId, LocalDate date, double money, String type) {
-        super();
         this.balanceId=balanceId;
         this.date=date;
         this.money=money;
