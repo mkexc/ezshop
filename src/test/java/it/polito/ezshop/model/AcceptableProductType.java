@@ -93,12 +93,17 @@ public class AcceptableProductType {
     }
 
     @Test
-    public void validateProductCode()
+    public void testValidationProductCode()
     {
         assertTrue(it.polito.ezshop.model.ProductType.validateProductCode("11234567890125"));
         assertFalse(it.polito.ezshop.model.ProductType.validateProductCode("12345678901234"));
         assertTrue(it.polito.ezshop.model.ProductType.validateProductCode("1234567890128"));
         assertTrue(it.polito.ezshop.model.ProductType.validateProductCode("123456789012"));
+        assertFalse(it.polito.ezshop.model.ProductType.validateProductCode("123456789"));
+        assertFalse(it.polito.ezshop.model.ProductType.validateProductCode("12345678901111112"));
+        assertTrue(it.polito.ezshop.model.ProductType.validateProductCode("11234567890200"));
+
+
     }
 
 
