@@ -59,12 +59,10 @@ public class AcceptablePayOrderFor {
     }
 
     @Test
-    public void validOrder() throws Exception
+    public void notEnoughBalanceValidOrder() throws Exception
     {
         EZShop shop = new EZShop();
         shop.login("admin","ciao");
-        Integer id=shop.payOrderFor("2143325343648",5,30.0);
-        assertTrue(id>0);
-
+        assertEquals(-1,shop.payOrderFor("2143325343648",5,30.0));
     }
 }
