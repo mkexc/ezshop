@@ -51,9 +51,9 @@ public class AcceptableUpdatePosition {
 
         EZShop shop = new EZShop();
         shop.login("admin","ciao");
-
-        assertFalse(shop.updatePosition(1,"12-as-12" ));
-
+        shop.updatePosition(1,"12-as-12" );
+        assertFalse(shop.updatePosition(3,"12-as-12" ));
+        shop.updatePosition(1,"14-per-14");
     }
 
     @Test
