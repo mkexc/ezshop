@@ -35,8 +35,7 @@ public class AcceptableGetProductTypeByBarcode {
 
         assertThrows(InvalidProductCodeException.class,()-> shop.getProductTypeByBarCode("1dasdadsasdas"));
 
-        // SAME BARCODE PRESENT
-        assertNull(shop.getProductTypeByBarCode("aaa1232143214421"));
+        assertThrows(InvalidProductCodeException.class,()-> shop.getProductTypeByBarCode("aaa1232143214421"));
     }
 
     @Test
