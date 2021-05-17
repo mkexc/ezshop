@@ -17,7 +17,7 @@ Version: 2.0
 
 # High level design
 
-EZShop is standalone application working indipendently on a single cash register. In the implementation, the façade class is EZShop.
+EZShop is a standalone application working indipendently on a single cash register. In the implementation, the façade class is EZShop.
 
 ```plantuml
 @startuml
@@ -215,12 +215,12 @@ EZShop -right-> it.polito.ezshop.model
 | FR  | Customer | ProductType | SaleTransaction | Exception | Order | User | TicketEntry | BalanceOperation | CreditCard | EZShop |
 | --- | :------: | :---------: | :-------------: | :-------: | :---: | :--: | :---------: | :--------------: | :--------: | :----: |
 | FR1 |          |             |                 |         x |       |    x |             |                  |            |      x | 
-| FR3 |          |           x |                 |         x |     x |      |             |                  |            |      x | 
-| FR4 |          |           x |               x |         x |     x |      |             |                  |            |      x | 
-| FR5 |        x |             |               x |         x |       |      |             |                  |            |      x | 
-| FR6 |        x |           x |               x |         x |       |      |             |                  |            |      x | 
-| FR7 |        x |             |               x |         x |       |      |             |                  |            |      x | 
-| FR8 |          |             |               x |         x |       |      |             |                  |            |      x |
+| FR3 |          |           x |                 |         x |     x |    x |             |                x |            |      x | 
+| FR4 |          |           x |               x |         x |     x |    x |             |                x |            |      x | 
+| FR5 |        x |             |                 |         x |       |    x |             |                  |            |      x | 
+| FR6 |        x |           x |               x |         x |       |    x |           x |                x |            |      x | 
+| FR7 |        x |             |               x |         x |       |    x |             |                x |          x |      x | 
+| FR8 |          |             |                 |         x |     x |    x |             |                x |            |      x |
 
 
 # Verification sequence diagrams
@@ -232,16 +232,14 @@ EZShop -right-> it.polito.ezshop.model
 ```plantuml
 @startuml
 autonumber
-EZShopGUI -> EZShop
-EZShop -> Inventory : createProductType()
-Inventory -> ProductType : createProductType()
-Inventory <-- ProductType : id
-Inventory -> ProductType : updatePosition()
-ProductType -> Position : getPosition()
-ProductType <-- Position : Position
-ProductType -> Position : Position.add()
-Inventory <-- ProductType : true
-EZShop <-- Inventory : true
+EZShopGUI -> EZShop : createProductType()
+EZShop -> ProductType : new ProductType()
+EZShopGUI <-- EZShop : id
+EZShopGUI -> ProductType : updatePosition()
+ProductType -> ProductType : getPosition()
+EZShop <-- ProductType : String
+EZShopGUI <-- EZShop : String
+
 @enduml
 ```
 
@@ -251,7 +249,7 @@ EZShop <-- Inventory : true
 @startuml
 autonumber
 EZShopGUI -> EZShop
-EZShop -> Inventory : getProductTypeByBarcode()
+EZShop -> EZShop : getProductTypeByBarcode()
 Inventory --> EZShop : ProductType
 Inventory -> ProductType : updateProduct()
 Inventory <-- ProductType : true
