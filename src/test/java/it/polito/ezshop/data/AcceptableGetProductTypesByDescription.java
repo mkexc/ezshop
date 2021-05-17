@@ -27,8 +27,12 @@ public class AcceptableGetProductTypesByDescription {
     {
         EZShop shop = new EZShop();
         shop.login("admin","ciao");
+        Integer id1 = shop.createProductType("Latte","23452427445635",23.0,"Parzialmente scremato");
+        Integer id2 = shop.createProductType("Latte","1231344234229",23.0,"Parzialmente scremato 2");
         List<ProductType> l=shop.getProductTypesByDescription("Latte");
         assertFalse(l.isEmpty());
+        shop.deleteProductType(id1);
+        shop.deleteProductType(id2);
         shop.logout();
     }
 
