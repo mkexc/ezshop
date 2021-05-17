@@ -65,4 +65,13 @@ public class AcceptablePayOrderFor {
         shop.login("admin","ciao");
         assertEquals(-1,shop.payOrderFor("2143325343648",5,30.0));
     }
+
+    @Test
+    public void validOrder() throws Exception
+    {
+        EZShop shop = new EZShop();
+        shop.login("admin","ciao");
+        Integer id=shop.payOrderFor("2143325343648",1,1);
+        assertTrue(id>0);
+    }
 }
