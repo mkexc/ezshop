@@ -36,7 +36,7 @@ public class AcceptableIssueOrder {
     {
         EZShop shop = new EZShop();
         shop.login("admin","ciao");
-        assertEquals(-1,shop.issueOrder("2143325343648",5,30.0));
+        assertEquals(-1,shop.issueOrder("652343546457",5,30.0));
     }
 
     @Test
