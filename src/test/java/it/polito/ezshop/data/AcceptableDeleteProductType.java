@@ -2,6 +2,7 @@ package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.InvalidProductIdException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
+import it.polito.ezshop.model.ProductType;
 import org.junit.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,13 +49,11 @@ public class AcceptableDeleteProductType {
 
     }
     @Test
+
     public void testCorrectCase() throws Exception{
 
         EZShop shop = new EZShop();
         shop.login("admin","ciao");
-
-        assertTrue(shop.deleteProductType(1));
-
-
+        assertTrue(shop.deleteProductType(shop.createProductType("Latte","653462536237",1.0,"Boh")));
     }
 }
