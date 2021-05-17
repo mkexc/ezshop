@@ -484,7 +484,7 @@ public class EZShop implements EZShopInterface{
                 return inventory;
             } catch (SQLException e) {
                 // db problem
-                return null;
+                return list;
             }
         }
         else
@@ -766,20 +766,21 @@ public class EZShop implements EZShopInterface{
                 return -1;
 
             // record the order on the balance
+            int res=st.getGeneratedKeys().getInt(1);
             boolean out = this.recordBalanceUpdate(-pricePerUnit*quantity);
             if(!out) {
                 // not enough balance to pay for order
+                this.deleteOrderId(st.getGeneratedKeys().getInt(1));
                 return -1;
             }
 
             isOrderListUpdated = false;
-            return st.getGeneratedKeys().getInt(1);
+            return res;
         } catch (SQLException e) {
             return -1;
         }
     }
 
-    // TODO da checkare
     @Override
     public boolean payOrder(Integer orderId) throws InvalidOrderIdException, UnauthorizedException {
         // check role of the user (only administrator, cashier and shopManager)
@@ -871,7 +872,7 @@ public class EZShop implements EZShopInterface{
             return false;
         }
 
-        if(product.getLocation() == null){
+        if(product.getLocation()==null || product.getLocation().equals("")){
             throw new InvalidLocationException();
         }
         if(actualStatus.equals("COMPLETED"))
@@ -959,7 +960,7 @@ public class EZShop implements EZShopInterface{
             throw new UnauthorizedException();
         else if (newCustomerName==null || newCustomerName.isEmpty())
             throw new InvalidCustomerNameException();
-        else if (newCustomerCard!=null && !newCustomerCard.isEmpty() && !newCustomerCard.matches("[0-9]+") && newCustomerCard.length()!=10 ) {
+        else if (newCustomerCard!=null && !newCustomerCard.isEmpty() && !it.polito.ezshop.model.ProductType.validateProductCode(newCustomerCard) ) {
             throw new InvalidCustomerCardException(); //Only when customer card is full but not a string of 10 digits, bypassed empty and null cases otherwise exception conflicts
         }
         else if ( id== null || id<=0) {
@@ -999,7 +1000,7 @@ public class EZShop implements EZShopInterface{
                     PreparedStatement st1 = conn.prepareStatement(sql1);
                     st1.setString(1, newCustomerCard);
                     st1.executeQuery();
-                    conn.commit();
+                    //conn.commit();
                     ResultSet rs1 = st1.getResultSet();
                     if(!rs1.next())
                     {
@@ -1056,21 +1057,37 @@ public class EZShop implements EZShopInterface{
         }
         else {
             try {
-                String sql = "SELECT * FROM customer INNER JOIN loyaltyCard ON loyaltyCard.id=customer.loyaltyCardId WHERE customer.id=?";
+                String sql = "SELECT * FROM customer AS C WHERE C.id=?";
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setInt(1,id);
                 ResultSet rs = st.executeQuery();
-                if(rs.next())
-                    return new it.polito.ezshop.model.Customer(
-                        rs.getInt("customerId"),
-                        rs.getString("customerName"),
-                        rs.getString("loyaltyCardId"),
-                        rs.getInt("points")
-                    );
-                else
+
+                if(!rs.isBeforeFirst())
                     return null;
+
+                Customer cust = new it.polito.ezshop.model.Customer(
+                                rs.getInt("id"),
+                                rs.getString("customerName"),
+                                "",
+                                0);
+                if(rs.getString(3)==null || rs.getString(3).isEmpty())
+                    return cust;
+                String loyaltyCardTmp = rs.getString("loyaltyCardId");
+                cust.setCustomerCard(loyaltyCardTmp);
+                String sql2 = "SELECT * FROM LoyaltyCard L WHERE id=?";
+                PreparedStatement st2 = conn.prepareStatement(sql2);
+                st.setString(1,loyaltyCardTmp);
+                ResultSet rs2 = st.executeQuery();
+
+                if(!rs.isBeforeFirst())
+                    return cust;
+
+                cust.setPoints(rs2.getInt("points"));
+
+                return cust;
             } catch (SQLException e)
             {
+                e.printStackTrace();
                 return null;
             }
         }
@@ -1116,7 +1133,7 @@ public class EZShop implements EZShopInterface{
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setInt(1,0);
                 st.executeUpdate();
-                conn.commit();
+                //conn.commit();
                 return st.getGeneratedKeys().getString("id");
             }catch (SQLException e)
             {
@@ -1142,7 +1159,7 @@ public class EZShop implements EZShopInterface{
                 PreparedStatement st1 = conn.prepareStatement(sql1);
                 st1.setString(1,customerCard);
                 st1.executeQuery();
-                conn.commit();
+                //conn.commit();
                 ResultSet rs1 = st1.getResultSet();
                 if(rs1.next())
                     return false;
@@ -1151,7 +1168,7 @@ public class EZShop implements EZShopInterface{
                 PreparedStatement st2 = conn.prepareStatement(sql2);
                 st2.setInt(1,customerId);
                 st2.executeQuery();
-                conn.commit();
+                //conn.commit();
                 ResultSet rs2 = st2.getResultSet();
                 if(rs2.next())
                     return false;
@@ -1162,7 +1179,7 @@ public class EZShop implements EZShopInterface{
                 st.setString(1,customerCard);
                 st.setInt(2,customerId);
                 st.executeUpdate();
-                conn.commit();
+                //conn.commit();
                 return true;
             } catch(SQLException e)
             {
@@ -1184,7 +1201,7 @@ public class EZShop implements EZShopInterface{
                 PreparedStatement st1 = conn.prepareStatement(sql1);
                 st1.setString(1, customerCard);
                 st1.executeQuery();
-                conn.commit();
+                //conn.commit();
                 ResultSet rs1 = st1.getResultSet();
                 if(rs1.next())
                 {
@@ -1200,7 +1217,7 @@ public class EZShop implements EZShopInterface{
                 st2.setInt(1,pointsToBeAdded);
                 st2.setString(2,customerCard);
                 st2.executeUpdate();
-                conn.commit();
+                //conn.commit();
                 return true;
             } catch(SQLException e)
             {
@@ -2132,13 +2149,18 @@ public class EZShop implements EZShopInterface{
         }
     }
 
+    //TODO ONLY FOR TEST, delete after the implementation of reset inside afterEach test
+    public void deleteOrderId(int orderId)
+    {
+        String sql = "DELETE FROM 'order' WHERE id=? ";
 
-//    public void close()
-//    {
-//        try {
-//            conn.close();
-//        } catch (SQLException ignored) {
-//
-//        }
-//    }
+        try {
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1, orderId);
+            st.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+    }
 }
