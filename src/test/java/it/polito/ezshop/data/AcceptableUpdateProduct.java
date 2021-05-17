@@ -95,9 +95,9 @@ public class AcceptableUpdateProduct {
 
         EZShop shop = new EZShop();
         shop.login("admin","ciao");
-
-        assertTrue(shop.updateProduct(1, "Pomodori", "11234567890125", 13.3, "Echo"));
-
+        Integer id = shop.createProductType("Latte","4673387564579",21.0,"Ciao");
+        assertTrue(shop.updateProduct(id, "Pomodori", "826427647372", 13.3, "Echo"));
+        shop.deleteProductType(id);
 
     }
 
