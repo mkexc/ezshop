@@ -37,22 +37,22 @@ public class AcceptableUpdateQuantity {
 
         EZShop shop = new EZShop();
         shop.login("admin","ciao");
-
-        assertFalse(shop.updateQuantity(1,-1 ));
-
-        assertFalse(shop.updateQuantity(2,-30 ));
+        Integer id= shop.createProductType("Temp","236547234749",21,"Boh");
+        shop.updatePosition(id,"19-per-20");
+        assertFalse(shop.updateQuantity(id,-1 ));
+        shop.deleteProductType(id);
 
         assertFalse(shop.updateQuantity(132432,1 ));
-
     }
     @Test
     public void testCorrectCase() throws Exception{
 
         EZShop shop = new EZShop();
         shop.login("admin","ciao");
-
-        assertTrue(shop.updateQuantity(2,-1 ));
-
+        Integer id= shop.createProductType("Temp","357424672543",21,"Boh");
+        shop.updatePosition(id,"19-per-19");
+        assertTrue(shop.updateQuantity(id,100));
+        shop.deleteProductType(id);
 
     }
 }
