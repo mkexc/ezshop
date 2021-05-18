@@ -829,9 +829,14 @@ public class EZShop implements EZShopInterface{
                 return false;
 
             // record order on balance
-            recordBalanceUpdate(toBeAdded);
-            isOrderListUpdated = false;
-            return true;
+            if(recordBalanceUpdate(toBeAdded))
+            {
+                isOrderListUpdated = false;
+                return true;
+            }
+            else
+                return false;
+
         } catch (SQLException e) {
             return false;
         }
@@ -1076,8 +1081,8 @@ public class EZShop implements EZShopInterface{
                 cust.setCustomerCard(loyaltyCardTmp);
                 String sql2 = "SELECT * FROM LoyaltyCard L WHERE id=?";
                 PreparedStatement st2 = conn.prepareStatement(sql2);
-                st.setString(1,loyaltyCardTmp);
-                ResultSet rs2 = st.executeQuery();
+                st2.setString(1,loyaltyCardTmp);
+                ResultSet rs2 = st2.executeQuery();
 
                 if(!rs.isBeforeFirst())
                     return cust;
@@ -1173,14 +1178,22 @@ public class EZShop implements EZShopInterface{
                 if(rs2.next())
                     return false;
 
-                this.isCustomerListUpdated=false;
+
                 String sql3 = "UPDATE customer SET loyaltyCardId=? WHERE id=?";
                 PreparedStatement st = conn.prepareStatement(sql3);
                 st.setString(1,customerCard);
                 st.setInt(2,customerId);
-                st.executeUpdate();
-                //conn.commit();
+                int updatedRows = st.executeUpdate();
+
+                if(updatedRows == 0)
+                {
+                    return false;
+                }
+
+                this.isCustomerListUpdated = false;
+
                 return true;
+                //conn.commit();
             } catch(SQLException e)
             {
                 return false;
@@ -1359,6 +1372,8 @@ public class EZShop implements EZShopInterface{
             st.setInt(2,transactionId);
             st.setString(3,productCode);
 
+            // TODO check di updatedRows==0
+            // TODO aggiungere isListUpdated
             st.executeUpdate();
             try {
                 ProductType product = this.getProductTypeByBarCode(productCode);

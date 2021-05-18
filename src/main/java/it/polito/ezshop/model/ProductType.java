@@ -1,7 +1,5 @@
 package it.polito.ezshop.model;
 
-import static java.lang.Math.abs;
-
 public class ProductType implements it.polito.ezshop.data.ProductType{
     private Integer id;
     private String productCode;
