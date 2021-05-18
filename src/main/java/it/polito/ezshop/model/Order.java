@@ -1,35 +1,36 @@
 package it.polito.ezshop.model;
 
-public class Order extends BalanceOperation implements it.polito.ezshop.data.Order{
+public class Order implements it.polito.ezshop.data.Order{
 
     private Integer id;
-    private String productCode;    // barcode of pro
+    private String productCode;
     private double pricePerUnit;
     private Integer quantity;
     private String status;
+    private Integer balanceId;
 
     public Order(Integer id){
-        super();
+
         this.id=id;
     }
 
     public Order(Integer id, String productCode, double pricePerUnit, Integer quantity, String status){
-        super();
         this.id = id;
         this.productCode = productCode;
         this.pricePerUnit = pricePerUnit;
         this.quantity = quantity;
         this.status = status;
+        this.balanceId = 0;
     }
 
     @Override
-    public int getBalanceId(){
-         return super.getBalanceId();
+    public Integer getBalanceId(){
+         return this.balanceId;
     }
 
     @Override
     public void setBalanceId(Integer balanceId){
-        super.setBalanceId(balanceId);
+        this.balanceId=balanceId;
     }
 
     @Override

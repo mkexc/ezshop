@@ -1,8 +1,7 @@
 package it.polito.ezshop.data;
 
 public interface Order {
-    //cambiata per risolvere il conflitto
-    int getBalanceId();
+    Integer getBalanceId();
 
     void setBalanceId(Integer balanceId);
 
