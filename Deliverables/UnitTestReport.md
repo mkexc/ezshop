@@ -2,9 +2,9 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 15/05/2021
+Date: 19/05/2021
 
-Version: 0.2
+Version: 1.0
 
 # Contents
 
@@ -14,13 +14,9 @@ Version: 0.2
 
 # Black Box Unit Tests - EZShop
 
-    <Define here criteria, predicates and the combination of predicates for each function of each class.
-    Define test cases to cover all equivalence classes and boundary conditions.
-    In the table, report the description of the black box test case and (traceability) the correspondence with the JUnit test case writing the 
-    class and method name that contains the test case>
-    <JUnit test classes must be in src/test/java/it/polito/ezshop   You find here, and you can use,  class TestEzShops.java that is executed  
-    to start tests
-    >
+### **All *it.polito.ezshop.model* Classes - all methods *setters***
+
+Despite we already tested the setters methods through JUnits tests, we decided to omit them from this documentation because their testing is very trivial since all the correct data checks are made in the DB with ad-hoc constraints and get handled by SQLExceptions in EZShop Class.
 
  ### **Class *it.polito.ezshop.model.ProductType* - method *validateProductCode***
 
