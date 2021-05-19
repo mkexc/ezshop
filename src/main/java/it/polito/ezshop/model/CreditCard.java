@@ -5,7 +5,6 @@ public class CreditCard {
     private double balance;
 
     public CreditCard(String cardNumber, double balance) {
-        super();
         this.cardNumber = cardNumber;
         this.balance = balance;
     }
