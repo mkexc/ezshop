@@ -63,7 +63,7 @@ public class AcceptablePayOrderFor {
     {
         EZShop shop = new EZShop();
         shop.login("admin","ciao");
-        assertEquals(-1,shop.payOrderFor("2143325343648",5,30.0));
+        assertEquals(-1,shop.payOrderFor("2143325343648",5,10000.0));
     }
 
     @Test
