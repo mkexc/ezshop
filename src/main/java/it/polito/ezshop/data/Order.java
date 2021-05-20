@@ -1,7 +1,6 @@
 package it.polito.ezshop.data;
 
 public interface Order {
-
     Integer getBalanceId();
 
     void setBalanceId(Integer balanceId);
