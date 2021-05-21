@@ -1,14 +1,15 @@
 package it.polito.ezshop.model;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+
 
 public class AcceptableCreditCard {
     private it.polito.ezshop.model.CreditCard card;
 
-    @BeforeEach
+    @BeforeClass
     public void newCustomer(){
         card = new it.polito.ezshop.model.CreditCard("4916560768986372",  370);
     }

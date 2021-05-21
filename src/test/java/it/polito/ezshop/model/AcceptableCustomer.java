@@ -1,21 +1,22 @@
 package it.polito.ezshop.model;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class AcceptableCustomer {
     private it.polito.ezshop.model.Customer customer;
 
-    @BeforeEach
+    @BeforeClass
     public void newCustomer(){
         customer = new it.polito.ezshop.model.Customer(1, "Pinuccio", "2143254542", 370);
     }
 
     @Test
     public void testGetId() {
-        assertEquals(1, customer.getId());
+        assertEquals(1, customer.getId().intValue());
     }
 
     @Test
@@ -30,13 +31,13 @@ public class AcceptableCustomer {
 
     @Test
     public void testGetPoints(){
-        assertEquals(370, customer.getPoints());
+        assertEquals(370, customer.getPoints().intValue());
     }
 
     @Test
     public void testSetId() {
         customer.setId(2);
-        assertEquals(2, customer.getId());
+        assertEquals(2, customer.getId().intValue());
     }
 
     @Test
@@ -54,7 +55,7 @@ public class AcceptableCustomer {
     @Test
     public void testSetPoints(){
         customer.setPoints(360);
-        assertEquals(360, customer.getPoints());
+        assertEquals(360, customer.getPoints().intValue());
     }
 
 }

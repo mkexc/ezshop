@@ -1,17 +1,17 @@
 package it.polito.ezshop.model;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 
 import java.time.LocalDate;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AcceptableBalanceOperation {
     private it.polito.ezshop.model.BalanceOperation bo;
     private LocalDate now = LocalDate.now();
 
-    @BeforeEach
+    @BeforeClass
     public void newSaleTransaction(){
         bo = new it.polito.ezshop.model.BalanceOperation(1,now,10.0,"DEBIT" );
     }

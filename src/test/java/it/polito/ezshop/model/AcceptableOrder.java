@@ -1,13 +1,15 @@
 package it.polito.ezshop.model;
 
-import org.junit.jupiter.api.*;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 
 public class AcceptableOrder {
 
     it.polito.ezshop.model.Order order;
 
-    @BeforeEach
+    @BeforeClass
     public void newOrder ()
     {
         order = new Order(1, "2143325343648", 25.8, 23, "ISSUED");
@@ -16,7 +18,7 @@ public class AcceptableOrder {
     @Test
     public void getId()
     {
-        assertEquals(1,order.getOrderId());
+        assertEquals(1,order.getOrderId().intValue());
     }
 
     @Test
@@ -46,21 +48,21 @@ public class AcceptableOrder {
     @Test
     public void getBalanceId()
     {
-        assertEquals(0, order.getBalanceId());
+        assertEquals(0, order.getBalanceId().intValue());
     }
 
     @Test
     public void setBalanceId()
     {
         order.setBalanceId(2);
-        assertEquals(2,order.getBalanceId());
+        assertEquals(2,order.getBalanceId().intValue());
     }
 
     @Test
     public void setId()
     {
         order.setOrderId(2);
-        assertEquals(2,order.getOrderId());
+        assertEquals(2,order.getOrderId().intValue());
     }
 
     @Test
@@ -96,14 +98,14 @@ public class AcceptableOrder {
     public void newEmptyOrder()
     {
         it.polito.ezshop.model.Order or= new Order(5);
-        assertEquals(5,or.getOrderId());
+        assertEquals(5,or.getOrderId().intValue());
     }
 
     @Test
     public void newFullOrder ()
     {
         it.polito.ezshop.model.Order or = new Order(2, "2143325343648", 25.8, 23, "ISSUED");
-        assertEquals(2,or.getOrderId());
+        assertEquals(2,or.getOrderId().intValue());
     }
 
 }
