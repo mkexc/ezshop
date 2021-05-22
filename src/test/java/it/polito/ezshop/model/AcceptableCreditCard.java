@@ -1,6 +1,6 @@
 package it.polito.ezshop.model;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public class AcceptableCreditCard {
     private it.polito.ezshop.model.CreditCard card;
 
-    @BeforeClass
+    @Before
     public void newCustomer(){
         card = new it.polito.ezshop.model.CreditCard("4916560768986372",  370);
     }
@@ -21,7 +21,7 @@ public class AcceptableCreditCard {
 
     @Test
     public void testGetBalance() {
-        assertEquals(370, card.getBalance());
+        assertEquals(370, card.getBalance(), 0);
     }
     
     @Test
@@ -33,7 +33,7 @@ public class AcceptableCreditCard {
     @Test
     public void testSetBalance() {
         card.setBalance(333);
-        assertEquals(333, card.getBalance());
+        assertEquals(333, card.getBalance(),0);
     }
 
     @Test

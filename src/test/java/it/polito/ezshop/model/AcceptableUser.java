@@ -1,22 +1,22 @@
 package it.polito.ezshop.model;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class AcceptableUser {
 
     private it.polito.ezshop.model.User user;
 
-    @BeforeEach
+    @Before
     public void newUser() {
         user = new it.polito.ezshop.model.User(1, "ciao", "2020", "Cashier");
     }
 
     @Test
     public void testGetId() {
-        assertEquals(1, user.getId());
+        assertEquals(1, user.getId().intValue());
     }
 
     @Test
@@ -37,7 +37,7 @@ public class AcceptableUser {
     @Test
     public void testSetId() {
         user.setId(2);
-        assertEquals(2, user.getId());
+        assertEquals(2, user.getId().intValue());
     }
 
     @Test

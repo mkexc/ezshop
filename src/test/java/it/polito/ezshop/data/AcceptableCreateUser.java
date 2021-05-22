@@ -5,7 +5,7 @@ import it.polito.ezshop.exceptions.InvalidRoleException;
 import it.polito.ezshop.exceptions.InvalidUsernameException;
 import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 
 public class AcceptableCreateUser {
@@ -60,7 +60,7 @@ public class AcceptableCreateUser {
             }catch(Exception ignored){
 
             }
-        assertEquals(-1, shop.createUser("Carlo", "sadF", "Cashier"));
+        assertEquals(-1, shop.createUser("Carlo", "sadF", "Cashier").intValue());
         //shop.close();
 
     }
@@ -69,7 +69,7 @@ public class AcceptableCreateUser {
     public void testCorrectCase() throws Exception{
         EZShop shop = new EZShop();
 
-        assertInstanceOf(Integer.class, shop.createUser("Carlo", "sadF", "Cashier"));
+        assertTrue(shop.createUser("Carlo", "sadF", "Cashier") instanceof Integer);
         //shop.close();
     }
 

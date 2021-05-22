@@ -5,7 +5,7 @@ import it.polito.ezshop.exceptions.*;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class AcceptableGetProductTypesByDescription {
 

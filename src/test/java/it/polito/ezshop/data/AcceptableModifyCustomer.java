@@ -1,19 +1,19 @@
 package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class AcceptableModifyCustomer {
 
     private it.polito.ezshop.data.EZShop shop;
     Integer id,id2;
 
-    @BeforeEach
+    @Before
     public void before() throws Exception {
         shop = new it.polito.ezshop.data.EZShop();
         shop.login("23","12345");
@@ -22,7 +22,7 @@ public class AcceptableModifyCustomer {
         shop.modifyCustomer(id2,"Pino","3465446777744");
     }
 
-    @AfterEach
+    @After
     public void after() throws Exception{
         shop.deleteCustomer(id);
         shop.deleteCustomer(id2);

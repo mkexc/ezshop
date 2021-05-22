@@ -1,6 +1,6 @@
 package it.polito.ezshop.model;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -9,7 +9,7 @@ public class AcceptableOrder {
 
     it.polito.ezshop.model.Order order;
 
-    @BeforeClass
+    @Before
     public void newOrder ()
     {
         order = new Order(1, "2143325343648", 25.8, 23, "ISSUED");
@@ -30,7 +30,7 @@ public class AcceptableOrder {
     @Test
     public void getPrice()
     {
-        assertEquals(25.8,order.getPricePerUnit());
+        assertEquals(25.8,order.getPricePerUnit(),0);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class AcceptableOrder {
     public void setPrice()
     {
         order.setPricePerUnit(28.9);
-        assertEquals(28.9,order.getPricePerUnit());
+        assertEquals(28.9,order.getPricePerUnit(),0);
     }
 
 

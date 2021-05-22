@@ -1,6 +1,6 @@
 package it.polito.ezshop.model;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -11,7 +11,7 @@ public class AcceptableBalanceOperation {
     private it.polito.ezshop.model.BalanceOperation bo;
     private LocalDate now = LocalDate.now();
 
-    @BeforeClass
+    @Before
     public void newSaleTransaction(){
         bo = new it.polito.ezshop.model.BalanceOperation(1,now,10.0,"DEBIT" );
     }
@@ -26,7 +26,7 @@ public class AcceptableBalanceOperation {
     }
     @Test
     public void testGetMoney() {
-        assertEquals(10.0, bo.getMoney());
+        assertEquals(10.0, bo.getMoney(),0);
     }
     @Test
     public void testGetType() {
@@ -47,7 +47,7 @@ public class AcceptableBalanceOperation {
     @Test
     public void testSetMoney() {
         bo.setMoney(11.0);
-        assertEquals(11.0, bo.getMoney());
+        assertEquals(11.0, bo.getMoney(), 0);
     }
     @Test
     public void testSetType() {

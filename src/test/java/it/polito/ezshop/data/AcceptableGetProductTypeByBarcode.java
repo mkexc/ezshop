@@ -4,7 +4,7 @@ import it.polito.ezshop.exceptions.UnauthorizedException;
 import it.polito.ezshop.exceptions.InvalidProductCodeException;
 import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class AcceptableGetProductTypeByBarcode {
     @Test
@@ -52,7 +52,7 @@ public class AcceptableGetProductTypeByBarcode {
 
         EZShop shop = new EZShop();
         shop.login("admin","ciao");
-        assertInstanceOf(it.polito.ezshop.model.ProductType.class,shop.getProductTypeByBarCode("11234567890125"));
+        assertTrue(shop.getProductTypeByBarCode("11234567890125") instanceof it.polito.ezshop.model.ProductType);
 
     }
 

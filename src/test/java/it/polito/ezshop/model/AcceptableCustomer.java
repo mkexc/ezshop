@@ -1,6 +1,6 @@
 package it.polito.ezshop.model;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public class AcceptableCustomer {
     private it.polito.ezshop.model.Customer customer;
 
-    @BeforeClass
+    @Before
     public void newCustomer(){
         customer = new it.polito.ezshop.model.Customer(1, "Pinuccio", "2143254542", 370);
     }

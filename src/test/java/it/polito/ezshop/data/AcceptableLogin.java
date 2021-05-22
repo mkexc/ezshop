@@ -3,10 +3,10 @@ package it.polito.ezshop.data;
 import it.polito.ezshop.exceptions.InvalidPasswordException;
 import it.polito.ezshop.exceptions.InvalidUsernameException;
 import org.junit.Test;
-import org.junit.jupiter.api.TestFactory;
+//import org.junit.TestFactory;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertEquals;
 
 public class AcceptableLogin {
     @Test

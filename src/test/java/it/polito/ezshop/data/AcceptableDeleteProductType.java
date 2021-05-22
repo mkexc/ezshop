@@ -5,7 +5,7 @@ import it.polito.ezshop.exceptions.UnauthorizedException;
 import it.polito.ezshop.model.ProductType;
 import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class AcceptableDeleteProductType {
     @Test

@@ -4,7 +4,7 @@ package it.polito.ezshop.data;
 import it.polito.ezshop.exceptions.*;
 import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class AcceptablePayOrderFor {
 
@@ -33,7 +33,7 @@ public class AcceptablePayOrderFor {
     public void validProductCodeNotInDB() throws Exception {
         EZShop shop = new EZShop();
         shop.login("admin", "ciao");
-        assertEquals(-1, shop.payOrderFor("652343546457", 5, 30.0));
+        assertEquals(-1, shop.payOrderFor("652343546457", 5, 30.0).intValue());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class AcceptablePayOrderFor {
     {
         EZShop shop = new EZShop();
         shop.login("admin","ciao");
-        assertEquals(-1,shop.payOrderFor("2143325343648",5,10000.0));
+        assertEquals(-1,shop.payOrderFor("2143325343648",5,10000.0).intValue());
     }
 
     @Test
