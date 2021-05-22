@@ -1252,7 +1252,6 @@ public class EZShop implements EZShopInterface{
             st.executeUpdate();
             res= st.getGeneratedKeys().getInt(1);
         }catch(SQLException e){
-
             return -1;
         }
 
@@ -1283,15 +1282,16 @@ public class EZShop implements EZShopInterface{
 
         ProductType product;
 
-        //check id
+        // check id
         String sql = "SELECT id from SaleTransaction WHERE id=? ";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1,transactionId);
             ResultSet rs=st.executeQuery();
-            if(rs.getInt("id")==transactionId){
+
+            if(rs.getInt("id")!=transactionId){
                 return false;
             }
-
         }catch(SQLException e){
             return false;
         }
@@ -1654,6 +1654,20 @@ public class EZShop implements EZShopInterface{
             throw new InvalidTransactionIdException();
         int res;
 
+        //check esistence of SaleTransaction
+        String sql2 = "SELECT id FROM saleTransaction WHERE id=?";
+        try {
+            PreparedStatement st2 = conn.prepareStatement(sql2);
+            st2.setInt(1,saleNumber);
+            ResultSet rs2 = st2.executeQuery();
+            if(!rs2.next()){
+                return -1;
+            }
+
+        }catch(SQLException e){
+            return -1;
+        }
+
         String sql = "INSERT INTO returnTransaction (quantity,saleTransactionId,discountRate,returnedPrice,total,status) VALUES (0,?,0.0,0.0,0.0,'OPEN')";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
@@ -1688,14 +1702,48 @@ public class EZShop implements EZShopInterface{
             throw new InvalidProductCodeException();
         }
 
+        // check if return transaction exists
+        int saleTransactionId;
+        String sql = "SELECT saleTransactionId FROM returnTransaction WHERE id=?";
+        try {
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1,returnId);
+
+            ResultSet rs = st.executeQuery();
+            if(!rs.next())
+                return false;
+            saleTransactionId = rs.getInt("saleTransactionId");
+
+        }catch(SQLException e) {
+            return false;
+        }
+
+        // check if there is the product and the proper quantity in the sale transaction
+
+        String sql3 = "SELECT amount FROM productEntry WHERE transactionId=? AND barcode=?";
+        try {
+            PreparedStatement st3 = conn.prepareStatement(sql3);
+            st3.setInt(1,saleTransactionId);
+            st3.setString(2,productCode);
+
+            ResultSet rs3 = st3.executeQuery();
+            if(!rs3.next())
+                return false;
+            if(amount> rs3.getDouble("amount"))
+                return false;
+
+        }catch(SQLException e) {
+            return false;
+        }
+
         String sql2 = "INSERT INTO productEntry (transactionId, barcode, amount) VALUES (?,?,?) ";
         try {
-            PreparedStatement st = conn.prepareStatement(sql2);
-            st.setInt(1,returnId);
-            st.setString(2,productCode);
-            st.setInt(3,amount);
+            PreparedStatement st2 = conn.prepareStatement(sql2);
+            st2.setInt(1,returnId);
+            st2.setString(2,productCode);
+            st2.setInt(3,amount);
 
-            st.executeUpdate();
+            st2.executeUpdate();
 
         }catch(SQLException e) {
             return false;
@@ -1716,20 +1764,23 @@ public class EZShop implements EZShopInterface{
             throw new InvalidTransactionIdException();
 
         //check status
-        String sql="SELECT status, barcode, amount FROM returnTransaction, productEntry WHERE id=? ";
+        String sql5="SELECT 'status', 'barcode', 'amount' FROM returnTransaction RT, productEntry PE WHERE RT.id=? AND PE.transactionId=RT.id ";
         String productCode;
 
         int amount;
         try {
 
-            PreparedStatement st = conn.prepareStatement(sql);
-            st.setInt(1,returnId);
-            ResultSet rs = st.executeQuery();
-            productCode= rs.getString("barcode");
-            amount = rs.getInt("amount");
-            if(!rs.getString("status").equals("OPEN"))
-                return false;
+            PreparedStatement st5 = conn.prepareStatement(sql5);
+            st5.setInt(1,returnId);
+            ResultSet rs5 = st5.executeQuery();
+            productCode= rs5.getString("barcode");
+
+            amount = rs5.getInt("amount");
+
+             if(!rs5.getString("status").equals("OPEN"))
+                 return false;
         }catch(SQLException e){
+            e.printStackTrace();
             return false;
         }
 
