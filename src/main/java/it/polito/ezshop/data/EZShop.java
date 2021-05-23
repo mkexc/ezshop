@@ -1234,9 +1234,7 @@ public class EZShop implements EZShopInterface{
                 String sql1 = "SELECT * FROM loyaltyCard WHERE id=?";
                 PreparedStatement st1 = conn.prepareStatement(sql1);
                 st1.setString(1, customerCard);
-                st1.executeQuery();
-                //conn.commit();
-                ResultSet rs1 = st1.getResultSet();
+                ResultSet rs1 = st1.executeQuery();
                 if(rs1.next())
                 {
                     if(pointsToBeAdded<0 && rs1.getInt("points")+pointsToBeAdded<0) {
