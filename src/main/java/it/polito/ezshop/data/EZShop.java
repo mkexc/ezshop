@@ -1133,14 +1133,25 @@ public class EZShop implements EZShopInterface{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
         else{
-            try{
-                String sql = "INSERT INTO loyaltyCard(points) VALUES (?)";
+            String nextId; int temp;
+            try {
+                String sql = "SELECT id FROM loyaltyCard ORDER BY id DESC LIMIT 1";
                 PreparedStatement st = conn.prepareStatement(sql);
-                st.setInt(1,0);
-                st.executeUpdate();
-                //conn.commit();
-                return st.getGeneratedKeys().getString("id");
-            }catch (SQLException e)
+                ResultSet rs = st.executeQuery();
+
+                if(!rs.next())
+                    return "";
+                temp=rs.getInt("id");
+                temp++;
+                nextId=String.format("%1$10d",temp).replace(' ', '0');
+                String sql2 = "INSERT INTO loyaltyCard(id,cardId) VALUES (?,?)";
+                PreparedStatement st2 = conn.prepareStatement(sql2);
+                st2.setInt(1,temp);
+                st2.setString(2,nextId);
+                st2.executeUpdate();
+                return nextId;
+
+            } catch (SQLException e)
             {
                 return "";
             }
@@ -1160,30 +1171,41 @@ public class EZShop implements EZShopInterface{
         else
         {
             try{
+                //Card already assigned
                 String sql1 = "SELECT * FROM customer WHERE loyaltyCardId=?";
                 PreparedStatement st1 = conn.prepareStatement(sql1);
                 st1.setString(1,customerCard);
-                st1.executeQuery();
+                ResultSet rs1 = st1.executeQuery();
                 //conn.commit();
-                ResultSet rs1 = st1.getResultSet();
                 if(rs1.next())
                     return false;
 
+            } catch(SQLException e)
+            {
+                return false;
+            }
+
+            try {
+                //No customer
                 String sql2 = "SELECT * FROM customer WHERE id=?";
                 PreparedStatement st2 = conn.prepareStatement(sql2);
                 st2.setInt(1,customerId);
-                st2.executeQuery();
+                ResultSet rs2 = st2.executeQuery();
                 //conn.commit();
-                ResultSet rs2 = st2.getResultSet();
-                if(rs2.next())
+                if(!rs2.next())
                     return false;
+            } catch (SQLException e)
+            {
+                return false;
+            }
 
-
+            try
+            {
                 String sql3 = "UPDATE customer SET loyaltyCardId=? WHERE id=?";
-                PreparedStatement st = conn.prepareStatement(sql3);
-                st.setString(1,customerCard);
-                st.setInt(2,customerId);
-                int updatedRows = st.executeUpdate();
+                PreparedStatement st3 = conn.prepareStatement(sql3);
+                st3.setString(1,customerCard);
+                st3.setInt(2,customerId);
+                int updatedRows = st3.executeUpdate();
 
                 if(updatedRows == 0)
                 {
@@ -1192,12 +1214,11 @@ public class EZShop implements EZShopInterface{
 
                 this.isCustomerListUpdated = false;
 
-                return true;
-                //conn.commit();
-            } catch(SQLException e)
+            } catch (SQLException e)
             {
                 return false;
             }
+            return true;
         }
     }
 
@@ -2223,6 +2244,21 @@ public class EZShop implements EZShopInterface{
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1, orderId);
+            st.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    //TODO ONLY FOR TEST, delete after the implementation of reset inside afterEach test
+    public void detachCustomerCard(String customerCard)
+    {
+        String sql = "UPDATE customer SET loyaltyCardId=NULL WHERE loyaltyCardId=? ";
+
+        try {
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, customerCard);
             st.executeUpdate();
         }catch (SQLException e){
             e.printStackTrace();
