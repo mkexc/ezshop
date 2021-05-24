@@ -16,13 +16,19 @@ public class AcceptableDeleteReturnTransaction {
 
     @Before
     public void before() throws Exception{
-        shop = new it.polito.ezshop.data.EZShop();
+        shop = new EZShop();
+        shop.reset();
         shop.login("admin","ciao");
         idSaleTransaction = shop.startSaleTransaction();
         idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
+        Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.updatePosition(idProd,"13-cacca-14");
+        shop.updateQuantity(idProd,4);
         shop.addProductToSale(idSaleTransaction,"2424242424239",3);
         // adding the product to return
         shop.returnProduct(idReturnTransaction,"2424242424239",2);
+        shop.logout();
+        shop.login("23","12345");
 
     }
 
@@ -32,7 +38,7 @@ public class AcceptableDeleteReturnTransaction {
         assertThrows(UnauthorizedException.class, () ->
                 shop.deleteReturnTransaction(idReturnTransaction));
 
-        shop.login("admin","ciao");
+        shop.login("23","12345");
     }
 
     @Test
@@ -67,12 +73,14 @@ public class AcceptableDeleteReturnTransaction {
     public void testPayed() throws Exception{
         shop.endReturnTransaction(idReturnTransaction,true);
         shop.returnCashPayment(idReturnTransaction);
+        //TODO controllare
         assertFalse(shop.deleteReturnTransaction(idReturnTransaction));
     }
 
     @After
     public void after() throws Exception{
-        //shop.reset();
+        shop.logout();
+        shop.reset();
     }
 
 }

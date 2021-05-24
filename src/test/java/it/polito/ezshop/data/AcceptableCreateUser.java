@@ -3,6 +3,7 @@ package it.polito.ezshop.data;
 import it.polito.ezshop.exceptions.InvalidPasswordException;
 import it.polito.ezshop.exceptions.InvalidRoleException;
 import it.polito.ezshop.exceptions.InvalidUsernameException;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -10,34 +11,38 @@ import static org.junit.Assert.*;
 
 public class AcceptableCreateUser {
 
+    private EZShop shop;
+
+    @Before
+    public void before() throws InvalidPasswordException, InvalidUsernameException {
+        shop = new EZShop();
+        shop.login("admin","ciao");
+    }
+
     @Test
     public void testUsername(){
-        EZShop shop = new EZShop();
         assertThrows(InvalidUsernameException.class, ()->
             shop.createUser("", "125465", "Cashier")
         );
         assertThrows(InvalidUsernameException.class, ()->
             shop.createUser(null, "password", "Cashier")
         );
-        //shop.close();
+
 
     }
     @Test
     public void testPassword(){
-        EZShop shop = new EZShop();
+
         assertThrows(InvalidPasswordException.class, ()->
             shop.createUser("Carlo", "", "Cashier")
         );
         assertThrows(InvalidPasswordException.class, ()->
             shop.createUser("Carlo", null, "Cashier")
         );
-        //shop.close();
-
     }
 
     @Test
     public void testRole(){
-        EZShop shop = new EZShop();
         assertThrows(InvalidRoleException.class, ()->
             shop.createUser("Carlo", "1234", "")
         );
@@ -47,30 +52,27 @@ public class AcceptableCreateUser {
         assertThrows(InvalidRoleException.class, ()->
             shop.createUser("Carlo", "1234", "asd")
         );
-        //shop.close();
 
     }
 
     @Test
     public void testDuplicateUsername() throws Exception{
-        EZShop shop = new EZShop();
+        Integer id=null;
             try {
-                shop.createUser("Carlo", "abCd", "Cashier");
+                id=shop.createUser("Carlo", "abCd", "Cashier");
 
             }catch(Exception ignored){
 
             }
         assertEquals(-1, shop.createUser("Carlo", "sadF", "Cashier").intValue());
-        //shop.close();
-
+        shop.deleteUser(id);
     }
 
     @Test
     public void testCorrectCase() throws Exception{
-        EZShop shop = new EZShop();
-
-        assertTrue(shop.createUser("Carlo", "sadF", "Cashier") instanceof Integer);
-        //shop.close();
+        Integer id=shop.createUser("Carlo", "sadF", "Cashier");
+        assertTrue(id>0);
+        shop.deleteUser(id);
     }
 
 }

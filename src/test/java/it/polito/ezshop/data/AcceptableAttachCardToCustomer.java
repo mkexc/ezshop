@@ -16,6 +16,7 @@ public class AcceptableAttachCardToCustomer {
     public void beforeEach() throws Exception
     {
         shop = new EZShop();
+        shop.reset();
         shop.login("23","12345");
     }
 
@@ -23,6 +24,7 @@ public class AcceptableAttachCardToCustomer {
     public void afterEach()
     {
         shop.logout();
+        shop.reset();
     }
 
     @Test

@@ -13,7 +13,7 @@ import static org.junit.Assert.assertThrows;
 public class AcceptablePayOrder {
 
     private it.polito.ezshop.data.EZShop shop;
-    private int orderIdPayed,  orderIdIssued;
+    private int orderIdPayed, orderIdIssued;
 
     @Before
     public void before() throws Exception{

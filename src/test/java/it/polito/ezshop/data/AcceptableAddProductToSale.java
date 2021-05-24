@@ -14,16 +14,19 @@ public class AcceptableAddProductToSale {
     EZShop shop;
 
     @Before
-    public void beforeEach() throws Exception
+    public void before() throws Exception
     {
         shop = new EZShop();
+        shop.reset();
         shop.login("23","12345");
+
     }
 
     @After
-    public void afterEach()
+    public void after()
     {
         shop.logout();
+        shop.reset();
     }
 
     @Test
@@ -43,7 +46,7 @@ public class AcceptableAddProductToSale {
     }
 
     @Test
-    public void invalidProductCodeException() throws Exception
+    public void invalidProductCodeException()
     {
         assertThrows(InvalidProductCodeException.class, () -> shop.addProductToSale(1,"278732878273",3));
         assertThrows(InvalidProductCodeException.class, () -> shop.addProductToSale(1,"2121",3));
@@ -72,6 +75,13 @@ public class AcceptableAddProductToSale {
     public void notEnoughQuantity() throws Exception
     {
         Integer id = shop.startSaleTransaction();
+        shop.logout();
+        shop.login("admin","ciao");
+        Integer idProduct = shop.createProductType("Vino","2424242424239",10.0,"Buono");
+        shop.updatePosition(idProduct,"12-ac-12");
+        shop.updateQuantity(idProduct,70);
+        shop.logout();
+        shop.login("23", "12345");
         assertFalse(shop.addProductToSale(id,"2424242424239",80));
         shop.endSaleTransaction(id);
     }
@@ -85,8 +95,15 @@ public class AcceptableAddProductToSale {
     @Test
     public void correctCase() throws Exception
     {
+        shop.logout();
+        shop.login("admin","ciao");
         Integer id = shop.startSaleTransaction();
-        assertFalse(shop.addProductToSale(id,"2424242424239",20));
+        Integer idProduct = shop.createProductType("Vino","2424242424239",10.0,"Buono");
+        shop.updatePosition(idProduct,"14-Boh-15");
+        shop.updateQuantity(idProduct,70);
+        shop.logout();
+        shop.login("23","12345");
+        assertTrue(shop.addProductToSale(id,"2424242424239",20));
         shop.endSaleTransaction(id);
         shop.logout();
         shop.login("admin","ciao");

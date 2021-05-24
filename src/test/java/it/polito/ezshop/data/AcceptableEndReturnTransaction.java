@@ -16,10 +16,17 @@ public class AcceptableEndReturnTransaction {
     @Before
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
+        shop.reset();
         shop.login("admin","ciao");
         idSaleTransaction = shop.startSaleTransaction();
         idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
+        Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.updatePosition(idProd,"13-cacca-14");
+        shop.updateQuantity(idProd,4);
+        shop.logout();
+        shop.login("23","12345");
         shop.addProductToSale(idSaleTransaction,"2424242424239",3);
+
     }
 
     @Test
@@ -28,7 +35,7 @@ public class AcceptableEndReturnTransaction {
         assertThrows(UnauthorizedException.class, () ->
                 shop.endReturnTransaction(idReturnTransaction,true));
 
-        shop.login("admin","ciao");
+        shop.login("23","12345");
     }
 
     @Test
@@ -58,13 +65,13 @@ public class AcceptableEndReturnTransaction {
 
     @Test
     public void testCorrectCase() throws Exception{
+        //TODO RIFARE
         assertTrue(shop.endReturnTransaction(idReturnTransaction,true));
     }
 
     @After
-    public void after() throws Exception {
-        shop.deleteSaleTransaction(idSaleTransaction);
-        shop.deleteReturnTransaction(idReturnTransaction);
+    public void after() throws Exception{
+        shop.reset();
         shop.logout();
     }
 

@@ -1,6 +1,7 @@
 package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.UnauthorizedException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,32 +15,41 @@ public class AcceptableGetCreditsAndDebits {
 
     @Before
     public void before() throws Exception{
-        shop = new it.polito.ezshop.data.EZShop();
+        shop = new EZShop();
         shop.login("admin","ciao");
+        shop.reset();
+        shop.recordBalanceUpdate(100);
+        shop.recordBalanceUpdate(899);
+        shop.recordBalanceUpdate(172);
+    }
 
+    @After
+    public void after(){
+        shop.logout();
+        shop.reset();
     }
 
     @Test
     public void authTest() throws Exception {
         shop.logout();
         assertThrows(UnauthorizedException.class, () ->
-                shop.recordBalanceUpdate(100));
+                shop.getCreditsAndDebits(LocalDate.of(2021,5,24),LocalDate.of(2021,5,25)));
         shop.login("23","12345");
         assertThrows(UnauthorizedException.class, () ->
-                shop.recordBalanceUpdate(100));
+                shop.getCreditsAndDebits(LocalDate.of(2021,5,24),LocalDate.of(2021,5,25)));
         shop.logout();
         shop.login("admin","ciao");
     }
 
+    //TODO fix
     @Test
     public void testCorrectCase() throws Exception{
-        LocalDate today = LocalDate.of(2021,5,24);
-        shop.recordBalanceUpdate(100);
-        //assertTrue(shop.getCreditsAndDebits(null, null).size()>=1);
-        assertEquals(0,shop.getCreditsAndDebits(today.minusDays(1),today).size());
-        assertTrue(shop.getCreditsAndDebits(null, today).size()>0);
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday= today.minusDays(1);
+
+        assertTrue(shop.getCreditsAndDebits(null, null).size()>=1);
+        assertEquals(3,shop.getCreditsAndDebits(yesterday,today).size());
+        assertEquals(3,shop.getCreditsAndDebits(null, today).size());
         assertEquals(0,shop.getCreditsAndDebits(today, null).size());
     }
-
-
 }

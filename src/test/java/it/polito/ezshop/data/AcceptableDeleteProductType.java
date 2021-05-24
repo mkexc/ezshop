@@ -2,16 +2,25 @@ package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.InvalidProductIdException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
-import it.polito.ezshop.model.ProductType;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class AcceptableDeleteProductType {
+
+    private EZShop shop;
+
+    @Before
+    public void before() throws  Exception{
+        shop = new EZShop();
+        shop.reset();
+        shop.login("admin","ciao");
+    }
+
     @Test
     public void testAuthorization() throws Exception{
-
-        EZShop shop = new EZShop();
+        shop.logout();
         assertThrows(UnauthorizedException.class,()->
                 shop.deleteProductType(1)
         );
@@ -25,34 +34,27 @@ public class AcceptableDeleteProductType {
     @Test
     public void testProductId() throws Exception{
 
-        EZShop shop = new EZShop();
+
         shop.login("admin","ciao");
 
-        assertThrows(InvalidProductIdException.class,()-> {
-            shop.deleteProductType(-1);
-        });
+        assertThrows(InvalidProductIdException.class,()->
+            shop.deleteProductType(-1)
+        );
 
-        assertThrows(InvalidProductIdException.class,()->{
-            shop.deleteProductType(null );
-        });
+        assertThrows(InvalidProductIdException.class,()->
+            shop.deleteProductType(null )
+        );
 
     }
 
     @Test
     public void testNoIdToDelete() throws Exception{
-
-        EZShop shop = new EZShop();
         shop.login("admin","ciao");
-
         assertFalse(shop.deleteProductType(432));
-
-
     }
+
     @Test
-
     public void testCorrectCase() throws Exception{
-
-        EZShop shop = new EZShop();
         shop.login("admin","ciao");
         assertTrue(shop.deleteProductType(shop.createProductType("Latte","653462536237",1.0,"Boh")));
     }

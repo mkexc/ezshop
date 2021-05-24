@@ -10,24 +10,25 @@ import static org.junit.Assert.*;
 
 @OrderWith(Alphanumeric.class)
 public class AcceptableGetUser {
-//    @Before
-//    public void init() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
-//        EZShop shop = new EZShop();
-//        shop
-//    }
+
+    private EZShop shop;
+    @Before
+    public void before() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+        shop=new EZShop();
+        shop.login("admin", "ciao");
+    }
 
     @Test
     public void testAuthorization() throws Exception {
 
-
-        EZShop shop = new EZShop();
+        shop.logout();
+        assertThrows(UnauthorizedException.class, shop::getAllUsers);
         shop.login("23", "12345");
         assertThrows(UnauthorizedException.class, shop::getAllUsers);
-        //shop.close();
     }
     @Test
     public void testCorrectId() throws Exception{
-        EZShop shop = new EZShop();
+
         shop.login("admin","ciao");
         assertThrows(InvalidUserIdException.class, ()->
            shop.getUser(-4)
@@ -35,30 +36,20 @@ public class AcceptableGetUser {
         assertThrows(InvalidUserIdException.class, ()->
             shop.getUser(null)
         );
-        //shop.close();
+
 
     }
 
     @Test
-    public void testGetUser() throws Exception{
-        EZShop shop = new EZShop();
-        shop.login("admin","ciao");
+    public void testGetUser() throws Exception {
         Integer id = shop.createUser("Franco","ciaoCiao","Cashier");
         assertEquals(id, shop.getUser(id).getId());
         shop.deleteUser(id);
-        //shop.close();
-
     }
 
     @Test
     public void testNotFoundUser() throws Exception{
-        EZShop shop = new EZShop();
-        shop.login("admin","ciao");
-
-        assertNull(shop.getUser(999));
-
-        //shop.close();
-
+       assertNull(shop.getUser(999));
     }
 
 }

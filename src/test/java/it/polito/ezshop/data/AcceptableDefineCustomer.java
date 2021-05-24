@@ -11,19 +11,15 @@ import static org.junit.Assert.assertThrows;
 
 public class AcceptableDefineCustomer {
     private it.polito.ezshop.data.EZShop shop;
-    private int customerId;
 
     @Before
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
         shop.login("admin","ciao");
-        customerId=shop.defineCustomer("Obama");
-
     }
 
     @After
     public void after() throws Exception{
-        shop.deleteCustomer(customerId);
         shop.logout();
     }
 
@@ -51,7 +47,7 @@ public class AcceptableDefineCustomer {
     @Test
     public void TestCorrectCase() throws Exception {
         Integer customerId2 = shop.defineCustomer("Biden");
-        assertTrue(customerId2 instanceof Integer);
+        assertTrue(customerId2>0);
         shop.deleteCustomer(customerId2);
     }
 }

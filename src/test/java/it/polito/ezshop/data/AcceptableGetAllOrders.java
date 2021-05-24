@@ -7,8 +7,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class AcceptableGetAllOrders {
 
@@ -18,11 +17,15 @@ public class AcceptableGetAllOrders {
     public void before() throws Exception {
         shop = new it.polito.ezshop.data.EZShop();
         shop.login("admin","ciao");
+        shop.reset();
+        shop.createProductType("Pane","2424242424239",10.0,"Boh");
+        shop.issueOrder("2424242424239",1,1.1);
     }
 
     @After
     public void after(){
         shop.logout();
+        shop.reset();
     }
 
     @Test
@@ -40,7 +43,7 @@ public class AcceptableGetAllOrders {
     @Test
     public void correctCase() throws Exception {
         List<Order> list= shop.getAllOrders();
-        assertTrue(!list.isEmpty());
+        assertFalse(list.isEmpty());
     }
 
 

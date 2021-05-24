@@ -10,12 +10,13 @@ import static org.junit.Assert.*;
 
 public class AcceptableModifyCustomer {
 
-    private it.polito.ezshop.data.EZShop shop;
+    private EZShop shop;
     Integer id,id2;
 
     @Before
     public void before() throws Exception {
-        shop = new it.polito.ezshop.data.EZShop();
+        shop = new EZShop();
+        shop.reset();
         shop.login("23","12345");
         id = shop.defineCustomer("Giovanni");
         id2 = shop.defineCustomer("Pino");
@@ -26,6 +27,7 @@ public class AcceptableModifyCustomer {
     public void after() throws Exception{
         shop.deleteCustomer(id);
         shop.deleteCustomer(id2);
+        shop.reset();
         shop.logout();
     }
 

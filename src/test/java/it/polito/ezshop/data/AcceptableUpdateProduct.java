@@ -1,114 +1,98 @@
 package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.*;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class AcceptableUpdateProduct {
+
+    EZShop shop;
+    int prodID,prod2;
+    @Before
+    public void before() throws Exception
+    {
+        shop=new EZShop();
+        shop.reset();
+        shop.login("admin","ciao");
+        prodID=shop.createProductType("Latte", "2424242424239", 1.5, "scaduto");
+        prod2=shop.createProductType("Lattosio", "12345678901286", 1.5, "scaduto");
+
+    }
+
+    @After
+    public void after() throws UnauthorizedException, InvalidProductIdException {
+        shop.logout();
+        shop.reset();
+    }
+
     @Test
     public void testAuthorization() throws Exception{
-
-        EZShop shop = new EZShop();
+        shop.logout();
         assertThrows(UnauthorizedException.class,()->
-                shop.createProductType("Latte", "11234567890125", 13.3, "Vecchio" )
+                shop.updateProduct(prodID,"Ma boh", "2424242424239", 10.0, "Boh")
         );
         shop.login("23","12345");
         assertThrows(UnauthorizedException.class,()->
-                shop.createProductType("Latte", "11234567890125", 13.3, "Vecchio" )
+                shop.updateProduct(prodID,"Ma boh", "2424242424239", 10.0, "Boh")
         );
-        //shop.close();
     }
     @Test
-    public void testProductCode() throws Exception{
-
-        EZShop shop = new EZShop();
-        shop.login("admin","ciao");
+    public void testProductCode() {
 
         assertThrows(InvalidProductCodeException.class,()->
-                shop.createProductType("Latte", "", 13.3, "Vecchio" )
+                shop.updateProduct(prodID, "asdf", "", 1.6, "la crisi")
         );
 
         assertThrows(InvalidProductCodeException.class,()->
-                shop.createProductType("Latte", null, 0.1, "Vecchio" )
+                shop.updateProduct(prodID, "asdf", null, 1.6, "la crisi")
         );
-        assertThrows(InvalidProductCodeException.class,()->
-                shop.createProductType("Latte", "12345678910", 0.1, "Vecchio" )
+
+        assertThrows(InvalidProductCodeException.class, ()->
+                shop.updateProduct(prodID, "asdf", "12345678910", 1.6, "la crisi")
         );
 
     }
-    @Test
-    public void testPricePerUnit() throws Exception{
 
-        EZShop shop = new EZShop();
-        shop.login("admin","ciao");
+    @Test
+    public void testPricePerUnit() {
         assertThrows(InvalidPricePerUnitException.class,()->
-                shop.createProductType("Latte", "11234567890125", -13.3, "Vecchio" )
+                shop.updateProduct(prodID, "asdf", "2424242424239", -1.0, "la crisi")
         );
-
-        assertThrows(InvalidPricePerUnitException.class,()->
-                shop.createProductType("Biscotti", "11234567890125", 0.0, "Vecchio" )
-        );
-        //shop.close();
     }
 
     @Test
-    public void testDescription() throws Exception{
-
-        EZShop shop = new EZShop();
-        shop.login("admin","ciao");
-
+    public void testDescription() {
         assertThrows(InvalidProductDescriptionException.class,()->
-                shop.createProductType("", "11234567890125", 13.3, "Vecchio" )
+                shop.updateProduct(prodID, "", "2424242424239", 1.0, "la crisi")
+        );
+        assertThrows(InvalidProductDescriptionException.class,()->
+                shop.updateProduct(prodID, null, "2424242424239", 1.0, "la crisi")
         );
 
-        assertThrows(InvalidProductDescriptionException.class,()->
-                shop.createProductType(null, "11234567890125", 0.1, "Vecchio" )
-        );
-        ////shop.close();
     }
 
     @Test
-    public void testProductId() throws Exception{
-
-        EZShop shop = new EZShop();
-        shop.login("admin","ciao");
-
-        assertThrows(InvalidProductIdException.class,()-> shop.updateProduct(null, "Latte", "11234567890125", 13.3, "Vecchio"));
-
-        assertThrows(InvalidProductIdException.class,()-> shop.updateProduct(-5,"Latte", "11234567890125", 0.1, "Vecchio" ));
-
+    public void testProductId() {
+        assertThrows(InvalidProductIdException.class,()-> shop.updateProduct(null, "Latte", "2424242424239", 13.3, "Vecchio"));
+        assertThrows(InvalidProductIdException.class,()-> shop.updateProduct(-5,"Latte", "2424242424239", 0.1, "Vecchio" ));
     }
+
     @Test
     public void testNoProductId() throws Exception{
-
-        EZShop shop = new EZShop();
-        shop.login("admin","ciao");
-
-        assertFalse(shop.updateProduct(433, "Latte", "11234567890125", 13.3, "Vecchio"));
-
-
+        assertFalse(shop.updateProduct(4839483, "Latte", "11234567890125", 13.3, "Vecchio"));
     }
 
     @Test
     public void testCorrectCase() throws Exception{
-
-        EZShop shop = new EZShop();
-        shop.login("admin","ciao");
-        Integer id = shop.createProductType("Latte","4673387564579",21.0,"Ciao");
-        assertTrue(shop.updateProduct(id, "Pomodori", "826427647372", 13.3, "Echo"));
-        shop.deleteProductType(id);
-
+        assertTrue(shop.updateProduct(prodID, "Pomodori", "826427647372", 13.3, "Echo"));
     }
 
     @Test
     public void testSameBarcodePresent() throws Exception{
-
-        EZShop shop = new EZShop();
-        shop.login("admin","ciao");
-                assertFalse(shop.updateProduct(2, "Latte", "11234567890125", 13.3, "Echo"));
-
-
+        assertFalse(shop.updateProduct(prod2, "Latte", "2424242424239", 13.3, "Echo"));
     }
 
     @Test

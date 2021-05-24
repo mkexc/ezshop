@@ -10,18 +10,22 @@ import static org.junit.Assert.*;
 
 public class AcceptableModifyPointsOnCard {
     EZShop shop;
-
+    String cardId;
     @Before
-    public void beforeEach() throws Exception
+    public void before() throws Exception
     {
         shop = new EZShop();
+        shop.reset();
         shop.login("23","12345");
+        cardId = shop.createCard();
     }
 
     @After
-    public void afterEach()
+    public void after()
     {
+        //TODO rimuovere card
         shop.logout();
+        shop.reset();
     }
 
     @Test
@@ -49,13 +53,13 @@ public class AcceptableModifyPointsOnCard {
     @Test
     public void notEnoughPoints() throws Exception
     {
-        assertFalse(shop.modifyPointsOnCard("0000000001",-1));
+        assertFalse(shop.modifyPointsOnCard(cardId,-1));
     }
 
     @Test
     public void correctCase() throws Exception
     {
-        assertTrue(shop.modifyPointsOnCard("0000000002",100));
-        shop.modifyPointsOnCard("0000000002",-100);
+        assertTrue(shop.modifyPointsOnCard(cardId,100));
+        shop.modifyPointsOnCard(cardId,-100);
     }
 }

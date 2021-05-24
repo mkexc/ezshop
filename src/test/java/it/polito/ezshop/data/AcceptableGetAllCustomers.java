@@ -28,7 +28,7 @@ public class AcceptableGetAllCustomers {
     }
 
     @Test
-    public void unLoggedIn() throws Exception {
+    public void unLoggedIn() {
         shop.logout();
         assertThrows(UnauthorizedException.class, ()->
                 shop.getAllCustomers()

@@ -16,8 +16,10 @@ public class AcceptableGetSaleTransaction {
     @Before
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
+        shop.reset();
         shop.login("admin","ciao");
         idSaleTransaction = shop.startSaleTransaction();
+        shop.addProductToSale(idSaleTransaction,"2424242424239",3);
     }
 
     @Test
@@ -48,8 +50,7 @@ public class AcceptableGetSaleTransaction {
 
     @Test
     public void testCorrectCase() throws Exception{
-       // todo FALLITO
-        assertTrue( shop.getSaleTransaction(idSaleTransaction) instanceof it.polito.ezshop.model.SaleTransaction);
+        assertNotNull(shop.getSaleTransaction(idSaleTransaction));
 
     }
 
@@ -57,8 +58,7 @@ public class AcceptableGetSaleTransaction {
     public void after() throws Exception {
         shop.deleteSaleTransaction(idSaleTransaction);
         shop.logout();
+        shop.reset();
     }
-
-
 
 }
