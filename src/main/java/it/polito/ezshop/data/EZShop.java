@@ -1783,7 +1783,7 @@ public class EZShop implements EZShopInterface{
             throw new InvalidTransactionIdException();
 
         //check status
-        String sql5="SELECT 'status', 'barcode', 'amount' FROM returnTransaction RT, productEntry PE WHERE RT.id=? AND PE.transactionId=RT.id ";
+        String sql5="SELECT status, PE.barcode, amount FROM returnTransaction RT, productEntry PE WHERE RT.id=? AND PE.transactionId=RT.id ";
         String productCode;
 
         int amount;
@@ -1910,7 +1910,7 @@ public class EZShop implements EZShopInterface{
         if(cash <= 0)
             throw new InvalidPaymentException();
 
-        String sql="SELECT total FROM saleTransaction WHERE id=? AND status='CLOSE' ";
+        String sql="SELECT 'total' FROM saleTransaction WHERE id=? AND status='CLOSE' ";
         double total;
         try {
 
@@ -2008,7 +2008,7 @@ public class EZShop implements EZShopInterface{
             throw new InvalidTransactionIdException();
 
 
-        String sql="SELECT total FROM returnTransaction WHERE id=? AND status='CLOSE'";
+        String sql="SELECT total FROM returnTransaction WHERE id=? AND status='CLOSED'";
         double total;
         try {
 
@@ -2107,7 +2107,8 @@ public class EZShop implements EZShopInterface{
 
             String sql2 = "INSERT INTO balanceOperation(date,money,type) VALUES (?,?,?) ";
             PreparedStatement st2 = conn.prepareStatement(sql2);
-            st2.setDate(1, java.sql.Date.valueOf((new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
+            //TODO AGGIUSTARE DATA
+            st2.setDate(1, java.sql.Date.valueOf(LocalDate.of(LocalDate.now().getYear(),LocalDate.now().getMonthValue(),LocalDate.now().getDayOfMonth())));
             st2.setDouble(2,toBeAdded);
             st2.setString(3,type);
             st2.executeUpdate();
@@ -2186,9 +2187,11 @@ public class EZShop implements EZShopInterface{
             try {
                 String sql = "SELECT * FROM balanceOperation WHERE date > ? ";
 
+
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setDate(1, java.sql.Date.valueOf(from));
-                st.executeQuery();
+
+                rs = st.executeQuery();
                 rs = st.getResultSet();
                 while (rs.next())
                 {
@@ -2205,6 +2208,28 @@ public class EZShop implements EZShopInterface{
                 }
             } catch (SQLException ignored) {
 
+            }
+        }else {
+            try {
+                String sql = "SELECT * FROM balanceOperation";
+                PreparedStatement st = conn.prepareStatement(sql);
+                rs = st.executeQuery();
+                rs = st.getResultSet();
+                while (rs.next())
+                {
+                    l.add(
+                            new it.polito.ezshop.model.BalanceOperation(
+                                    rs.getInt("id"),
+                                    Instant.ofEpochMilli(rs.getDate("date").getTime())
+                                            .atZone(ZoneId.systemDefault())
+                                            .toLocalDate(),
+                                    rs.getDouble("money"),
+                                    rs.getString("type")
+                            )
+                    );
+                }
+                return l;
+            }catch (SQLException ignored){
             }
         }
         return l;
