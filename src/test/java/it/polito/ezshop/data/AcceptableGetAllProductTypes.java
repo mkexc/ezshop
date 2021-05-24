@@ -5,8 +5,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.*;
 
 public class AcceptableGetAllProductTypes {
 
@@ -21,7 +20,7 @@ public class AcceptableGetAllProductTypes {
     public void testCorrectCase() throws Exception {
         shop = new it.polito.ezshop.data.EZShop();
         shop.login("admin","ciao");
-        assertInstanceOf(ArrayList.class, shop.getAllProductTypes());
+        assertTrue(shop.getAllProductTypes() instanceof ArrayList);
     }
 
 

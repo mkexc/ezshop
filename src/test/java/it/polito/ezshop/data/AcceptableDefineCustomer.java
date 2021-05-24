@@ -2,18 +2,18 @@ package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.InvalidCustomerNameException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertThrows;
 
 public class AcceptableDefineCustomer {
     private it.polito.ezshop.data.EZShop shop;
     private int customerId;
 
-    @BeforeEach
+    @Before
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
         shop.login("admin","ciao");
@@ -21,7 +21,7 @@ public class AcceptableDefineCustomer {
 
     }
 
-    @AfterEach
+    @After
     public void after() throws Exception{
         shop.deleteCustomer(customerId);
         shop.logout();
@@ -51,7 +51,7 @@ public class AcceptableDefineCustomer {
     @Test
     public void TestCorrectCase() throws Exception {
         Integer customerId2 = shop.defineCustomer("Biden");
-        assertInstanceOf(Integer.class, customerId2);
+        assertTrue(customerId2 instanceof Integer);
         shop.deleteCustomer(customerId2);
     }
 }

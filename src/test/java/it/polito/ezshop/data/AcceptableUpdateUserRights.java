@@ -2,7 +2,7 @@ package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.*;
 import org.junit.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class AcceptableUpdateUserRights {
     @Test

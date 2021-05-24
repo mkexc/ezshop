@@ -1,14 +1,14 @@
 package it.polito.ezshop.model;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class AcceptableTicketEntry {
     private it.polito.ezshop.model.TicketEntry ticketEntry;
 
-    @BeforeEach
+    @Before
     public void newEntry(){
         ticketEntry = new it.polito.ezshop.model.TicketEntry("11234567890125", "product", 123, 3.70, 1.0 );
     }
@@ -31,11 +31,11 @@ public class AcceptableTicketEntry {
 
     @Test
     public void testGetPricePerUnit() {
-        assertEquals(3.70, ticketEntry.getPricePerUnit());
+        assertEquals(3.70, ticketEntry.getPricePerUnit(),0);
     }
     @Test
     public void testGetDiscountRate() {
-        assertEquals(1.0, ticketEntry.getDiscountRate());
+        assertEquals(1.0, ticketEntry.getDiscountRate(),0);
     }
 
     @Test
@@ -59,11 +59,11 @@ public class AcceptableTicketEntry {
     @Test
     public void testSetPricePerUnit() {
         ticketEntry.setPricePerUnit(8.88);
-        assertEquals(8.88, ticketEntry.getPricePerUnit());
+        assertEquals(8.88, ticketEntry.getPricePerUnit(),0);
     }
     @Test
     public void testSetDiscountRate() {
         ticketEntry.setDiscountRate(0.0);
-        assertEquals(0.0, ticketEntry.getDiscountRate());
+        assertEquals(0.0, ticketEntry.getDiscountRate(),0);
     }
 }

@@ -4,9 +4,9 @@ import it.polito.ezshop.exceptions.InvalidLocationException;
 import it.polito.ezshop.exceptions.InvalidProductIdException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
 import org.junit.Test;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 
 public class AcceptableUpdatePosition {
     @Test

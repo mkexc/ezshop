@@ -2,15 +2,15 @@ package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.*;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.Before;
 import org.junit.runner.OrderWith;
 import org.junit.runner.manipulation.Alphanumeric;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 @OrderWith(Alphanumeric.class)
 public class AcceptableGetUser {
-//    @BeforeEach
+//    @Before
 //    public void init() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
 //        EZShop shop = new EZShop();
 //        shop

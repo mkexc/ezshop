@@ -1,15 +1,15 @@
 package it.polito.ezshop.model;
 
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.*;
+import org.junit.Before;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class AcceptableProductType {
 
      it.polito.ezshop.model.ProductType productType;
 
-    @BeforeEach
+    @Before
     public void newProductType()
     {
         productType = new it.polito.ezshop.model.ProductType(1, "2143325343648", "CiaoDescrizione", 23.5,21, "NoteOn","Shelf");
@@ -23,7 +23,7 @@ public class AcceptableProductType {
     @Test
     public void testSetQuantity() {
         productType.setQuantity(22);
-        assertEquals(22,productType.getQuantity());
+        assertEquals(22,productType.getQuantity().intValue());
     }
 
     @Test
@@ -72,24 +72,24 @@ public class AcceptableProductType {
 
     @Test
     public void testGetPricePerUnit() {
-        assertEquals(23.5,productType.getPricePerUnit());
+        assertEquals(23.5,productType.getPricePerUnit().doubleValue(),0.0);
     }
 
     @Test
     public void testSetPricePerUnit() {
         productType.setPricePerUnit(24.9);
-        assertEquals(24.9,productType.getPricePerUnit());
+        assertEquals(24.9,productType.getPricePerUnit().doubleValue(),0.0);
     }
 
     @Test
     public void testGetId() {
-        assertEquals(1,productType.getId());
+        assertEquals(1,productType.getId().intValue());
     }
 
     @Test
     public void setId() {
         productType.setId(2);
-        assertEquals(2,productType.getId());
+        assertEquals(2,productType.getId().intValue());
     }
 
     @Test

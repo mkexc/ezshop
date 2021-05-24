@@ -2,19 +2,19 @@ package it.polito.ezshop.data;
 import it.polito.ezshop.exceptions.InvalidLocationException;
 import it.polito.ezshop.exceptions.InvalidOrderIdException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.Test;
+import org.junit.After;
+import org.junit.Before;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThrows;
 
 public class AcceptableRecordOrderArrival {
 
     private it.polito.ezshop.data.EZShop shop;
     private int orderIdPayed,  orderIdIssued;
 
-    @BeforeEach
+    @Before
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
         shop.login("admin","ciao");
@@ -23,7 +23,7 @@ public class AcceptableRecordOrderArrival {
 
     }
 
-    @AfterEach
+    @After
     public void after(){
         shop.logout();
         shop.deleteOrderId(orderIdPayed);

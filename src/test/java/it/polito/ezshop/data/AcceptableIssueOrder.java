@@ -4,7 +4,7 @@ package it.polito.ezshop.data;
 import it.polito.ezshop.exceptions.*;
 import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class AcceptableIssueOrder {
 
@@ -36,7 +36,7 @@ public class AcceptableIssueOrder {
     {
         EZShop shop = new EZShop();
         shop.login("admin","ciao");
-        assertEquals(-1,shop.issueOrder("652343546457",5,30.0));
+        assertEquals(-1,shop.issueOrder("652343546457",5,30.0).intValue());
     }
 
     @Test

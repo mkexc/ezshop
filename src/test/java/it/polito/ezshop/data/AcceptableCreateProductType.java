@@ -4,28 +4,28 @@ import it.polito.ezshop.exceptions.InvalidPricePerUnitException;
 import it.polito.ezshop.exceptions.InvalidProductCodeException;
 import it.polito.ezshop.exceptions.InvalidProductDescriptionException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
+import org.junit.Test;
+import org.junit.After;
+import org.junit.Before;
+//import org.junit.Nested;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class AcceptableCreateProductType {
 
     private EZShop shop;
     private Integer toDeleteID=0;
 
-    @Nested
+    //@Nested
     class loginAndLogoutForEach{
-        @BeforeEach
+        @Before
         public void beforeEach()throws Exception{
             shop = new EZShop();
             shop.login("admin","ciao");
         }
 
-        @AfterEach
-        public void afterEach() {
+        @After
+        public void AfterEach() {
             shop.logout();
         }
 
@@ -53,14 +53,14 @@ public class AcceptableCreateProductType {
             assertThrows(InvalidProductCodeException.class,()-> shop.createProductType("Latte", "12345678910", 0.1, "Vecchio"));
 
             // SAME BARCODE PRESENT
-            assertEquals(-1,shop.createProductType("Uova","11234567890125",3.4,"Di Struzzo"));
+            assertEquals(-1,shop.createProductType("Uova","11234567890125",3.4,"Di Struzzo").intValue());
         }
 
-        @Nested
+        //@Nested
         class correct{
 
-            @AfterEach
-            public void afterEach() throws Exception {
+            @After
+            public void AfterEach() throws Exception {
                 shop.deleteProductType(toDeleteID);
             }
 
@@ -75,16 +75,16 @@ public class AcceptableCreateProductType {
         @Test
         public void testErrorCase() throws Exception{
             shop.createProductType("Durian", "1234567890128", 1.5, "It does not taste good");
-            assertEquals(-1, shop.createProductType("Durian", "1234567890128", 1.5, "It does not tast good"));
+            assertEquals(-1, shop.createProductType("Durian", "1234567890128", 1.5, "It does not tast good").intValue());
         }
 
 
     }
 
 
-    @Nested
+    //@Nested
     class NotLogged{
-        @BeforeEach
+        @Before
         public void before(){
             shop = new EZShop();
         }
@@ -99,7 +99,7 @@ public class AcceptableCreateProductType {
             );
 
         }
-        @AfterEach
+        @After
         public void after(){
             shop.logout();
         }
