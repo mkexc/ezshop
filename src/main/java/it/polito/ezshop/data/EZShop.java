@@ -1395,7 +1395,7 @@ public class EZShop implements EZShopInterface{
             return false;
         }
 
-
+        // TODO check funzionamento deleteproductfromsale
         //update quantity
         String sql2 = "UPDATE productEntry SET amount=amount-? WHERE transactionId=? AND barcode=?";
         try {
@@ -1404,9 +1404,12 @@ public class EZShop implements EZShopInterface{
             st.setInt(2,transactionId);
             st.setString(3,productCode);
 
-            // TODO check di updatedRows==0
             // TODO aggiungere isListUpdated
-            st.executeUpdate();
+            int updatedRows = st.executeUpdate();
+
+            if(updatedRows == 0)
+                return false;
+
             try {
                 ProductType product = this.getProductTypeByBarCode(productCode);
                 this.updateQuantity(product.getId(), amount);
@@ -1428,7 +1431,7 @@ public class EZShop implements EZShopInterface{
         if(transactionId==null||transactionId<=0)
             throw new InvalidTransactionIdException();
         //check discountRate
-        if(discountRate>=0.0 && discountRate<=1.0)
+        if(discountRate<=1.0)
             throw new InvalidDiscountRateException();
 
         // productCode not null, not empty
@@ -1491,7 +1494,7 @@ public class EZShop implements EZShopInterface{
         if(transactionId==null||transactionId<=0)
             throw new InvalidTransactionIdException();
         //check discountRate
-        if(discountRate>=0.0 && discountRate<=1.0)
+        if(discountRate<=1.0)
             throw new InvalidDiscountRateException();
 
         //check status
