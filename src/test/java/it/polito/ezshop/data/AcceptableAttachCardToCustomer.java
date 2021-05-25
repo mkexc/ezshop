@@ -13,39 +13,34 @@ public class AcceptableAttachCardToCustomer {
     EZShop shop;
 
     @Before
-    public void beforeEach() throws Exception
-    {
+    public void beforeEach() throws Exception {
         shop = new EZShop();
         shop.reset();
         shop.login("23","12345");
     }
 
     @After
-    public void afterEach()
-    {
+    public void afterEach() {
         shop.logout();
         shop.reset();
     }
 
     @Test
-    public void authTest() throws Exception
-    {
+    public void authTest() throws Exception {
         shop.logout();
         assertThrows(UnauthorizedException.class, () -> shop.attachCardToCustomer("0000000001",1));
         shop.login("23","12345");
     }
 
     @Test
-    public void invalidCustomerId()
-    {
+    public void invalidCustomerId() {
         assertThrows(InvalidCustomerIdException.class, () -> shop.attachCardToCustomer("0000000001",0));
         assertThrows(InvalidCustomerIdException.class, () -> shop.attachCardToCustomer("0000000001",-1));
         assertThrows(InvalidCustomerIdException.class, () -> shop.attachCardToCustomer("0000000001",null));
     }
 
     @Test
-    public void invalidCardId()
-    {
+    public void invalidCardId() {
         assertThrows(InvalidCustomerCardException.class, () -> shop.attachCardToCustomer("",1));
         assertThrows(InvalidCustomerCardException.class, () -> shop.attachCardToCustomer("00000001",1));
         assertThrows(InvalidCustomerCardException.class, () -> shop.attachCardToCustomer("000000000100",1));
@@ -67,5 +62,4 @@ public class AcceptableAttachCardToCustomer {
         assertTrue(shop.attachCardToCustomer("0000000002",10));
         shop.detachCustomerCard("0000000002");
     }
-
 }

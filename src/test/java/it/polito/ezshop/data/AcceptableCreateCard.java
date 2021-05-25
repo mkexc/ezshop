@@ -20,23 +20,20 @@ public class AcceptableCreateCard {
     }
 
     @After
-    public void after()
-    {
+    public void after() {
         shop.logout();
         shop.reset();
     }
 
     @Test
-    public void authTest() throws Exception
-    {
+    public void authTest() throws Exception {
         shop.logout();
         assertThrows(UnauthorizedException.class, () -> shop.createCard());
         shop.login("23","12345");
     }
 
     @Test
-    public void correctCase() throws Exception
-    {
+    public void correctCase() throws Exception {
         String c = shop.createCard();
         assertEquals(10,c.length());
         //TODO togliere card

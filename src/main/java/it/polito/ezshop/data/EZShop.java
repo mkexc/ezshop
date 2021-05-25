@@ -798,7 +798,6 @@ public class EZShop implements EZShopInterface{
         }
     }
 
-    // TODO da checkare
     @Override
     public boolean recordOrderArrival(Integer orderId) throws InvalidOrderIdException, UnauthorizedException, InvalidLocationException {
         // check role of the user (only administrator, cashier and shopManager)
@@ -864,6 +863,7 @@ public class EZShop implements EZShopInterface{
 
     }
 
+    // TODO check della getallorders perché crea strani duplicati se vengono fatti ordini diversi dello stesso prodotto
     @Override
     public List<Order> getAllOrders() throws UnauthorizedException {
         // check role of the user (only administrator, cashier and shopManager)
@@ -921,15 +921,19 @@ public class EZShop implements EZShopInterface{
             throw new UnauthorizedException();
         else if (newCustomerName==null || newCustomerName.isEmpty())
             throw new InvalidCustomerNameException("Invalid Customer Name");
-        else if (newCustomerCard!=null && !newCustomerCard.isEmpty() && !it.polito.ezshop.model.ProductType.validateProductCode(newCustomerCard) ) {
-            throw new InvalidCustomerCardException("Invalid Customer Card"); //Only when customer card is full but not a string of 10 digits, bypassed empty and null cases otherwise exception conflicts
-        }
+        // TODO perché validateproductcode su customercard?
+//        else if (newCustomerCard!=null && !newCustomerCard.isEmpty() && !it.polito.ezshop.model.ProductType.validateProductCode(newCustomerCard) ) {
+//            throw new InvalidCustomerCardException("Invalid Customer Card"); //Only when customer card is full but not a string of 10 digits, bypassed empty and null cases otherwise exception conflicts
+//        }
+//        else if (newCustomerCard==null || newCustomerCard.length()!=10 || !newCustomerCard.matches("[0-9]+") ) {
+//            throw new InvalidCustomerCardException("Invalid Customer Card");
+//        }
         else if ( id== null || id<=0) {
             throw new InvalidCustomerIdException("Invalid Customer Id");
         }
         else {
             try{
-
+                // update only customername
                 if(newCustomerCard==null)
                 {
                     String sql = "UPDATE customer SET customerName = ? WHERE id=?";
@@ -942,6 +946,7 @@ public class EZShop implements EZShopInterface{
                         return true;
                     }
                 }
+                // delete customercard from customer
                 else if(newCustomerCard.isEmpty())
                 {
                     String sql = "UPDATE customer SET loyaltyCardId=NULL, customerName = ? WHERE id=?";
@@ -955,8 +960,12 @@ public class EZShop implements EZShopInterface{
                     }
                     
                 }
-                else
-                {
+                // update customercard
+                else {
+                    //if (newCustomerCard.length()!=10 || !newCustomerCard.matches("[0-9]+") ) {
+                    if (!newCustomerCard.matches("^[0-9]{10}$") ) {
+                        throw new InvalidCustomerCardException("Invalid Customer Card");
+                    }
                     String sql1 = "SELECT * FROM customer WHERE loyaltyCardId=?";
                     PreparedStatement st1 = conn.prepareStatement(sql1);
                     st1.setString(1, newCustomerCard);
@@ -1119,7 +1128,8 @@ public class EZShop implements EZShopInterface{
     public boolean attachCardToCustomer(String customerCard, Integer customerId) throws InvalidCustomerIdException, InvalidCustomerCardException, UnauthorizedException {
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-        else if (customerCard==null || customerCard.length()!=10 || !customerCard.matches("[0-9]+") ) {
+        //else if (customerCard==null || customerCard.length()!=10 || !customerCard.matches("[0-9]+") ) {
+        else if (customerCard==null || !customerCard.matches("^[0-9]{10}$")) {
             throw new InvalidCustomerCardException("Invalid customer card.");
         }
         else if ( customerId== null || customerId<=0) {
@@ -1183,7 +1193,8 @@ public class EZShop implements EZShopInterface{
     public boolean modifyPointsOnCard(String customerCard, int pointsToBeAdded) throws InvalidCustomerCardException, UnauthorizedException {
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-        else if (customerCard==null || customerCard.length()!=10 || !customerCard.matches("[0-9]+") ) {
+        //else if (customerCard==null || customerCard.equals("") || customerCard.length()!=10 || !customerCard.matches("[0-9]+") ) {
+        else if (customerCard==null || !customerCard.matches("^[0-9]{10}$")) {
             throw new InvalidCustomerCardException();
         }
         else {
@@ -1205,9 +1216,9 @@ public class EZShop implements EZShopInterface{
                 PreparedStatement st2 = conn.prepareStatement(sql2);
                 st2.setInt(1,pointsToBeAdded);
                 st2.setString(2,customerCard);
-                st2.executeUpdate();
+                int updatedRows = st2.executeUpdate();
                 //conn.commit();
-                return true;
+                return !(updatedRows == 0);
             } catch(SQLException e)
             {
                 return false;
@@ -1332,6 +1343,7 @@ public class EZShop implements EZShopInterface{
         }
     }
 
+    // TODO non viene incrementato nuovamente il numero di prodotti nell'inventario dopo averli eliminati dalla saletransaction
     @Override
     public boolean deleteProductFromSale(Integer transactionId, String productCode, int amount) throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException, UnauthorizedException {
         //check authorization
@@ -1397,6 +1409,8 @@ public class EZShop implements EZShopInterface{
         return true;
     }
 
+    // TODO discountrateproduct not valid
+    // TODO if discountrateproduct is not valid, product is added anyway, normal?
     @Override
     public boolean applyDiscountRateToProduct(Integer transactionId, String productCode, double discountRate) throws InvalidTransactionIdException, InvalidProductCodeException, InvalidDiscountRateException, UnauthorizedException {
         //check authorization
@@ -1460,6 +1474,7 @@ public class EZShop implements EZShopInterface{
 
     }
 
+    // TODO discountratesale not valid
     @Override
     public boolean applyDiscountRateToSale(Integer transactionId, double discountRate) throws InvalidTransactionIdException, InvalidDiscountRateException, UnauthorizedException {
         //check authorization
@@ -1575,6 +1590,7 @@ public class EZShop implements EZShopInterface{
         }
     }
 
+    // TODO deletesaletransaction deve anche ripristinare gli amount dei prodotti che erano nella saletransaction
     @Override
     public boolean deleteSaleTransaction(Integer saleNumber) throws InvalidTransactionIdException, UnauthorizedException {
         //check authorization
@@ -1604,7 +1620,10 @@ public class EZShop implements EZShopInterface{
 
             PreparedStatement st = conn.prepareStatement(sql2);
             st.setInt(1,saleNumber);
-            st.executeUpdate();
+            int deletedRows = st.executeUpdate();
+
+            if(deletedRows == 0)
+                return false;
 
         }catch(SQLException e){
             return false;
@@ -1615,7 +1634,10 @@ public class EZShop implements EZShopInterface{
 
             PreparedStatement st = conn.prepareStatement(sql3);
             st.setInt(1,saleNumber);
-            st.executeUpdate();
+            int deletedRows = st.executeUpdate();
+
+            if(deletedRows == 0)
+                return false;
 
         }catch(SQLException e){
             return false;
@@ -1634,6 +1656,7 @@ public class EZShop implements EZShopInterface{
             throw new InvalidTransactionIdException();
 
         //check status
+        // TODO i campi vanno messi senza apici
         String sql="SELECT 'ST.id', 'ST.balanceId', 'ST.discountRate' AS STDiscountRate, 'ST.total', 'PE.barcode', 'PE.amount', 'PE.discountRate', 'PT.description', 'PT.pricePerUnit' FROM saleTransaction ST, productEntry PE, productType PT WHERE PE.transactionId=ST.id AND ST.id=? AND PE.barcode=PT.productCode";
         List<TicketEntry> entries;
         try {
@@ -1681,6 +1704,7 @@ public class EZShop implements EZShopInterface{
         }
     }
 
+    // TODO check di returntransaction
     @Override
     public Integer startReturnTransaction(Integer saleNumber) throws /*InvalidTicketNumberException,*/InvalidTransactionIdException, UnauthorizedException {
         //check authorization
@@ -1691,7 +1715,7 @@ public class EZShop implements EZShopInterface{
             throw new InvalidTransactionIdException();
         int res;
 
-        //check esistence of SaleTransaction
+        //check existence of SaleTransaction
         String sql2 = "SELECT id FROM saleTransaction WHERE id=?";
         try {
             PreparedStatement st2 = conn.prepareStatement(sql2);
@@ -2188,7 +2212,7 @@ public class EZShop implements EZShopInterface{
             }
 
             try {
-                String sql = "SELECT * FROM balanceOperation WHERE date > ? AND date < ? ";
+                String sql = "SELECT * FROM balanceOperation WHERE date >= ? AND date <= ?";
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setDate(1, java.sql.Date.valueOf(realFrom));
                 st.setDate(2, java.sql.Date.valueOf(realTo));
@@ -2210,7 +2234,7 @@ public class EZShop implements EZShopInterface{
         }
         else if(from==null && to!=null) {
             try {
-                String sql = "SELECT * FROM balanceOperation WHERE date < ? ";
+                String sql = "SELECT * FROM balanceOperation WHERE date <= ?";
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setDate(1,java.sql.Date.valueOf(to));
                 rs = st.executeQuery();
@@ -2232,7 +2256,7 @@ public class EZShop implements EZShopInterface{
         else if(from!=null)
         {
             try {
-                String sql = "SELECT * FROM balanceOperation WHERE date > ? ";
+                String sql = "SELECT * FROM balanceOperation WHERE date >= ?";
 
 
                 PreparedStatement st = conn.prepareStatement(sql);
@@ -2301,10 +2325,10 @@ public class EZShop implements EZShopInterface{
         }
     }
 
-    //ONLY FOR TEST
+    // TODO aggiungere dei check
     public void deleteOrderId(int orderId)
     {
-        String sql = "DELETE FROM 'order' WHERE id=? ";
+        String sql = "DELETE FROM 'order' WHERE id=?";
 
         try {
             PreparedStatement st = conn.prepareStatement(sql);
@@ -2312,13 +2336,13 @@ public class EZShop implements EZShopInterface{
             st.executeUpdate();
         }catch (SQLException ignored){
         }
-
     }
 
     //ONLY FOR TEST
+    // TODO aggiungere dei check?
     public void detachCustomerCard(String customerCard)
     {
-        String sql = "UPDATE customer SET loyaltyCardId=NULL WHERE loyaltyCardId=? ";
+        String sql = "UPDATE customer SET loyaltyCardId=NULL WHERE loyaltyCardId=?";
 
         try {
             PreparedStatement st = conn.prepareStatement(sql);

@@ -30,7 +30,6 @@ public class AcceptableDeleteReturnTransaction {
         shop.returnProduct(idReturnTransaction,"2424242424239",2);
         shop.logout();
         shop.login("23","12345");
-
     }
 
     @Test
@@ -67,14 +66,12 @@ public class AcceptableDeleteReturnTransaction {
         shop.addProductToSale(idSaleTransaction,"2424242424239",3);
         // adding the product to return
         shop.returnProduct(idReturnTransaction,"2424242424239",2);
-
     }
 
     @Test
     public void testPayed() throws Exception{
         shop.endReturnTransaction(idReturnTransaction,true);
         shop.returnCashPayment(idReturnTransaction);
-        //TODO controllare
         assertFalse(shop.deleteReturnTransaction(idReturnTransaction));
     }
 
