@@ -82,33 +82,17 @@ public class EZShop implements EZShopInterface{
     public Integer createUser(String username, String password, String role) throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
         // username not null, not empty
         if(username == null || username.equals(""))
-            throw new InvalidUsernameException();
+            throw new InvalidUsernameException("Invalid Username");
 
         // password not null, not empty
         if(password == null || password.equals("")){
-            throw new InvalidPasswordException();
+            throw new InvalidPasswordException("Invalid Password");
         }
 
         // role not null, not empty, not Administrator&&ShopManager&&Cashier
         if(role == null || role.isEmpty() || (!role.equals("Administrator") && !role.equals("ShopManager") && !role.equals("Cashier"))){
-            throw new InvalidRoleException();
+            throw new InvalidRoleException("Invalid Role");
         }
-
-//        // check if username is already present
-//        String sql = "SELECT username FROM user WHERE username=?";
-//        try {
-//            PreparedStatement st = conn.prepareStatement(sql);
-//            st.setString(1, username);
-//            ResultSet rs = st.executeQuery();
-//
-//            if(rs.getString("username").equals(username)) {
-//                // product already present
-//                return -1;
-//            }
-//        } catch (SQLException e) {
-//            // problems with db connection
-//            return -1;
-//        }
 
         // insert the new user
         String sql = "INSERT INTO user(username, password, role) VALUES (?, ?, ?)";
@@ -136,12 +120,12 @@ public class EZShop implements EZShopInterface{
     public boolean deleteUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
         // check role of the user (only administrator)
         if(loggedUser == null || !loggedUser.getRole().equals("Administrator")) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("Unauthorized");
         }
 
         // id not null, not <= 0
         if(id == null || id <= 0) {
-            throw new InvalidUserIdException();
+            throw new InvalidUserIdException("Invalid User id");
         }
 
         // delete user using id
@@ -317,7 +301,7 @@ public class EZShop implements EZShopInterface{
 
         // productCode not null, not empty
         if(productCode == null || productCode.equals(""))
-            throw new InvalidProductCodeException();
+            throw new InvalidProductCodeException("Invalid Product Code");
 
         // check if productCode is valid
         if(!validateProductCode(productCode)) {
@@ -326,12 +310,12 @@ public class EZShop implements EZShopInterface{
 
         // description not null, not empty
         if(description == null || description.equals("")){
-            throw new InvalidProductDescriptionException();
+            throw new InvalidProductDescriptionException("Invalid Product Description");
         }
 
         // pricePerUnit not <= 0
         if(pricePerUnit <= 0){
-            throw new InvalidPricePerUnitException();
+            throw new InvalidPricePerUnitException("Invalid Price Per unit");
         }
 
 //        // check if productCode is already present
@@ -383,7 +367,7 @@ public class EZShop implements EZShopInterface{
 
         // check id of the product (not <=0)
         if(id == null || id <= 0)
-            throw new InvalidProductIdException();
+            throw new InvalidProductIdException("Invalid Product Id");
 
         // description not null, not empty
         if(newDescription == null || newDescription.equals("")){
@@ -505,22 +489,6 @@ public class EZShop implements EZShopInterface{
             throw new InvalidProductCodeException();
         }
 
-//        // check if productCode is already present
-//        String sql = "SELECT productCode FROM productType WHERE productCode=?";
-//        try {
-//            PreparedStatement st = conn.prepareStatement(sql);
-//            st.setString(1, barCode);
-//            ResultSet rs = st.executeQuery();
-//
-//            if(rs.getString("productCode").equals(barCode)) {
-//                // product already present
-//                return null;
-//            }
-//        } catch (SQLException e) {
-//            // problems with db connection
-//            return null;
-//        }
-
         ProductType product;
         String sql = "SELECT id, productCode, description, pricePerUnit, quantity, notes, position FROM productType WHERE productCode=?";
         try {
@@ -595,22 +563,6 @@ public class EZShop implements EZShopInterface{
         if(productId == null || productId <= 0)
             throw new InvalidProductIdException();
 
-//        // query the product quantity
-//        String sql="SELECT quantity, position FROM productType WHERE id=? " ;
-//        int quantity;
-//        try {
-//            PreparedStatement st = conn.prepareStatement(sql);
-//
-//            st.setInt(1,productId);
-//            ResultSet rs = st.executeQuery();
-//            quantity = rs.getInt("quantity");
-//            if(rs.getString("position").equals("")){
-//                return false;
-//            }
-//        } catch (SQLException e) {
-//            return false;
-//        }
-//
 //        // updating the value to quantity
 //        quantity= quantity+toBeAdded;
         String sql="UPDATE productType SET quantity=quantity+? WHERE id=? AND position IS NOT NULL";
@@ -650,7 +602,7 @@ public class EZShop implements EZShopInterface{
 
         // check position format (number-string-number)
         if(!newPos.equals("") && !newPos.matches("[0-9]+-[a-zA-Z]+-[0-9]+")){
-            throw new InvalidLocationException();
+            throw new InvalidLocationException("Invalid Location");
         }
 
 //        // query for checking the uniqueness of position
@@ -702,7 +654,7 @@ public class EZShop implements EZShopInterface{
 
         //check quantity is not <=0
         if(quantity <= 0)
-            throw new InvalidQuantityException();
+            throw new InvalidQuantityException("Invalid Quantity");
 
         //check pricePerUnit is not <=0
         if(pricePerUnit <= 0)
@@ -788,7 +740,7 @@ public class EZShop implements EZShopInterface{
 
         // orderId not null, not <=0
         if(orderId == null || orderId <= 0){
-            throw new InvalidOrderIdException();
+            throw new InvalidOrderIdException("Invalid order Id");
         }
 
         String sql2 = "SELECT quantity, pricePerUnit, status FROM 'order' WHERE id=?" ;
@@ -968,12 +920,12 @@ public class EZShop implements EZShopInterface{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
         else if (newCustomerName==null || newCustomerName.isEmpty())
-            throw new InvalidCustomerNameException();
+            throw new InvalidCustomerNameException("Invalid Customer Name");
         else if (newCustomerCard!=null && !newCustomerCard.isEmpty() && !it.polito.ezshop.model.ProductType.validateProductCode(newCustomerCard) ) {
-            throw new InvalidCustomerCardException(); //Only when customer card is full but not a string of 10 digits, bypassed empty and null cases otherwise exception conflicts
+            throw new InvalidCustomerCardException("Invalid Customer Card"); //Only when customer card is full but not a string of 10 digits, bypassed empty and null cases otherwise exception conflicts
         }
         else if ( id== null || id<=0) {
-            throw new InvalidCustomerIdException();
+            throw new InvalidCustomerIdException("Invalid Customer Id");
         }
         else {
             try{
@@ -1109,13 +1061,15 @@ public class EZShop implements EZShopInterface{
             return this.customerList;
         else {
             try {
-                String sql = "SELECT * FROM customer INNER JOIN loyaltyCard ON loyaltyCard.id=customer.loyaltyCardId";
+                String sql = "SELECT * FROM customer LEFT JOIN loyaltyCard ON loyaltyCard.cardId=customer.loyaltyCardId";
                 PreparedStatement st = conn.prepareStatement(sql);
                 ResultSet rs = st.executeQuery();
                 this.customerList.clear();
+
                 while(rs.next()){
+
                     customerList.add(new it.polito.ezshop.model.Customer(
-                            rs.getInt("customerId"),
+                            rs.getInt("id"),
                             rs.getString("customerName"),
                             rs.getString("loyaltyCardId"),
                             rs.getInt("points")
@@ -1123,8 +1077,8 @@ public class EZShop implements EZShopInterface{
                 }
                 this.isCustomerListUpdated=true;
 
-            } catch (SQLException ignored) {
-
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
             return this.customerList;
         }
@@ -1166,10 +1120,10 @@ public class EZShop implements EZShopInterface{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
         else if (customerCard==null || customerCard.length()!=10 || !customerCard.matches("[0-9]+") ) {
-            throw new InvalidCustomerCardException();
+            throw new InvalidCustomerCardException("Invalid customer card.");
         }
         else if ( customerId== null || customerId<=0) {
-            throw new InvalidCustomerIdException();
+            throw new InvalidCustomerIdException("Invalid customer id.");
         }
         else
         {
@@ -1453,7 +1407,7 @@ public class EZShop implements EZShopInterface{
             throw new InvalidTransactionIdException();
         //check discountRate
         if(discountRate<=1.0)
-            throw new InvalidDiscountRateException();
+            throw new InvalidDiscountRateException("Invalid DiscountRate");
 
         // productCode not null, not empty
         if(productCode == null|| productCode.equals("") )
@@ -1984,10 +1938,10 @@ public class EZShop implements EZShopInterface{
             throw new UnauthorizedException();
         //check id
         if(transactionId==null||transactionId<=0)
-            throw new InvalidTransactionIdException();
+            throw new InvalidTransactionIdException("Invalid Transaction Id");
         //check cash
         if(cash <= 0)
-            throw new InvalidPaymentException();
+            throw new InvalidPaymentException("Invalid Payment");
 
         String sql="SELECT total FROM saleTransaction WHERE id=? AND status='CLOSED'";
         double total;
@@ -2139,7 +2093,7 @@ public class EZShop implements EZShopInterface{
         if(returnId==null||returnId<=0)
             throw new InvalidTransactionIdException();
         if(creditCard==null || creditCard.isEmpty() || !CreditCard.validateWithLuhn(creditCard))
-            throw new InvalidCreditCardException();
+            throw new InvalidCreditCardException("Invalid credit card.");
 
         String sql="SELECT total FROM returnTransaction WHERE id=? AND status='CLOSED'";
         double total;
@@ -2347,7 +2301,7 @@ public class EZShop implements EZShopInterface{
         }
     }
 
-    //TODO ONLY FOR TEST, delete after the implementation of reset inside afterEach test
+    //ONLY FOR TEST
     public void deleteOrderId(int orderId)
     {
         String sql = "DELETE FROM 'order' WHERE id=? ";
@@ -2361,7 +2315,7 @@ public class EZShop implements EZShopInterface{
 
     }
 
-    //TODO ONLY FOR TEST, delete after the implementation of reset inside afterEach test
+    //ONLY FOR TEST
     public void detachCustomerCard(String customerCard)
     {
         String sql = "UPDATE customer SET loyaltyCardId=NULL WHERE loyaltyCardId=? ";
