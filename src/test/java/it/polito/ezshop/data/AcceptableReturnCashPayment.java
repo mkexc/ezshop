@@ -10,20 +10,33 @@ import static org.junit.Assert.*;
 
 public class AcceptableReturnCashPayment {
 
-    private it.polito.ezshop.data.EZShop shop;
+    private EZShop shop;
     private int idSaleTransaction;
     private int idReturnTransaction;
 
     @Before
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
+        shop.reset();
         shop.login("admin","ciao");
         idSaleTransaction = shop.startSaleTransaction();
-        idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
+        Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.updatePosition(idProd,"13-cacca-14");
+        shop.updateQuantity(idProd,4);
+        shop.logout();
+        shop.login("23","12345");
         shop.addProductToSale(idSaleTransaction,"2424242424239",3);
-        // adding the product to return
+        shop.endSaleTransaction(idSaleTransaction);
+        shop.receiveCashPayment(idSaleTransaction,10.0);
+        idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
         shop.returnProduct(idReturnTransaction,"2424242424239",2);
         shop.endReturnTransaction(idReturnTransaction,true);
+    }
+
+    @After
+    public void after(){
+        shop.logout();
+        shop.reset();
     }
 
     @Test
@@ -53,21 +66,16 @@ public class AcceptableReturnCashPayment {
     }
 
     @Test
-    public void testNoEndend() throws Exception{
+    public void testNoEnded() throws Exception{
         int idReturnTransaction2= shop.startReturnTransaction(idSaleTransaction);
-
         // adding the product to return
-        shop.returnProduct(idReturnTransaction2,"2424242424239",2);
+        shop.returnProduct(idReturnTransaction2,"2424242424239",1);
+
         shop.returnCashPayment(idReturnTransaction2);
     }
 
     @Test
     public void testCorrectCase() throws Exception{
-        assertEquals(4.0, shop.returnCashPayment(idReturnTransaction),0.01);
-    }
-
-    @After
-    public void after(){
-        //shop.reset();
+        assertEquals(2.0, shop.returnCashPayment(idReturnTransaction),0.00);
     }
 }

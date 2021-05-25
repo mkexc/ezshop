@@ -41,15 +41,16 @@ public class AcceptableGetCreditsAndDebits {
         shop.login("admin","ciao");
     }
 
-    //TODO fix
+
     @Test
     public void testCorrectCase() throws Exception{
         LocalDate today = LocalDate.now();
         LocalDate yesterday= today.minusDays(1);
 
         assertTrue(shop.getCreditsAndDebits(null, null).size()>=1);
-        assertEquals(3,shop.getCreditsAndDebits(yesterday,today).size());
-        assertEquals(3,shop.getCreditsAndDebits(null, today).size());
-        assertEquals(0,shop.getCreditsAndDebits(today, null).size());
+        assertEquals(3,shop.getCreditsAndDebits(yesterday,today.plusDays(1)).size());
+        assertEquals(0,shop.getCreditsAndDebits(null, today).size());
+        assertEquals(3,shop.getCreditsAndDebits(yesterday, null).size());
+        assertEquals(3,shop.getCreditsAndDebits(null, today.plusDays(1)).size());
     }
 }

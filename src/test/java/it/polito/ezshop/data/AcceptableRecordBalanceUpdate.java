@@ -8,12 +8,19 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class AcceptableRecordBalanceUpdate {
-    private it.polito.ezshop.data.EZShop shop;
+    private EZShop shop;
 
     @Before
     public void before() throws Exception{
-        shop = new it.polito.ezshop.data.EZShop();
+        shop = new EZShop();
+        shop.reset();
         shop.login("admin","ciao");
+    }
+
+    @After
+    public void after(){
+        shop.logout();
+        shop.reset();
     }
 
     @Test
@@ -39,8 +46,5 @@ public class AcceptableRecordBalanceUpdate {
         assertTrue(shop.recordBalanceUpdate(-100));
     }
 
-    @After
-    public void after(){
-        // shop.reset();
-    }
+
 }

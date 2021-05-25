@@ -20,12 +20,13 @@ public class AcceptableDeleteReturnTransaction {
         shop.reset();
         shop.login("admin","ciao");
         idSaleTransaction = shop.startSaleTransaction();
-        idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
         Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
         shop.updatePosition(idProd,"13-cacca-14");
         shop.updateQuantity(idProd,4);
         shop.addProductToSale(idSaleTransaction,"2424242424239",3);
+        shop.endSaleTransaction(idSaleTransaction);
         // adding the product to return
+        idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
         shop.returnProduct(idReturnTransaction,"2424242424239",2);
         shop.logout();
         shop.login("23","12345");

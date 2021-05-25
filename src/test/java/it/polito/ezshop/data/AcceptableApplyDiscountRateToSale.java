@@ -12,70 +12,64 @@ import static org.junit.Assert.*;
 
 public class AcceptableApplyDiscountRateToSale {
     EZShop shop;
+    Integer idSaleTransaction;
 
     @Before
-    public void beforeEach() throws Exception {
+    public void before() throws Exception {
         shop = new EZShop();
+
+        shop.reset();
+        shop.login("admin","ciao");
+        Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.updatePosition(idProd,"13-cacca-14");
+        shop.updateQuantity(idProd,4);
+        shop.logout();
         shop.login("23","12345");
+        idSaleTransaction = shop.startSaleTransaction();
+        shop.addProductToSale(idSaleTransaction,"2424242424239",3);
     }
 
     @After
     public void afterEach() {
         shop.logout();
+        shop.reset();
     }
 
     @Test
     public void authTest() throws Exception {
         // no logged user
         shop.logout();
-        //Integer id = shop.startSaleTransaction();
         assertThrows(UnauthorizedException.class, () -> shop.applyDiscountRateToSale(1,10.0));
-        //shop.endSaleTransaction(id);
 
-        // user without privilege
-        //shop.login("Carlo","abcd");
-        //assertThrows(UnauthorizedException.class, () -> shop.applyDiscountRateToSale(1,10.0));
     }
 
     @Test
-    public void invalidTransactionId() throws Exception {
-        //Integer id = shop.startSaleTransaction();
-        // transactionid 0
+    public void invalidTransactionId() {
+        // transactionId 0
         assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToSale(0,10.0));
-        // transactionid <0
+        // transactionId <0
         assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToSale(-1,10.0));
-        // transactionid null
+        // transactionId null
         assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToSale(null,10.0));
-        //shop.endSaleTransaction(id);
     }
 
     @Test
-    public void invalidDiscountRateException() throws Exception {
-        Integer id = shop.startSaleTransaction();
-
-        // discountrate<0
-        assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToSale(id,-1.0));
-        // 0<discountrate<1
-        assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToSale(id,0.5));
-        // discountrate=1
-        assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToSale(id,1));
-
-        shop.endSaleTransaction(id);
+    public void invalidDiscountRateException()  {
+        // discountRate<0
+        assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToSale(idSaleTransaction,-1.0));
+        // 0<discountRate<1
+        assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToSale(idSaleTransaction,0.5));
+        // discountRate=1
+        assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToSale(idSaleTransaction,1));
     }
 
     @Test
     public void nonExistingTransaction() throws Exception {
-        assertFalse(shop.applyDiscountRateToSale(9999,10.0));
+        assertFalse(shop.applyDiscountRateToSale(666,10.0));
     }
 
     @Test
     public void correctCase() throws Exception {
-        Integer id = shop.startSaleTransaction();
-        assertTrue(shop.applyDiscountRateToSale(id,10.0));
-        shop.endSaleTransaction(id);
-        //shop.logout();
-        //shop.login("admin","ciao");
-        //Integer productId = shop.getProductTypeByBarCode("2424242424239").getId();
-        //shop.updateQuantity(productId,20);
+        assertTrue(shop.applyDiscountRateToSale(idSaleTransaction,10.0));
     }
 }

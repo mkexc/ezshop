@@ -9,63 +9,61 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class AcceptableDeleteSaleTransaction {
-    EZShop shop;
+    private it.polito.ezshop.data.EZShop shop;
+    private int idSaleTransaction;
 
     @Before
-    public void beforeEach() throws Exception {
-        shop = new EZShop();
+    public void before() throws Exception{
+        shop = new it.polito.ezshop.data.EZShop();
+        shop.reset();
+        shop.login("admin","ciao");
+        Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.updatePosition(idProd,"13-cacca-14");
+        shop.updateQuantity(idProd,40);
+        shop.logout();
         shop.login("23","12345");
+        idSaleTransaction = shop.startSaleTransaction();
+        shop.addProductToSale(idSaleTransaction,"2424242424239",11);
     }
 
     @After
-    public void afterEach() {
+    public void after() {
         shop.logout();
+        shop.reset();
     }
 
     @Test
     public void authTest() throws Exception {
         // no logged user
         shop.logout();
-        //Integer id = shop.startSaleTransaction();
-        assertThrows(UnauthorizedException.class, () -> shop.deleteSaleTransaction(1));
-        //shop.endSaleTransaction(id);
+        assertThrows(UnauthorizedException.class, () -> shop.deleteSaleTransaction(idSaleTransaction));
     }
 
     @Test
-    public void invalidTransactionId() throws Exception {
-        //Integer id = shop.startSaleTransaction();
+    public void invalidTransactionId() {
         // transactionid 0
         assertThrows(InvalidTransactionIdException.class, () -> shop.deleteSaleTransaction(0));
         // transactionid <0
         assertThrows(InvalidTransactionIdException.class, () -> shop.deleteSaleTransaction(-1));
         // transactionid null
         assertThrows(InvalidTransactionIdException.class, () -> shop.deleteSaleTransaction(null));
-        //shop.endSaleTransaction(id);
     }
 
     @Test
     public void nonExistingTransaction() throws Exception {
-        assertFalse(shop.deleteSaleTransaction(9999));
+        assertFalse(shop.deleteSaleTransaction(666));
     }
 
     @Test
     public void transactionAlreadyPayed() throws Exception {
-        Integer id = shop.startSaleTransaction();
-        shop.addProductToSale(id,"2424242424239",1);
-        shop.receiveCashPayment(id, 2);
+        shop.endSaleTransaction(idSaleTransaction);
+        shop.receiveCashPayment(idSaleTransaction, 12.0);
 
-        // TODO sistemare receivecashpayement?
-        assertFalse(shop.deleteSaleTransaction(id));
-    }
-
-    @Test
-    public void dbProblem() throws Exception {
-        //TODO testing db problem in deletesaletransaction
+        assertFalse(shop.deleteSaleTransaction(idSaleTransaction));
     }
 
     @Test
     public void correctCase() throws Exception {
-        Integer id = shop.startSaleTransaction();
-        assertTrue(shop.deleteSaleTransaction(id));
+        assertTrue(shop.deleteSaleTransaction(idSaleTransaction));
     }
 }

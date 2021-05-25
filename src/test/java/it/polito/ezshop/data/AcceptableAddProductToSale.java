@@ -38,7 +38,7 @@ public class AcceptableAddProductToSale {
     }
 
     @Test
-    public void invalidTransactionId() throws Exception
+    public void invalidTransactionId()
     {
         assertThrows(InvalidTransactionIdException.class, () -> shop.addProductToSale(0,"3456243422340",3));
         assertThrows(InvalidTransactionIdException.class, () -> shop.addProductToSale(-1,"3456243422340",3));

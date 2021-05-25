@@ -19,14 +19,21 @@ public class AcceptableEndReturnTransaction {
         shop.reset();
         shop.login("admin","ciao");
         idSaleTransaction = shop.startSaleTransaction();
-        idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
         Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
         shop.updatePosition(idProd,"13-cacca-14");
         shop.updateQuantity(idProd,4);
         shop.logout();
         shop.login("23","12345");
         shop.addProductToSale(idSaleTransaction,"2424242424239",3);
+        shop.endSaleTransaction(idSaleTransaction);
+        idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
+        shop.returnProduct(idReturnTransaction,"2424242424239",2);
+    }
 
+    @After
+    public void after() throws Exception{
+        shop.reset();
+        shop.logout();
     }
 
     @Test
@@ -65,14 +72,6 @@ public class AcceptableEndReturnTransaction {
 
     @Test
     public void testCorrectCase() throws Exception{
-        //TODO RIFARE
         assertTrue(shop.endReturnTransaction(idReturnTransaction,true));
     }
-
-    @After
-    public void after() throws Exception{
-        shop.reset();
-        shop.logout();
-    }
-
 }

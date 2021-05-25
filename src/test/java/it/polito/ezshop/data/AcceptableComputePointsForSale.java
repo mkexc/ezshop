@@ -11,50 +11,53 @@ import static org.junit.Assert.*;
 
 public class AcceptableComputePointsForSale {
     EZShop shop;
+    Integer idSaleTransaction;
 
     @Before
-    public void beforeEach() throws Exception {
+    public void before() throws Exception {
         shop = new EZShop();
+
+        shop.reset();
+        shop.login("admin","ciao");
+        Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.updatePosition(idProd,"13-cacca-14");
+        shop.updateQuantity(idProd,40);
+        shop.logout();
         shop.login("23","12345");
+        idSaleTransaction = shop.startSaleTransaction();
+        shop.addProductToSale(idSaleTransaction,"2424242424239",11);
     }
 
     @After
     public void afterEach() {
         shop.logout();
+        shop.reset();
     }
 
     @Test
     public void authTest() throws Exception {
-        // no logged user
         shop.logout();
-        //Integer id = shop.startSaleTransaction();
         assertThrows(UnauthorizedException.class, () -> shop.computePointsForSale(1));
-        //shop.endSaleTransaction(id);
     }
 
     @Test
-    public void invalidTransactionId() throws Exception {
-        //Integer id = shop.startSaleTransaction();
-        // transactionid 0
+    public void invalidTransactionId() {
+        // transactionId 0
         assertThrows(InvalidTransactionIdException.class, () -> shop.computePointsForSale(0));
-        // transactionid <0
+        // transactionId <0
         assertThrows(InvalidTransactionIdException.class, () -> shop.computePointsForSale(-1));
-        // transactionid null
+        // transactionId null
         assertThrows(InvalidTransactionIdException.class, () -> shop.computePointsForSale(null));
-        //shop.endSaleTransaction(id);
     }
 
     @Test
     public void nonExistingTransaction() throws Exception {
-        assertSame(-1, shop.computePointsForSale(9999));
+        assertSame(-1, shop.computePointsForSale(666));
     }
 
     @Test
     public void correctCase() throws Exception {
-        Integer id = shop.startSaleTransaction();
-        shop.addProductToSale(id, "2424242424239", 5);
-        // TODO sistemare computepointsforsale
-        assertSame(1, shop.computePointsForSale(id));
-        shop.endSaleTransaction(id);
+        shop.addProductToSale(idSaleTransaction, "2424242424239", 12);
+        assertSame(2, shop.computePointsForSale(idSaleTransaction));
     }
 }

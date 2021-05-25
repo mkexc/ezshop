@@ -9,15 +9,30 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class AcceptableStartReturnTransaction {
-    private it.polito.ezshop.data.EZShop shop;
-    private int idSaleTransaction;
-
+    EZShop shop;
+    Integer idSaleTransaction;
 
     @Before
-    public void before() throws Exception{
-        shop = new it.polito.ezshop.data.EZShop();
+    public void before() throws Exception {
+        shop = new EZShop();
+
+        shop.reset();
         shop.login("admin","ciao");
+        Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.updatePosition(idProd,"13-cacca-14");
+        shop.updateQuantity(idProd,40);
+        shop.logout();
+        shop.login("23","12345");
         idSaleTransaction = shop.startSaleTransaction();
+        shop.addProductToSale(idSaleTransaction,"2424242424239",11);
+        shop.endSaleTransaction(idSaleTransaction);
+        shop.receiveCashPayment(idSaleTransaction,1000.0);
+    }
+
+    @After
+    public void after() throws Exception {
+        shop.reset();
+        shop.logout();
     }
 
     @Test
@@ -40,9 +55,10 @@ public class AcceptableStartReturnTransaction {
         assertThrows(InvalidTransactionIdException.class, () ->
                 shop.startReturnTransaction(-1));
     }
+
     @Test
     public void testNoTransactionPresent() throws Exception{
-        assertEquals(-1,shop.startReturnTransaction(999).intValue());
+        assertSame(-1,shop.startReturnTransaction(999));
     }
 
     @Test
@@ -50,13 +66,5 @@ public class AcceptableStartReturnTransaction {
         int idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
         assertTrue( idReturnTransaction>0);
         shop.deleteReturnTransaction(idReturnTransaction);
-
     }
-
-    @After
-    public void after() throws Exception {
-        shop.deleteSaleTransaction(idSaleTransaction);
-        shop.logout();
-    }
-
 }

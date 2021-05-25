@@ -11,17 +11,29 @@ import static org.junit.Assert.*;
 
 public class AcceptableReceiveCashPayment {
 
-    private it.polito.ezshop.data.EZShop shop;
-    private int idSaleTransaction;
-
+    EZShop shop;
+    Integer idSaleTransaction;
 
     @Before
-    public void before() throws Exception{
-        shop = new it.polito.ezshop.data.EZShop();
+    public void before() throws Exception {
+        shop = new EZShop();
+
+        shop.reset();
         shop.login("admin","ciao");
+        Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.updatePosition(idProd,"13-cacca-14");
+        shop.updateQuantity(idProd,40);
+        shop.logout();
+        shop.login("23","12345");
         idSaleTransaction = shop.startSaleTransaction();
-        shop.addProductToSale(idSaleTransaction,"2424242424239",3);
+        shop.addProductToSale(idSaleTransaction,"2424242424239",11);
         shop.endSaleTransaction(idSaleTransaction);
+    }
+
+    @After
+    public void after() throws Exception{
+        shop.logout();
+        shop.reset();
     }
 
     @Test
@@ -29,7 +41,7 @@ public class AcceptableReceiveCashPayment {
         shop.logout();
         assertThrows(UnauthorizedException.class, () ->
                 shop.receiveCashPayment(idSaleTransaction, 100));
-        shop.login("admin","ciao");
+        shop.login("23","12345");
     }
 
     @Test
@@ -64,13 +76,6 @@ public class AcceptableReceiveCashPayment {
 
     @Test
     public void testCorrectCase() throws Exception{
-        assertTrue(shop.receiveCashPayment(idSaleTransaction,10.0)==4);
+        assertEquals(1.0, shop.receiveCashPayment(idSaleTransaction,12.0),0.00);
     }
-
-    @After
-    public void after() throws Exception{
-        //shop.reset();
-    }
-
-
 }

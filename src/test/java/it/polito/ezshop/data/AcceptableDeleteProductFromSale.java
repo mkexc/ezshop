@@ -13,99 +13,87 @@ import static org.junit.Assert.*;
 
 public class AcceptableDeleteProductFromSale {
     EZShop shop;
+    Integer idSaleTransaction;
 
     @Before
-    public void beforeEach() throws Exception {
+    public void before() throws Exception {
         shop = new EZShop();
+
+        shop.reset();
+        shop.login("admin","ciao");
+        Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.updatePosition(idProd,"13-cacca-14");
+        shop.updateQuantity(idProd,4);
+        shop.logout();
         shop.login("23","12345");
+        idSaleTransaction = shop.startSaleTransaction();
+        shop.addProductToSale(idSaleTransaction,"2424242424239",3);
     }
 
     @After
-    public void afterEach() {
+    public void after() {
         shop.logout();
+        shop.reset();
     }
 
     @Test
     public void authTest() throws Exception {
         // no logged user
         shop.logout();
-        //Integer id = shop.startSaleTransaction();
         assertThrows(UnauthorizedException.class, () -> shop.deleteProductFromSale(1,"2424242424239",1));
-        //shop.endSaleTransaction(id);
-
-        // user without privilege
-        //shop.login("Carlo","abcd");
-        //assertThrows(UnauthorizedException.class, () -> shop.deleteProductFromSale(1,"278732878273",1));
     }
 
     @Test
-    public void invalidTransactionId() throws Exception {
-        //Integer id = shop.startSaleTransaction();
+    public void invalidTransactionId()  {
         // transactionid 0
         assertThrows(InvalidTransactionIdException.class, () -> shop.deleteProductFromSale(0,"2424242424239",3));
         // transactionid <0
         assertThrows(InvalidTransactionIdException.class, () -> shop.deleteProductFromSale(-1,"2424242424239",3));
         // transactionid null
         assertThrows(InvalidTransactionIdException.class, () -> shop.deleteProductFromSale(null,"2424242424239",3));
-        //shop.endSaleTransaction(id);
     }
 
     @Test
-    public void invalidProductCodeException() throws Exception {
-        Integer id = shop.startSaleTransaction();
-        // productcode invalid
-        assertThrows(InvalidProductCodeException.class, () -> shop.deleteProductFromSale(id,"278732878273",3));
-        assertThrows(InvalidProductCodeException.class, () -> shop.deleteProductFromSale(id,"2121",3));
-        assertThrows(InvalidProductCodeException.class, () -> shop.deleteProductFromSale(id,"27873287827362737",3));
-        // productcode empty
-        assertThrows(InvalidProductCodeException.class, () -> shop.deleteProductFromSale(id,"",3));
-        // productcode null
-        assertThrows(InvalidProductCodeException.class, () -> shop.deleteProductFromSale(id,null,3));
-        shop.endSaleTransaction(id);
+    public void invalidProductCodeException() {
+
+        // productCode invalid
+        assertThrows(InvalidProductCodeException.class, () -> shop.deleteProductFromSale(idSaleTransaction,"278732878273",3));
+        assertThrows(InvalidProductCodeException.class, () -> shop.deleteProductFromSale(idSaleTransaction,"2121",3));
+        assertThrows(InvalidProductCodeException.class, () -> shop.deleteProductFromSale(idSaleTransaction,"27873287827362737",3));
+        // productCode empty
+        assertThrows(InvalidProductCodeException.class, () -> shop.deleteProductFromSale(idSaleTransaction,"",3));
+        // productCode null
+        assertThrows(InvalidProductCodeException.class, () -> shop.deleteProductFromSale(idSaleTransaction,null,3));
     }
 
     @Test
-    public void invalidQuantity() throws Exception {
+    public void invalidQuantity() {
         // quantity <0
-        Integer id = shop.startSaleTransaction();
-        assertThrows(InvalidQuantityException.class, () -> shop.deleteProductFromSale(id,"2424242424239",-1));
-        shop.endSaleTransaction(id);
+        assertThrows(InvalidQuantityException.class, () -> shop.deleteProductFromSale(idSaleTransaction,"2424242424239",-1));
     }
 
     @Test
     public void nonExistingProductCode() throws Exception {
-        Integer id = shop.startSaleTransaction();
-        assertFalse(shop.deleteProductFromSale(id,"3456243422340",4));
-        shop.endSaleTransaction(id);
+        assertFalse(shop.deleteProductFromSale(idSaleTransaction,"3456243422340",4));
     }
 
     @Test
     public void notEnoughQuantity() throws Exception {
-        Integer id = shop.startSaleTransaction();
-        shop.addProductToSale(id,"2424242424239",1);
-        assertFalse(shop.deleteProductFromSale(id,"2424242424239",80));
-        shop.endSaleTransaction(id);
+        assertFalse(shop.deleteProductFromSale(idSaleTransaction,"2424242424239",80));
     }
 
     @Test
     public void transactionNotOpen() throws Exception {
-        Integer id = shop.startSaleTransaction();
-        shop.addProductToSale(id,"2424242424239",1);
-        shop.endSaleTransaction(id);
-
-        assertFalse(shop.deleteProductFromSale(id,"2424242424239",1));
+        shop.endSaleTransaction(idSaleTransaction);
+        assertFalse(shop.deleteProductFromSale(idSaleTransaction,"2424242424239",1));
     }
 
     @Test
     public void correctCase() throws Exception {
-        Integer id = shop.startSaleTransaction();
-        shop.addProductToSale(id,"2424242424239",1);
-        // TODO sistemare deleteProductFromSale
-        assertTrue(shop.deleteProductFromSale(id,"2424242424239",1));
-        shop.endSaleTransaction(id);
-        //shop.logout();
-        //shop.login("admin","ciao");
-        //Integer productId = shop.getProductTypeByBarCode("2424242424239").getId();
-        //shop.updateQuantity(productId,20);
+        assertTrue(shop.deleteProductFromSale(idSaleTransaction,"2424242424239",1));
+        shop.endSaleTransaction(idSaleTransaction);
+        shop.logout();
+        shop.login("admin","ciao");
+        assertEquals(2,shop.getProductTypeByBarCode("2424242424239").getQuantity().intValue());
     }
 }
