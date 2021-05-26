@@ -33,7 +33,7 @@ public class AcceptableAddProductToSale {
     public void authTest() throws Exception
     {
         shop.logout();
-        assertThrows(UnauthorizedException.class, () -> shop.addProductToSale(1,"278732878273",3));
+        assertThrows(UnauthorizedException.class, () -> shop.addProductToSale(1,"3456243422340",3));
         shop.login("23","12345");
     }
 

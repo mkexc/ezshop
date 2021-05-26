@@ -1722,6 +1722,7 @@ public class EZShop implements EZShopInterface{
             ResultSet rs2 = st2.executeQuery();
             if(!rs2.isBeforeFirst())
                 return null;
+            rs2.next();
             int id = rs2.getInt("id");
             double discountRate = rs2.getDouble("discountRate");
             double total = rs2.getDouble("total");
@@ -1853,7 +1854,7 @@ public class EZShop implements EZShopInterface{
             PreparedStatement st2 = conn.prepareStatement(sql2);
             st2.setInt(1,returnId);
             st2.setString(2,productCode);
-            st2.setInt(3,amount);
+            st2.setInt(3,amount); //TODO aggiungere meno
             st2.setDouble(4,discountOfProduct);
 
             int updatedRows = st2.executeUpdate();
@@ -1866,9 +1867,6 @@ public class EZShop implements EZShopInterface{
 
     @Override
     public boolean endReturnTransaction(Integer returnId, boolean commit) throws InvalidTransactionIdException, UnauthorizedException {
-        if(!commit){
-            this.deleteReturnTransaction(returnId);
-        }
         //check authorization
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
@@ -1876,49 +1874,86 @@ public class EZShop implements EZShopInterface{
         if(returnId==null||returnId<=0)
             throw new InvalidTransactionIdException();
 
+        if(!commit){
+            return this.deleteReturnTransaction(returnId);
+        }
+
         //check status
-        String sql5="SELECT status, PE.barcode, amount FROM returnTransaction RT, productEntry PE WHERE RT.id=? AND PE.transactionId=RT.id";
-        String productCode="";
+
+        String productCode;
         int amount=0;
-
+        int idSaleTransaction;
+        ProductType product=null;
+        String oldRole=loggedUser.getRole();
         try {
-
+            String sql5="SELECT status, PE.barcode, amount, RT.saleTransactionId AS saleTransactionId FROM returnTransaction RT, productEntry PE WHERE RT.id=? AND PE.transactionId=RT.id AND status='OPEN'";
             PreparedStatement st5 = conn.prepareStatement(sql5);
             st5.setInt(1, returnId);
             ResultSet rs5 = st5.executeQuery();
 
-            if (rs5.next()) {
+            if(!rs5.isBeforeFirst())
+                return false;
+
+            while (rs5.next()) {
                 productCode = rs5.getString("barcode");
                 amount = rs5.getInt("amount");
+                idSaleTransaction=rs5.getInt("saleTransactionId");
+                loggedUser.setRole("Administrator");
+                if((product = this.getProductTypeByBarCode(productCode)) == null)
+                    return false;
+
+                String sql9 = "UPDATE ProductEntry SET amount=amount-? WHERE transactionId=? AND barcode=?";
+                PreparedStatement st6 = conn.prepareStatement(sql9);
+                st6.setInt(1,amount);
+                st6.setInt(2,idSaleTransaction);
+                st6.setString(3,productCode);
+                int updatedRows = st6.executeUpdate();
+                if(updatedRows == 0)
+                    return false;
+
+                if(!this.updateQuantity(product.getId(),amount))
+                    return false;
+
+                loggedUser.setRole(oldRole);
 
             }
 
-            if(!rs5.getString("status").equals("OPEN"))
-                return false;
-        }catch(SQLException e){
 
-            return false;
-        }
-
-        ProductType product;
-        String oldRole=loggedUser.getRole();
-        try {
-            loggedUser.setRole("Administrator");
-            product = this.getProductTypeByBarCode(productCode);
-            loggedUser.setRole(oldRole);
-        }catch(Exception e) {
+        }catch(Exception e){
             loggedUser.setRole(oldRole);
             return false;
         }
 
-        try{
-            loggedUser.setRole("Administrator");
-            this.updateQuantity(product.getId(),amount);
-            loggedUser.setRole(oldRole);
-        }catch(Exception e) {
-            loggedUser.setRole(oldRole);
-            return false;
-        }
+//        ProductType product;
+//        String oldRole=loggedUser.getRole();
+//        try {
+//            loggedUser.setRole("Administrator");
+//            product = this.getProductTypeByBarCode(productCode);
+//            loggedUser.setRole(oldRole);
+//        }catch(Exception e) {
+//            loggedUser.setRole(oldRole);
+//            return false;
+//        }
+//
+//        try{
+//            loggedUser.setRole("Administrator");
+//
+//            //decrease productEntry of sale
+//            String sql9 = "UPDATE ProductEntry SET amount=amount-? WHERE transactionId=? AND barcode=?";
+//            try{
+//                PreparedStatement st5 = conn.prepareStatement(sql9);
+//                st5.setInt(1,amount);
+//                st5.setInt(2,idSaleTransaction);
+//                st5.setString(3,productCode);
+//                st5.executeUpdate();
+//
+//                this.updateQuantity(product.getId(),amount);
+//            }catch (SQLException e){e.printStackTrace();}
+//            loggedUser.setRole(oldRole);
+//        }catch(Exception e) {
+//            loggedUser.setRole(oldRole);
+//            return false;
+//        }
 
         double discountOfSale=0.0;
         //get discountRate of sale
@@ -1945,7 +1980,7 @@ public class EZShop implements EZShopInterface{
             while(rs.next()){
                 double price = rs.getDouble("pricePerUnit");
                 price = price - price*discountOfSale;
-                total+=rs.getInt("amount")* price  - price* (rs.getDouble("discountRate"));
+                total+=rs.getInt("amount")* price  - (price* (rs.getDouble("discountRate"))*rs.getInt("amount"));
             }
 
         }catch(SQLException e){
@@ -1963,7 +1998,8 @@ public class EZShop implements EZShopInterface{
         }catch(SQLException e){
             try{
                 loggedUser.setRole("Administrator");
-                this.updateQuantity(product.getId(),-amount);
+                if(product != null)
+                    this.updateQuantity(product.getId(),-amount);
                 loggedUser.setRole(oldRole);
                 return false;
             }catch(Exception ee){
