@@ -40,29 +40,29 @@ public class AcceptableApplyDiscountRateToProduct {
     public void authTest() throws Exception {
         // no logged user
         shop.logout();
-        assertThrows(UnauthorizedException.class, () -> shop.applyDiscountRateToProduct(1,"2424242424239",10.0));
+        assertThrows(UnauthorizedException.class, () -> shop.applyDiscountRateToProduct(1,"2424242424239",0.1));
     }
 
     @Test
     public void invalidTransactionId() {
         // transactionId 0
-        assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToProduct(0,"2424242424239",10.0));
+        assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToProduct(0,"2424242424239",0.1));
         // transactionId <0
-        assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToProduct(-1,"2424242424239",10.0));
+        assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToProduct(-1,"2424242424239",0.1));
         // transactionId null
-        assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToProduct(null,"2424242424239",10.0));
+        assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToProduct(null,"2424242424239",0.1));
     }
 
     @Test
     public void invalidProductCodeException() {
         // productCode invalid
-        assertThrows(InvalidProductCodeException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,"278732878273",10.0));
-        assertThrows(InvalidProductCodeException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,"2121",10.0));
-        assertThrows(InvalidProductCodeException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,"27873287827362737",10.0));
+        assertThrows(InvalidProductCodeException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,"278732878273",0.1));
+        assertThrows(InvalidProductCodeException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,"2121",0.1));
+        assertThrows(InvalidProductCodeException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,"27873287827362737",0.1));
         // productCode empty
-        assertThrows(InvalidProductCodeException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,"",10.0));
+        assertThrows(InvalidProductCodeException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,"",0.1));
         // productCode null
-        assertThrows(InvalidProductCodeException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,null,10.0));
+        assertThrows(InvalidProductCodeException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,null,0.1));
     }
 
     @Test
@@ -70,24 +70,24 @@ public class AcceptableApplyDiscountRateToProduct {
         // discountRate<0
         assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,"2424242424239",-1.0));
         // 0<discountRate<1
-        assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,"2424242424239",0.5));
+        assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,"2424242424239",10.0));
         // discountRate=1
         assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToProduct(idSaleTransaction,"2424242424239",1));
     }
 
     @Test
     public void nonExistingProductCode() throws Exception {
-        assertFalse(shop.applyDiscountRateToProduct(idSaleTransaction,"3456243422340",10.0));
+        assertFalse(shop.applyDiscountRateToProduct(idSaleTransaction,"3456243422340",0.1));
     }
 
     @Test
     public void transactionNotOpen() throws Exception {
         shop.endSaleTransaction(idSaleTransaction);
-        assertFalse(shop.applyDiscountRateToProduct(idSaleTransaction,"2424242424239",10.0));
+        assertFalse(shop.applyDiscountRateToProduct(idSaleTransaction,"2424242424239",0.1));
     }
 
     @Test
     public void correctCase() throws Exception {
-        assertTrue(shop.applyDiscountRateToProduct(idSaleTransaction,"2424242424239",10.0));
+        assertTrue(shop.applyDiscountRateToProduct(idSaleTransaction,"2424242424239",0.1));
     }
 }

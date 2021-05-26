@@ -39,18 +39,18 @@ public class AcceptableApplyDiscountRateToSale {
     public void authTest() throws Exception {
         // no logged user
         shop.logout();
-        assertThrows(UnauthorizedException.class, () -> shop.applyDiscountRateToSale(1,10.0));
+        assertThrows(UnauthorizedException.class, () -> shop.applyDiscountRateToSale(1,0.1));
 
     }
 
     @Test
     public void invalidTransactionId() {
         // transactionId 0
-        assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToSale(0,10.0));
+        assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToSale(0,0.1));
         // transactionId <0
-        assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToSale(-1,10.0));
+        assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToSale(-1,0.1));
         // transactionId null
-        assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToSale(null,10.0));
+        assertThrows(InvalidTransactionIdException.class, () -> shop.applyDiscountRateToSale(null,0.1));
     }
 
     @Test
@@ -58,18 +58,18 @@ public class AcceptableApplyDiscountRateToSale {
         // discountRate<0
         assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToSale(idSaleTransaction,-1.0));
         // 0<discountRate<1
-        assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToSale(idSaleTransaction,0.5));
+        assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToSale(idSaleTransaction,21.2));
         // discountRate=1
         assertThrows(InvalidDiscountRateException.class, () -> shop.applyDiscountRateToSale(idSaleTransaction,1));
     }
 
     @Test
     public void nonExistingTransaction() throws Exception {
-        assertFalse(shop.applyDiscountRateToSale(666,10.0));
+        assertFalse(shop.applyDiscountRateToSale(666,0.1));
     }
 
     @Test
     public void correctCase() throws Exception {
-        assertTrue(shop.applyDiscountRateToSale(idSaleTransaction,10.0));
+        assertTrue(shop.applyDiscountRateToSale(idSaleTransaction,0.1));
     }
 }
