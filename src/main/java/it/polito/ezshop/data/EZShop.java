@@ -2441,7 +2441,6 @@ public class EZShop implements EZShopInterface{
 //    }
 
     //ONLY FOR TEST
-    // TODO cancellare?
     public void detachCustomerCard(String customerCard)
     {
         String sql = "UPDATE customer SET loyaltyCardId=NULL WHERE loyaltyCardId=?";
@@ -2454,6 +2453,7 @@ public class EZShop implements EZShopInterface{
         }
     }
 
+    //ONLY FOR TEST
     public void deleteCard(String id) {
         String sql = "DELETE FROM loyaltyCard WHERE cardId=?";
 

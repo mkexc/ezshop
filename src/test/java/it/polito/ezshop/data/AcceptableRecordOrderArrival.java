@@ -46,7 +46,7 @@ public class AcceptableRecordOrderArrival {
     }
 
     @Test
-    public void TestInvalidOrderId() throws Exception {
+    public void testInvalidOrderId() throws Exception {
         shop.login("admin", "ciao");
         assertFalse(shop.recordOrderArrival(300));
         assertThrows(InvalidOrderIdException.class, () ->
@@ -58,17 +58,17 @@ public class AcceptableRecordOrderArrival {
     }
 
     @Test
-    public void TestCompletedState() throws Exception {
+    public void testCompletedState() throws Exception {
         assertFalse(shop.recordOrderArrival(255));
     }
 
     @Test
-    public void TestNoLocation() {
+    public void testNoLocation() {
         assertThrows(InvalidLocationException.class,()->shop.recordOrderArrival(orderIdPayed2));
     }
 
     @Test
-    public void TestCorrectCase() throws Exception {
+    public void testCorrectCase() throws Exception {
         assertTrue(shop.recordOrderArrival(orderIdPayed));
     }
 

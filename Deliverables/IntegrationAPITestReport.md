@@ -1,10 +1,11 @@
 # Integration and API Test Documentation
 
-Authors:
+Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date:
+Date: 26/05/2021
 
-Version:
+Version: 1.0
+
 
 # Contents
 
@@ -18,98 +19,419 @@ Version:
 
 - [Coverage of scenarios and FR](#scenario-coverage)
 - [Coverage of non-functional requirements](#nfr-coverage)
-
+- [Coverage of methods and code lines](#Coverage-of-methods-and-code-lines)
 
 
 # Dependency graph 
 
-     <report the here the dependency graph of the classes in EzShop, using plantuml>
-     
-# Integration approach
+```plantuml
+@startuml
+class EZShop {}
 
-    <Write here the integration sequence you adopted, in general terms (top down, bottom up, mixed) and as sequence
-    (ex: step1: class A, step 2: class A+B, step 3: class A+B+C, etc)> 
-    <Some steps may  correspond to unit testing (ex step1 in ex above), presented in other document UnitTestReport.md>
-    <One step will  correspond to API testing>
+class ProductType {}
+class BalanceOperation {}
+class User {}
+class Customer {}
+class SaleTransaction {}
+class TicketEntry {}
+class CreditCard {}
+class Order {}
+
+
+EZShop --> ProductType
+EZShop -> BalanceOperation
+SaleTransaction ---> BalanceOperation
+EZShop --> User
+EZShop --> Customer
+EZShop --> SaleTransaction
+EZShop --> TicketEntry
+EZShop --> CreditCard
+EZShop --> Order
+
+@enduml
+```
+
+![Dependency Graph from IDE: IntelliJ IDEA](assets/img/dependency_graph.jpg)
+
+
+# Integration approach
     
+## Step 1
+Unit test of classes User, Customer, ProductType, Order, SaleTransaction, TicketEntry, CreditCard, BalanceOperation
+## Step 2
+Integration test of User methods from API and reset
+## Step 3
+Integration test of Customer, ProductType, LoyalityCard methods from API
+## Step 4
+Integration test of Order methods from API
+## Step 5
+Integration test of SaleTransaction, ReturnTransaction, TicketEntry methods from API
+## Step 6
+Integration test of CreditCard, BalanceOperation methods from API
 
 
 #  Tests
 
-   <define below a table for each integration step. For each integration step report the group of classes under test, and the names of
-     JUnit test cases applied to them> JUnit test classes should be here src/test/java/it/polito/ezshop
-
 ## Step 1
-| Classes  | JUnit test cases |
-|--|--|
-|||
 
+This step corresponds to Unit testing.
 
 ## Step 2
-| Classes  | JUnit test cases |
-|--|--|
-|||
+| Classes                   | JUnit test cases           |
+|---------------------------|----------------------------|
+|AcceptableReset            |check1                      |
+|                         * |check2                      |
+|                         * |check3                      |
+|                         * |check4                      |
+|AcceptableCreateUser       |testUsername                |
+|                         * |testPassword                |
+|                         * |testRole                    |
+|                         * |testDuplicatedUsername      |
+|                         * |testCorrectCase             |
+|AcceptableDeleteUser       |deleteUser                  |
+|                         * |deleteUsernameNotAuthorized |
+|                         * |deleteUsernameNotPresent    |
+|                         * |userNotLogged               |
+|                         * |invalidUserId               |
+|                         * |userDeletable               |
+|AcceptableGetAllUsers      |testAuthorization           |
+|                         * |testCorrect                 |
+|AcceptableGetUser          |testAuthorization           |
+|                         * |testCorrectId               |
+|                         * |testGetUser                 |
+|                         * |testNotFoundUser            |
+|AcceptableUpdateUserRights |userNotLogged               |
+|                         * |userNotAuthorized           |
+|                         * |invalidUserId               |
+|                         * |invalidRole                 |
+|                         * |userNotPresent              |
+|AcceptableLogin            |testUsername                |
+|                         * |testPassword                |
+|                         * |testTwoLoggedUser           |
+|AcceptableLogout           |testNotLoggedUser           |
+|                         * |testCorrectCase             |
 
+## Step 3 
+               
+| Classes                               | JUnit test cases           |
+|-------------------------------------- |----------------------------|
+|AcceptableDefineCustomer               |authTest                    |
+|                                     * |testCustomerName            |
+|                                     * |testCorrectCase             |
+|AcceptableModifyCustomer               |authTest                    |
+|                                     * |modifyNameOnly              |
+|                                     * |removeCard                  |
+|                                     * |modifyCard                  |
+|                                     * |modifyCardAlreadyAssigned   |
+|                                     * |invalidName                 |
+|                                     * |invalidCard                 |
+|AcceptableDeleteCustomer               |authTest                    |
+|                                     * |testId                      |
+|                                     * |testCorrectCase             |
+|AcceptableGetAllCustomers              |unLoggedIn                  |
+|                                     * |cashierLoggedIn             |
+|AcceptableGetCustomer                  |authTest                    |
+|                                     * |testId                      |
+|                                     * |testCorrectCase             |
+|AcceptableCreateProductType            |testAuthorization           |
+|                                     * |testPricePerUnit            |
+|                                     * |testDescription             |
+|                                     * |testProductCode             |
+|                                     * |testErrorCase               |
+|                                     * |testCorrectCase             |
+|AcceptableDeleteProductType            |testAuthorization           |
+|                                     * |testProductId               |
+|                                     * |testNoIdToDelete            |
+|                                     * |testCorrectCase             |
+|AcceptableGetAllProductTypes           |testAuthorization           |
+|                                     * |testCorrectCase             |
+|AcceptableGetProductTypeByBarcode      |testAuthorization           |
+|                                     * |testProductCode             |
+|                                     * |testNoProduct               |
+|                                     * |testCorrectCase             |
+|AcceptableGetProductTypeByDescription  |testAuthorization           |
+|                                     * |testValid                   |
+|                                     * |testMultipleValid           |
+|                                     * |testNotValid                |
+|AcceptableUpdatePosition               |testAuthorization           |
+|                                     * |testProductId               |
+|                                     * |testDuplicatePosition       |
+|                                     * |testCorrectCase             |
+|AcceptableUpdateProduct                |testAuthorization           |
+|                                     * |testProductCode             |
+|                                     * |testPricePerUnit            |
+|                                     * |testDescription             |
+|                                     * |testProductId               |
+|                                     * |testNoProductId             |
+|                                     * |testCorrectCase             |
+|                                     * |testSameBarcodePresent      |
+|                                     * |testValidBarcode            |
+|AcceptableUpdateQuantity               |testAuthorization           |
+|                                     * |testProductId               |
+|                                     * |testToBeAdded               |
+|                                     * |testCorrectCase             |
+|AcceptableCreateCard                   |authTest                    |
+|                                     * |correctCase                 |
+|AcceptableAttachCardToCustomer         |authTest                    |
+|                                     * |invalidCustomerId           |
+|                                     * |invalidCardId               |
+|                                     * |noUser                      |
+|                                     * |alreadyAssigned             |
+|                                     * |correctCase                 |
+|AcceptableModifyPointsOnCard           |authTest                    |
+|                                     * |cardIdNotPresent            |
+|                                     * |invalidCardId               |
+|                                     * |notEnoughPoints             |
+|                                     * |correctCase                 |
 
-## Step n 
+## Step 4 
+               
+| Classes                               | JUnit test cases           |
+|-------------------------------------- |----------------------------|
+|AcceptableIssueOrder                   |authTest                    |
+|                                     * |invalidProductCode          |
+|                                     * |validProductCodeNotInDB     |
+|                                     * |invalidPricePerUnit         |
+|                                     * |invalidQuantity             |
+|                                     * |validOrder                  |
+|AcceptablePayOrder                     |authTest                    |
+|                                     * |testInvalidOrderId          |
+|                                     * |testJustPayed               |
+|                                     * |TestCorrectCase             |
+|AcceptablePayOrderFor                  |authTest                    |
+|                                     * |invalidProductCode          |
+|                                     * |validProductCodeNotInDB     |
+|                                     * |invalidPricePerUnit         |
+|                                     * |invalidQuantity             |
+|                                     * |notEnoughBalanceValidOrder  |
+|                                     * |validOrder                  |
+|AcceptableRecordOrderArrival           |authTest                    |
+|                                     * |invalidOrderId              |
+|                                     * |testCompletedState          |
+|                                     * |testNoLocation              |
+|                                     * |testCorrectCase             |
+|AcceptableGetAllOrder                  |authTest                    |
+|                                     * |correctCase                 |
 
-   
+## Step 5 
+               
+| Classes                                | JUnit test cases               |
+|--------------------------------------- |------------------------------- |
+|AcceptableAddProductToSale              |authTest                        |
+|                                      * |invalidTransactionId            |
+|                                      * |invalidProductCodeException     |
+|                                      * |invalidQuantity                 |
+|                                      * |nonExistingProductCode          |
+|                                      * |notEnoughQuantity               |
+|                                      * |notStartedSaleTransaction       |
+|                                      * |correctCase                     |
+| AcceptableApplyDiscountRateToProduct   |authTest                        |
+|                                      * |invalidTransactionId            |
+|                                      * |invalidProductCodeException     |
+|                                      * |invalidDiscountRateException    |
+|                                      * |nonExistingProductCode          |
+|                                      * |TransactionNotOpen              |
+|                                      * |correctCase                     |
+| AcceptableApplyDiscountRateToSale      |authTest                        |
+|                                      * |invalidTransactionId            |
+|                                      * |invalidDiscountRateException    |
+|                                      * |nonExistingTransaction          |
+|                                      * |correctCase                     |
+| AcceptableComputePointsForSale         |authTest                        |
+|                                      * |invalidTransactionId            |
+|                                      * |nonExistingTransaction          |
+|                                      * |correctCase                     |
+| AcceptableDeleteProductFromSale        |authTest                        |
+|                                      * |invalidTransactionId            |
+|                                      * |invalidProductCodeException     |
+|                                      * |invalidQuantity                 |
+|                                      * |notEnoughQuantity               |
+|                                      * |TransactionNotOpen              |
+|                                      * |correctCase                     |
+| AcceptableDeleteReturnTransaction      |authTest                        |
+|                                      * |testIdCorrect                   |
+|                                      * |testNoReturnTransactionId       |
+|                                      * |testCorrectCase                 |
+|                                      * |testPayed                       |
+| AcceptableDeleteSaleTransaction        |authTest                        |
+|                                      * |invalidTransactionId            |
+|                                      * |nonExistingTransaction          |
+|                                      * |transactionAlreadyPayed         |
+|                                      * |correctCase                     |
+| AcceptableEndReturnTransaction         |authTest                        |
+|                                      * |testIdCorrect                   |
+|                                      * |testNoReturnTransactionId       |
+|                                      * |testCloseAgain                  |
+|                                      * |testCorrectCase                 |
+| AcceptableEndSaleTransaction           |authTest                        |
+|                                      * |invalidTransactionId            |
+|                                      * |nonExistingTransaction          |
+|                                      * |transactionAlreadyClosed        |
+|                                      * |correctCase                     |
+| AcceptableGetSaleTransaction           |authTest                        |
+|                                      * |testIdCorrect                   |
+|                                      * |testNoTransactionPresent        |
+|                                      * |testProductCase                 |
+| AcceptableStartReturnTransaction       |authTest                        |
+|                                      * |testIdCorrect                   |
+|                                      * |testNoTrans ctionPresent        
+|                                      * |testCorrectCase                 |
+| AcceptableStartSaleTransaction         |authTest                        |
+|                                      * |testCorrectCase                 |
+| AcceptableReturnProduct                |authTest                        |
+|                                      * |testInvalidProductCode          |
+|                                      * |testInvalidQuantity             |
+|                                      * |testIdCorrect                   |
+|                                      * |testNoProductInSaleTransaction  |
+|                                      * |testNoProductInProductType      |
+|                                      * |testTooHighQuantity             |
+|                                      * |testNoReturnTransactionId       |
+|                                      * |testCorrectCase                 |
 
-| Classes  | JUnit test cases |
-|--|--|
-|||
-
-
-
+## Step 6 
+               
+| Classes                               | JUnit test cases           |
+|-------------------------------------- |----------------------------|
+|AcceptableReceiveCashPayment           |authTest                    |
+|                                     * |testIdCorrect               |
+|                                     * |testInvalidPayment          |
+|                                     * |testSaleDoesNotExist        |
+|                                     * |testNoMoney                 |
+|                                     * |testCorrectCase             |
+|AcceptableReceiveCreditCardPayment     |authTest                    |
+|                                     * |testIdCorrect               |
+|                                     * |testNoSaleTransactionId     |
+|                                     * |testCreditCard              |
+|                                     * |testCorrectCase             |
+|AcceptableReturnCashPayment            |authTest                    |
+|                                     * |testIdCorrect               |
+|                                     * |testNoReturnTransactionId   |
+|                                     * |testNoEnded                 |
+|                                     * |testCorrectCase             |
+|AcceptableReturnCreditCardPayment      |authTest                    |
+|                                     * |testIdCorrect               |
+|                                     * |testNoReturnTransactionId   |
+|                                     * |testNoEnded                 |
+|                                     * |testCorrectCase             |
+|                                     * |testCreditCard              |
+|                                     * |testNoSaleTransactionId     |
+|AcceptableRecordBalanceUpdate          |authTest                    |
+|                                     * |testNegativeBalance         |
+|                                     * |testIdCorrect               |
+|AcceptableComputeBalance               |authTest                    |
+|                                     * |testIdCorrect               |
+|AcceptableGetCreditsAndDebits          |authTest                    |
+|                                     * |testIdCorrect               |
 
 # Scenarios
 
+## Scenario 1-4
 
-<If needed, define here additional scenarios for the application. Scenarios should be named
- referring the UC in the OfficialRequirements that they detail>
+| Scenario           |  name                              |
+| ------------------ |:----------------------------------:| 
+| Precondition       | Employee C exists and is logged in |
+|                    | Product type X exists              |
+| Post condition     | X.quantity = new quantity          |
+| Step#              | Description                        |
+|  1                 |  C searches X via bar code         |
+|  2                 |  C selects X's record              |
+|  3                 |  C inserts a new quantity          |
+|  4                 |  C confirms the update             |
+|  5                 |  X is updated                      |
 
-## Scenario UCx.y
+## Scenario 1-5
 
-| Scenario |  name |
-| ------------- |:-------------:| 
-|  Precondition     |  |
-|  Post condition     |   |
-| Step#        | Description  |
-|  1     |  ... |  
-|  2     |  ... |
+| Scenario       | Get all products                |
+| -------------- | ------------------------------- |
+| Precondition   | Admin A exists and is logged in |
+| Post Condition | List of products P is retrieved |
+| Step #         | Description                     |
+| 1              | P is retrieved                  |
 
+## Scenario 2-4
+
+| Scenario       | Get all users                   |
+| -------------- | ------------------------------- |
+| Precondition   | Admin A exists and is logged in |
+| Post Condition | List of users U is retrieved    |
+| Step #         | Description                     |
+| 1              | U is retrieved                  |
+
+## Scenario 3-4
+
+| Scenario       | Get all orders                  |
+| -------------- | ------------------------------- |
+| Precondition   | Admin A exists and is logged in |
+| Post Condition | List of orders O is retrieved   |
+| Step #         | Description                     |
+| 1              | O is retrieved                  |
+
+## Scenario 4-5
+
+| Scenario       | Get all customers                |
+| -------------- | -------------------------------- |
+| Precondition   | Admin A exists and is logged in  |
+| Post Condition | List of customers C is retrieved |
+| Step #         | Description                      |
+| 1              | C is retrieved                   |
 
 
 # Coverage of Scenarios and FR
 
+We define coverage of Scenarios and FRs in relation to test classes, instead of single JUnit test.
 
-<Report in the following table the coverage of  scenarios (from official requirements and from above) vs FR. 
-Report also for each of the scenarios the (one or more) API JUnit tests that cover it. >
-
-
-
-
-| Scenario ID | Functional Requirements covered | JUnit  Test(s) | 
-| ----------- | ------------------------------- | ----------- | 
-|  ..         | FRx                             |             |             
-|  ..         | FRy                             |             |             
-| ...         |                                 |             |             
-| ...         |                                 |             |             
-| ...         |                                 |             |             
-| ...         |                                 |             |             
-
+| Scenario ID | Functional Requirements covered                                                           | JUnit Test(s)                                                                                                                                                                                                                                                                       | 
+| ----------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | 
+| 1.1         | FR3.1                                                                                     | AcceptableCreateProductType                                                                                                                                                                                                                                                         |             
+| 1.2         | FR3.1                                                                                     | AcceptableUpdatePosition                                                                                                                                                                                                                                                            |             
+| 1.3         | FR3.1                                                                                     | AcceptableUpdateProduct                                                                                                                                                                                                                                                             |             
+| 1.4         | FR3.4                                                                                     | AcceptableUpdateQuantity                                                                                                                                                                                                                                                            |
+| 1.5         | FR3.3                                                                                     | AcceptableGetAllProducts                                                                                                                                                                                                                                                            |
+| 2.1         | FR1.1                                                                                     | AcceptableCreateUser                                                                                                                                                                                                                                                                |
+| 2.2         | FR1.2                                                                                     | AcceptableDeleteUser                                                                                                                                                                                                                                                                |
+| 2.3         | FR1.5                                                                                     | AcceptableUpdateUserRight                                                                                                                                                                                                                                                           |
+| 2.4         | FR1.3                                                                                     | AcceptableGetAllUsers                                                                                                                                                                                                                                                               |
+| 3.1         | FR4.3                                                                                     | AcceptableIssueOrder                                                                                                                                                                                                                                                                |
+| 3.2         | FR4.5 + FR8.1                                                                             | AcceptablePayOrder                                                                                                                                                                                                                                                                  |
+| 3.3         | FR4.6                                                                                     | AcceptableRecordOrderArrival                                                                                                                                                                                                                                                        |
+| 3.4         | FR4.7                                                                                     | AcceptableGetAllOrders                                                                                                                                                                                                                                                              |
+| 4.1         | FR5.1                                                                                     | AcceptableDefineCustomer                                                                                                                                                                                                                                                            |
+| 4.2         | FR5.6                                                                                     | AcceptableAttachCardToCustomer                                                                                                                                                                                                                                                      |
+| 4.3         | FR5.1                                                                                     | AcceptableModifyCustomer                                                                                                                                                                                                                                                            |
+| 4.4         | FR5.1                                                                                     | AcceptableModifyCustomer                                                                                                                                                                                                                                                            |
+| 4.5         | FR5.4                                                                                     | AcceptableGetAllCustormer                                                                                                                                                                                                                                                           |
+| 5.1         | FR1.5                                                                                     | AcceptableLogin                                                                                                                                                                                                                                                                     |
+| 5.2         | FR1.5                                                                                     | AcceptableLogout                                                                                                                                                                                                                                                                    |
+| 6.1         | FR6.1 + FR6.2 + FR6.7 + FR6.8 + FR6.10  + FR6.11 + FR7.1/2 + FR8.2 + FR4.1                | AcceptableStartSaleTransaction + AcceptableGeProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate                                                                 |
+| 6.2         | FR6.1 + FR6.2 + FR6.5 + FR6.7 + FR6.8 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1         | AcceptableStartSaleTransaction + AcceptableGeProductByBarcode + AcceptableAddProductToSale + AcceptableApplyDiscountRateToProduct + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate                          |
+| 6.3         | FR6.1 + FR6.2 + FR6.4 + FR6.7 + FR6.8 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1         | AcceptableStartSaleTransaction + AcceptableGeProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableApplyDiscountRateToSale + AcceptableEndSaleTransaction + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate                             |   
+| 6.4         | FR6.1 + FR6.2 + FR6.6 + FR6.7 + FR6.8 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1 + FR5.7 | AcceptableStartSaleTransaction + AcceptableGeProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableComputePointsForSale + AcceptableModifyPointsOnCard + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate |   
+| 6.5         | FR6.1 + FR6.2 + FR6.7 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1                         | AcceptableStartSaleTransaction + AcceptableGeProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableDeleteSaleTransaction                                                                                              |   
+| 6.6         | FR6.1 + FR6.2 + FR6.6 + FR6.7 + FR6.8 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1         | AcceptableStartSaleTransaction + AcceptableGeProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate                                                                 |   
+| 7.1         | FR7.2                                                                                     | testValidateWithLuhn + AcceptableReceiveCreditCardPayment                                                                                                                                                                                                                           |   
+| 7.2         | FR7.2                                                                                     | testValidateWithLuhn                                                                                                                                                                                                                                                                |   
+| 7.3         | FR7.2                                                                                     | testValidateWithLuhn + AcceptableReceiveCreditCardPayment                                                                                                                                                                                                                           |   
+| 7.4         | FR7.3                                                                                     | AcceptableReceiveCashPayment                                                                                                                                                                                                                                                        |   
+| 8.1         | FR6.12 + FR6.13 + FR6.14 + FR8.1 + FR7.4                                                  | All test of UseCase 6.3 + AcceptableStartReturnTransaction + AcceptableReturnProduct + AcceptableUpdateQuantity + AcceptableEndReturnTransaction + AcceptableReturnCreditCardPayment + AcceptableRecordBalanceUpdate                                                                |     
+| 8.2         | FR6.12 + FR6.13 + FR6.14 + FR8.1 + FR7.3                                                  | All test of UseCase 6.3 + AcceptableStartReturnTransaction + AcceptableReturnProduct + AcceptableUpdateQuantity + AcceptableEndReturnTransaction + AcceptableReturnCashPayment + AcceptableRecordBalanceUpdate                                                                      |   
+| 9.1         | FR8.3                                                                                     | AcceptableGetCreditsAndDebits                                                                                                                                                                                                                                                       |   
+| 10.1        | FR7.4                                                                                     | testValidateWithLunh + AcceptableReturnCreditCardPayment                                                                                                                                                                                                                            |     
+| 10.2        | FR7.3                                                                                     | AcceptableReturnCashPayment + AcceptableRecordBalanceUpdate                                                                                                                                                                                                                         |   
 
 
 # Coverage of Non Functional Requirements
 
-
-<Report in the following table the coverage of the Non Functional Requirements of the application - only those that can be tested with automated testing frameworks.>
-
-
 ### 
 
-| Non Functional Requirement | Test name |
-| -------------------------- | --------- |
-|                            |           |
+| Non Functional Requirement | Test name                                                                                            |
+| -------------------------- | ---------------------------------------------------------------------------------------------------- |
+| NFR1                       | GUI Test                                                                                             |
+| NFR2                       | All tests, verified by [IntelliJ IDEA IDE timing reports](assets/testReports/testsTimingReport.html) |
+| NFR4                       | AcceptableProductType.testValidationProductCode                                                      |
+| NFR5                       | AcceptableCreditCard.testValidateWithLuhn                                                            |
+| NFR6                       | AcceptableAttachCardToCustomer.invalidCardId                                                         |
 
 
+# Coverage of methods and code lines
+
+Complete coverage report by IntelliJ IDEA IDE is available [here](assets/testReports/index.html).

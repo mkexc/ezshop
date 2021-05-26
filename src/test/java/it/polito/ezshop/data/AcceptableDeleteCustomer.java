@@ -37,7 +37,7 @@ public class AcceptableDeleteCustomer {
     }
 
     @Test
-    public void TestId() throws Exception {
+    public void testId() throws Exception {
         assertThrows(InvalidCustomerIdException.class, () ->
                 shop.deleteCustomer(-3)
         );
@@ -49,7 +49,7 @@ public class AcceptableDeleteCustomer {
     }
 
     @Test
-    public void TestCorrectCase() throws Exception {
+    public void testCorrectCase() throws Exception {
         assertTrue(shop.deleteCustomer(customerId));
     }
 

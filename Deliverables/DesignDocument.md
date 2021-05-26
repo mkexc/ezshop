@@ -199,7 +199,8 @@ package it.polito.ezshop.data{
         + getCreditsAndDebits()
         + computeBalance()
 
-        + deleteOrderId()
+        + detachCustomerCard()
+        + deleteCard()
     }
 }
 

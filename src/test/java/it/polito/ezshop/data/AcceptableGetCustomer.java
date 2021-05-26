@@ -37,7 +37,7 @@ public class AcceptableGetCustomer {
     }
 
     @Test
-    public void TestId() throws Exception {
+    public void testId() throws Exception {
         assertThrows(InvalidCustomerIdException.class, () ->
                 shop.getCustomer(-3)
         );
@@ -49,7 +49,7 @@ public class AcceptableGetCustomer {
     }
 
     @Test
-    public void TestCorrectCase() throws Exception {
+    public void testCorrectCase() throws Exception {
         assertEquals("Obama",shop.getCustomer(customerId).getCustomerName());
     }
 }

@@ -45,7 +45,7 @@ public class AcceptablePayOrder {
     }
 
     @Test
-    public void TestInvalidOrderId() throws Exception {
+    public void testInvalidOrderId() throws Exception {
         assertFalse(shop.payOrder(300));
 
         assertThrows(InvalidOrderIdException.class, () ->
@@ -57,12 +57,12 @@ public class AcceptablePayOrder {
     }
 
     @Test
-    public void TestJustPayed() throws Exception {
+    public void testJustPayed() throws Exception {
         assertFalse(shop.payOrder(orderIdPayed));
     }
 
     @Test
-    public void TestCorrectCase() throws Exception {
+    public void testCorrectCase() throws Exception {
         assertTrue(shop.payOrder(orderIdIssued));
     }
 }
