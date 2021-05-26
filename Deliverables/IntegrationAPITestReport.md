@@ -431,8 +431,8 @@ We define coverage of Scenarios and FRs in relation to test classes, instead of 
 | NFR5                       | AcceptableCreditCard.testValidateWithLuhn                                                            |
 | NFR6                       | AcceptableAttachCardToCustomer.invalidCardId                                                         |
 
-Here's the test's timing, the complete test report is report is linked in the table above (NFR2)
 ![Test timing from IDE: IntelliJ IDEA](assets/img/testTiming.jpg)
+Here's the test's timing, the complete test report is report is linked in the table above (NFR2)
 
 # Coverage of methods and code lines
 
