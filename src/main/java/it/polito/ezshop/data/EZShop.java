@@ -985,17 +985,17 @@ public class EZShop implements EZShopInterface{
         else {
             try {
                 //String sql = "SELECT * FROM customer AS C WHERE C.id=?";
-                String sql = "SELECT C.id AS id, customerName, loyaltyCardId, points FROM customer AS C, loyaltyCard AS LC WHERE C.id=? AND C.loyaltyCardId=LC.cardId";
+                String sql = "SELECT C.id AS id, C.customerName as customerName , C.loyaltyCardId as loyaltyCardId, points FROM customer AS C, loyaltyCard AS LC LEFT JOIN customer ON C.loyaltyCardId=LC.cardId  WHERE C.id=?";
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setInt(1,id);
                 ResultSet rs = st.executeQuery();
 
                 if(!rs.isBeforeFirst())
                     return null;
-
-                Customer cust = new it.polito.ezshop.model.Customer(
+                rs.next();
+                return new it.polito.ezshop.model.Customer(
                         rs.getInt("id"),
-                        rs.getString("CustomerName"),
+                        rs.getString("customerName"),
                         rs.getString("loyaltyCardId"),
                         rs.getInt("points")
                 );
@@ -1020,7 +1020,7 @@ public class EZShop implements EZShopInterface{
 //
 //                cust.setPoints(rs2.getInt("points"));
 
-                return cust;
+                //return cust;
             } catch (SQLException e) {
                 return null;
             }
@@ -1068,10 +1068,15 @@ public class EZShop implements EZShopInterface{
                 ResultSet rs = st.executeQuery();
 
                 if(!rs.next())
-                    return "";
-                temp = rs.getInt("id");
-                temp++;
-                nextId = String.format("%1$10d",temp).replace(' ', '0');
+                {
+                    temp = 1;
+                    nextId="0000000001";
+                }else
+                {
+                    temp = rs.getInt("id");
+                    temp++;
+                    nextId = String.format("%1$10d",temp).replace(' ', '0');
+                }
                 String sql2 = "INSERT INTO loyaltyCard(id,cardId) VALUES (?,?)";
                 PreparedStatement st2 = conn.prepareStatement(sql2);
                 st2.setInt(1,temp);
@@ -1369,17 +1374,6 @@ public class EZShop implements EZShopInterface{
 
             if(updatedRows == 0)
                 return false;
-
-            // delete row if productentry amount is 0
-            String sql3 = "DELETE FROM productEntry WHERE amount=0 AND transactionId=? AND barcode=?";
-            PreparedStatement st2 = conn.prepareStatement(sql3);
-            st2.setInt(1,transactionId);
-            st2.setString(2,productCode);
-            int updatedRows2 = st2.executeUpdate();
-
-            if(updatedRows2 == 0)
-                return false;
-
             // check availability of the product
             try {
                 loggedUser.setRole("Administrator");
@@ -1393,6 +1387,15 @@ public class EZShop implements EZShopInterface{
                 loggedUser.setRole(actualRole);
                 return false;
             }
+
+            // delete row if productentry amount is 0
+            String sql3 = "DELETE FROM productEntry WHERE amount=0 AND transactionId=? AND barcode=?";
+            PreparedStatement st2 = conn.prepareStatement(sql3);
+            st2.setInt(1,transactionId);
+            st2.setString(2,productCode);
+            st2.executeUpdate();
+
+
             return true;
 //            String oldRole= loggedUser.getRole();
 //            try {
@@ -1826,7 +1829,7 @@ public class EZShop implements EZShopInterface{
         }
 
         // check if there is the product and the proper quantity in the sale transaction
-        double discountOfProduct=0.0;
+        double discountOfProduct;
         String sql3 = "SELECT amount, discountRate FROM productEntry WHERE transactionId=? AND barcode=?";
         try {
             PreparedStatement st3 = conn.prepareStatement(sql3);
@@ -2413,6 +2416,16 @@ public class EZShop implements EZShopInterface{
             st.executeUpdate();
         }catch (SQLException ignored){
         }
+    }
 
+    public void deleteCard(String id) {
+        String sql = "DELETE FROM loyaltyCard WHERE cardId=?";
+
+        try {
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, id);
+            st.executeUpdate();
+        } catch (SQLException ignored){
+        }
     }
 }

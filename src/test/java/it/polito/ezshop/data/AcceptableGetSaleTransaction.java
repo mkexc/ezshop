@@ -19,7 +19,11 @@ public class AcceptableGetSaleTransaction {
         shop.reset();
         shop.login("admin","ciao");
         idSaleTransaction = shop.startSaleTransaction();
+        Integer productId=shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.updatePosition(productId, "123-a-456");
+        shop.updateQuantity(productId,4);
         shop.addProductToSale(idSaleTransaction,"2424242424239",3);
+        shop.endSaleTransaction(idSaleTransaction);
     }
 
     @Test

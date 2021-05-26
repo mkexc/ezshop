@@ -11,16 +11,27 @@ import static org.junit.Assert.*;
 
 public class AcceptableAttachCardToCustomer {
     EZShop shop;
+    String card,cardAssengated;
+    Integer customerId, customerIdWithCard;
 
     @Before
-    public void beforeEach() throws Exception {
+    public void before() throws Exception {
         shop = new EZShop();
         shop.reset();
         shop.login("23","12345");
+        card=shop.createCard();
+        customerId=shop.defineCustomer("Jonny");
+        customerIdWithCard=shop.defineCustomer("Frank");
+        cardAssengated= shop.createCard();
+        shop.attachCardToCustomer(cardAssengated,customerIdWithCard);
     }
 
     @After
-    public void afterEach() {
+    public void after() throws Exception{
+        shop.deleteCustomer(customerId);
+        shop.deleteCustomer(customerIdWithCard);
+        shop.deleteCard(card);
+        shop.deleteCard(cardAssengated);
         shop.logout();
         shop.reset();
     }
@@ -28,38 +39,38 @@ public class AcceptableAttachCardToCustomer {
     @Test
     public void authTest() throws Exception {
         shop.logout();
-        assertThrows(UnauthorizedException.class, () -> shop.attachCardToCustomer("0000000001",1));
+        assertThrows(UnauthorizedException.class, () -> shop.attachCardToCustomer(card,customerId));
         shop.login("23","12345");
     }
 
     @Test
     public void invalidCustomerId() {
-        assertThrows(InvalidCustomerIdException.class, () -> shop.attachCardToCustomer("0000000001",0));
-        assertThrows(InvalidCustomerIdException.class, () -> shop.attachCardToCustomer("0000000001",-1));
-        assertThrows(InvalidCustomerIdException.class, () -> shop.attachCardToCustomer("0000000001",null));
+        assertThrows(InvalidCustomerIdException.class, () -> shop.attachCardToCustomer(card,0));
+        assertThrows(InvalidCustomerIdException.class, () -> shop.attachCardToCustomer(card,-1));
+        assertThrows(InvalidCustomerIdException.class, () -> shop.attachCardToCustomer(card,null));
     }
 
     @Test
     public void invalidCardId() {
-        assertThrows(InvalidCustomerCardException.class, () -> shop.attachCardToCustomer("",1));
-        assertThrows(InvalidCustomerCardException.class, () -> shop.attachCardToCustomer("00000001",1));
-        assertThrows(InvalidCustomerCardException.class, () -> shop.attachCardToCustomer("000000000100",1));
-        assertThrows(InvalidCustomerCardException.class, () -> shop.attachCardToCustomer(null,1));
+        assertThrows(InvalidCustomerCardException.class, () -> shop.attachCardToCustomer("",customerId));
+        assertThrows(InvalidCustomerCardException.class, () -> shop.attachCardToCustomer("00000001",customerId));
+        assertThrows(InvalidCustomerCardException.class, () -> shop.attachCardToCustomer("000000000100",customerId));
+        assertThrows(InvalidCustomerCardException.class, () -> shop.attachCardToCustomer(null,customerId));
     }
 
     @Test
     public void noUser() throws InvalidCustomerIdException, UnauthorizedException, InvalidCustomerCardException {
-        assertFalse(shop.attachCardToCustomer("0000000001",3));
+        assertFalse(shop.attachCardToCustomer(card,748374));
     }
 
     @Test
     public void alreadyAssigned() throws InvalidCustomerIdException, UnauthorizedException, InvalidCustomerCardException {
-        assertFalse(shop.attachCardToCustomer("0000000001",10));
+        assertFalse(shop.attachCardToCustomer(cardAssengated,customerId));
     }
 
     @Test
     public void correctCase() throws InvalidCustomerIdException, UnauthorizedException, InvalidCustomerCardException {
-        assertTrue(shop.attachCardToCustomer("0000000002",10));
-        shop.detachCustomerCard("0000000002");
+        assertTrue(shop.attachCardToCustomer(card,customerId));
+        shop.detachCustomerCard(card);
     }
 }

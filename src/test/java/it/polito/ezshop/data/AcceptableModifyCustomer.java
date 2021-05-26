@@ -12,21 +12,27 @@ public class AcceptableModifyCustomer {
 
     private EZShop shop;
     Integer id,id2;
+    String card, card2;
 
     @Before
     public void before() throws Exception {
         shop = new EZShop();
         shop.reset();
         shop.login("23","12345");
-        id = shop.defineCustomer("Giovanni");
-        id2 = shop.defineCustomer("Pino");
-        shop.modifyCustomer(id2,"Pino","3465446777744");
+        id = shop.defineCustomer("Brazorf");
+        id2 = shop.defineCustomer("Ajeje");
+        card = shop.createCard();
+        card2 = shop.createCard();
+        shop.attachCardToCustomer(card,id2);
+        //shop.modifyCustomer(id2,"Pino",card);
     }
 
     @After
     public void after() throws Exception{
         shop.deleteCustomer(id);
         shop.deleteCustomer(id2);
+        shop.deleteCard(card);
+        shop.deleteCard(card2);
         shop.reset();
         shop.logout();
     }
@@ -35,7 +41,7 @@ public class AcceptableModifyCustomer {
     public void authTest() throws Exception {
         shop.logout();
         assertThrows(UnauthorizedException.class, () ->
-                shop.modifyCustomer(1,"mauro","3465446453648")
+                shop.modifyCustomer(id,"Mauro",card2)
         );
         shop.login("23","12345");
     }
@@ -53,12 +59,12 @@ public class AcceptableModifyCustomer {
 
     @Test
     public void modifyCard() throws Exception {
-        assertTrue(shop.modifyCustomer(id,"Francesco","3465446499646"));
+        assertTrue(shop.modifyCustomer(id,"Francesco",card2));
     }
 
     @Test
     public void modifyCardAlreadyAssigned() throws Exception {
-        assertFalse(shop.modifyCustomer(id,"Francesco","3465446777744"));
+        assertFalse(shop.modifyCustomer(id,"Francesco",card));
     }
 
     @Test

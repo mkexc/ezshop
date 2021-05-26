@@ -1,6 +1,5 @@
 package it.polito.ezshop.model;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -39,10 +38,10 @@ public class AcceptableCreditCard {
 
     @Test
     public void testValidateWithLuhn() {
-
-        assertTrue(it.polito.ezshop.model.CreditCard.validateWithLuhn("4556737586899855"));
+        assertTrue(it.polito.ezshop.model.CreditCard.validateWithLuhn("4485370086510891"));
+        assertTrue(it.polito.ezshop.model.CreditCard.validateWithLuhn("5100293991053009"));
+        assertTrue(it.polito.ezshop.model.CreditCard.validateWithLuhn("4716258050958645"));
         assertFalse(it.polito.ezshop.model.CreditCard.validateWithLuhn("4324332424"));
     }
-
 
 }

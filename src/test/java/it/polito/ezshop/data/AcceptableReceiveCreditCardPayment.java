@@ -41,20 +41,20 @@ public class AcceptableReceiveCreditCardPayment {
     public void authTest() throws Exception {
         shop.logout();
         assertThrows(UnauthorizedException.class, () ->
-                shop.receiveCreditCardPayment(idSaleTransaction, "4024007103682604"));
+                shop.receiveCreditCardPayment(idSaleTransaction, "4716258050958645"));
         shop.login("admin","ciao");
     }
 
     @Test
     public void testIdCorrect() {
         assertThrows(InvalidTransactionIdException.class, () ->
-                shop.receiveCreditCardPayment(null,"4024007103682604"));
+                shop.receiveCreditCardPayment(null,"4716258050958645"));
 
         assertThrows(InvalidTransactionIdException.class, () ->
-                shop.receiveCreditCardPayment(0,"4024007103682604"));
+                shop.receiveCreditCardPayment(0,"4716258050958645"));
 
         assertThrows(InvalidTransactionIdException.class, () ->
-                shop.receiveCreditCardPayment(-1,"4024007103682604"));
+                shop.receiveCreditCardPayment(-1,"4716258050958645"));
     }
 
     @Test
@@ -64,17 +64,17 @@ public class AcceptableReceiveCreditCardPayment {
         assertThrows(InvalidCreditCardException.class, () ->
                 shop.receiveCreditCardPayment(idSaleTransaction,null));
         assertThrows(InvalidCreditCardException.class, () ->
-                shop.receiveCreditCardPayment(idSaleTransaction,"4024007103682604"));
+                shop.receiveCreditCardPayment(idSaleTransaction,"4716258000958645"));
     }
 
     @Test
     public void testNoSaleTransactionId() throws Exception{
-        assertFalse(shop.receiveCreditCardPayment(9999, "4556737586899855"));
+        assertFalse(shop.receiveCreditCardPayment(9999, "4716258050958645"));
     }
 
     @Test
     public void testCorrectCase() throws Exception{
-        assertTrue(shop.receiveCreditCardPayment(idSaleTransaction,"4556737586899855"));
+        assertTrue(shop.receiveCreditCardPayment(idSaleTransaction,"4716258050958645"));
     }
 
 }

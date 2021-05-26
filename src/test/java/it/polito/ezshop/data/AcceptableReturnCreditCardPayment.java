@@ -27,7 +27,7 @@ public class AcceptableReturnCreditCardPayment {
         shop.login("23","12345");
         shop.addProductToSale(idSaleTransaction,"2424242424239",3);
         shop.endSaleTransaction(idSaleTransaction);
-        shop.receiveCreditCardPayment(idSaleTransaction, "4556737586899855");
+        shop.receiveCreditCardPayment(idSaleTransaction, "4716258050958645");
         idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
         shop.returnProduct(idReturnTransaction,"2424242424239",2);
         shop.endReturnTransaction(idReturnTransaction,true);
@@ -62,7 +62,7 @@ public class AcceptableReturnCreditCardPayment {
 
     @Test
     public void testNoReturnTransactionId() throws Exception{
-        assertEquals(-1.0,shop.returnCreditCardPayment(9999,"4556737586899855"),0.1);
+        assertEquals(-1.0,shop.returnCreditCardPayment(9999,"4716258050958645"),0.1);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class AcceptableReturnCreditCardPayment {
         int idReturnTransaction2= shop.startReturnTransaction(idSaleTransaction);
         // adding the product to return
         shop.returnProduct(idReturnTransaction2,"2424242424239",2);
-        shop.returnCreditCardPayment(idReturnTransaction2,"4556737586899855");
+        shop.returnCreditCardPayment(idReturnTransaction2,"4716258050958645");
     }
 
     @Test
@@ -80,19 +80,19 @@ public class AcceptableReturnCreditCardPayment {
         assertThrows(InvalidCreditCardException.class, () ->
                 shop.returnCreditCardPayment(idReturnTransaction,null));
         assertThrows(InvalidCreditCardException.class, () ->
-                shop.returnCreditCardPayment(idReturnTransaction,"4024007103682604"));
+                shop.returnCreditCardPayment(idReturnTransaction,"4716258750958645"));
     }
 
     @Test
     public void testNoSaleTransactionId() throws Exception{
-        assertEquals(-1.0, shop.returnCreditCardPayment(9999, "4556737586899855"), 0.01);
+        assertEquals(-1.0, shop.returnCreditCardPayment(9999, "4716258050958645"), 0.01);
     }
 
 
 
     @Test
     public void testCorrectCase() throws Exception{
-        assertEquals(2.0,shop.returnCreditCardPayment(idReturnTransaction,"4556737586899855"),0.01);
+        assertEquals(2.0,shop.returnCreditCardPayment(idReturnTransaction,"4716258050958645"),0.01);
     }
 
 }

@@ -2,6 +2,8 @@ package it.polito.ezshop.data;
 
 import org.junit.*;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 public class AcceptableReset {
@@ -32,8 +34,8 @@ public class AcceptableReset {
 
     @Test
     public void check4() throws Exception{
-        assertSame(2,shop.getAllCustomers().size());
-        assertSame(2,shop.getAllUsers().size());
+        assertTrue(shop.getAllCustomers() instanceof ArrayList);
+        assertTrue(shop.getAllUsers() instanceof ArrayList);
     }
 
 }
