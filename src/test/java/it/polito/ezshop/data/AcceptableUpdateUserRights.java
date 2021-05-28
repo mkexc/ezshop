@@ -5,12 +5,12 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 public class AcceptableUpdateUserRights {
+
     @Test
     public void userNotLogged ()
     {
         EZShop shop = new EZShop();
         assertThrows(UnauthorizedException.class, ()->shop.updateUserRights(1, "Cashier"));
-        //shop.close();
     }
 
 
@@ -20,7 +20,7 @@ public class AcceptableUpdateUserRights {
         shop.login("23","12345");
         assertThrows(UnauthorizedException.class, ()->shop.updateUserRights(1, "Cashier"));
         shop.logout();
-        //shop.close();
+
     }
 
     @Test
@@ -29,7 +29,7 @@ public class AcceptableUpdateUserRights {
         shop.login("admin","ciao");
         assertThrows(InvalidUserIdException.class, ()->shop.updateUserRights(0, "Cashier"));
         shop.logout();
-        //shop.close();
+
     }
 
     @Test
@@ -38,7 +38,6 @@ public class AcceptableUpdateUserRights {
         shop.login("admin","ciao");
         assertThrows(InvalidRoleException.class, ()->shop.updateUserRights(1, "Boh"));
         shop.logout();
-        //shop.close();
     }
 
     @Test
@@ -47,6 +46,5 @@ public class AcceptableUpdateUserRights {
         shop.login("admin","ciao");
         assertFalse(shop.updateUserRights(999, "Cashier"));
         shop.logout();
-        //shop.close();
     }
 }

@@ -72,13 +72,13 @@ public class AcceptableProductType {
 
     @Test
     public void testGetPricePerUnit() {
-        assertEquals(23.5,productType.getPricePerUnit().doubleValue(),0.0);
+        assertEquals(23.5,productType.getPricePerUnit(),0.0);
     }
 
     @Test
     public void testSetPricePerUnit() {
         productType.setPricePerUnit(24.9);
-        assertEquals(24.9,productType.getPricePerUnit().doubleValue(),0.0);
+        assertEquals(24.9,productType.getPricePerUnit(),0.0);
     }
 
     @Test

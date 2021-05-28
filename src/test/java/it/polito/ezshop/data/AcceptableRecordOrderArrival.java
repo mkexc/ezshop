@@ -12,41 +12,43 @@ import static org.junit.Assert.assertThrows;
 public class AcceptableRecordOrderArrival {
 
     private it.polito.ezshop.data.EZShop shop;
-    private int orderIdPayed,  orderIdIssued;
+    private int orderIdPayed, orderIdPayed2;
 
     @Before
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
+        shop.reset();
         shop.login("admin","ciao");
-        orderIdPayed = shop.payOrderFor("2143325343648",1,1.0);
-        orderIdIssued= shop.issueOrder("11234567890125",1,1.0);
-
+        int idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.createProductType("Duriano","12345678901286",1.0,"Solidificato");
+        shop.updatePosition(idProd,"13-cacca-14");
+        shop.recordBalanceUpdate(1000);
+        orderIdPayed = shop.payOrderFor("2424242424239",1,1.0);
+        orderIdPayed2= shop.payOrderFor("12345678901286",1,1.0);
     }
 
     @After
     public void after(){
         shop.logout();
-        shop.deleteOrderId(orderIdPayed);
-        shop.deleteOrderId(orderIdIssued);
+        shop.reset();
     }
 
     @Test
     public void authTest() throws Exception {
         shop.logout();
         assertThrows(UnauthorizedException.class, () ->
-                shop.recordOrderArrival(1)
+                shop.recordOrderArrival(orderIdPayed)
         );
         shop.login("23", "12345");
         assertThrows(UnauthorizedException.class, () ->
-                shop.recordOrderArrival(1)
+                shop.recordOrderArrival(orderIdPayed)
         );
     }
 
     @Test
-    public void TestInvalidOrderId() throws Exception {
+    public void testInvalidOrderId() throws Exception {
         shop.login("admin", "ciao");
         assertFalse(shop.recordOrderArrival(300));
-
         assertThrows(InvalidOrderIdException.class, () ->
                 shop.recordOrderArrival(-300)
         );
@@ -56,21 +58,18 @@ public class AcceptableRecordOrderArrival {
     }
 
     @Test
-    public void TestCompletedState() throws Exception {
+    public void testCompletedState() throws Exception {
         assertFalse(shop.recordOrderArrival(255));
-
     }
 
     @Test
-    public void TestNoLocation() {
-        assertThrows(InvalidLocationException.class,()->shop.recordOrderArrival(256));
-
+    public void testNoLocation() {
+        assertThrows(InvalidLocationException.class,()->shop.recordOrderArrival(orderIdPayed2));
     }
 
     @Test
-    public void TestCorrectCase() throws Exception {
+    public void testCorrectCase() throws Exception {
         assertTrue(shop.recordOrderArrival(orderIdPayed));
-
     }
 
 

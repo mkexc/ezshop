@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.*;
-import java.util.Date;
 
 import static it.polito.ezshop.model.ProductType.validateProductCode;
 
@@ -19,11 +18,11 @@ public class EZShop implements EZShopInterface{
 
     private List<ProductType> inventory = new ArrayList<>();
     private List<Customer> customerList = new ArrayList<>();
-    private List<BalanceOperation> balanceOperationList = new ArrayList<>();
+    //private List<BalanceOperation> balanceOperationList = new ArrayList<>();
     private List<User> userList = new ArrayList<>();
     private List<Order> orderList = new ArrayList<>();
     private boolean isOrderListUpdated = false;
-    private boolean isBalanceOperationUpdated = false;
+    //private boolean isBalanceOperationUpdated = false;
     private boolean isCustomerListUpdated = false;
     private boolean isUserListUpdated = false;
     private boolean isInventoryUpdated = false;
@@ -49,7 +48,7 @@ public class EZShop implements EZShopInterface{
     @Override
     public void reset() {
         this.isOrderListUpdated = false;
-        this.isBalanceOperationUpdated = false;
+        //this.isBalanceOperationUpdated = false;
         this.isCustomerListUpdated = false;
         this.isUserListUpdated = false;
         this.isInventoryUpdated = false;
@@ -83,33 +82,17 @@ public class EZShop implements EZShopInterface{
     public Integer createUser(String username, String password, String role) throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
         // username not null, not empty
         if(username == null || username.equals(""))
-            throw new InvalidUsernameException();
+            throw new InvalidUsernameException("Invalid Username");
 
         // password not null, not empty
         if(password == null || password.equals("")){
-            throw new InvalidPasswordException();
+            throw new InvalidPasswordException("Invalid Password");
         }
 
         // role not null, not empty, not Administrator&&ShopManager&&Cashier
         if(role == null || role.isEmpty() || (!role.equals("Administrator") && !role.equals("ShopManager") && !role.equals("Cashier"))){
-            throw new InvalidRoleException();
+            throw new InvalidRoleException("Invalid Role");
         }
-
-//        // check if username is already present
-//        String sql = "SELECT username FROM user WHERE username=?";
-//        try {
-//            PreparedStatement st = conn.prepareStatement(sql);
-//            st.setString(1, username);
-//            ResultSet rs = st.executeQuery();
-//
-//            if(rs.getString("username").equals(username)) {
-//                // product already present
-//                return -1;
-//            }
-//        } catch (SQLException e) {
-//            // problems with db connection
-//            return -1;
-//        }
 
         // insert the new user
         String sql = "INSERT INTO user(username, password, role) VALUES (?, ?, ?)";
@@ -118,17 +101,14 @@ public class EZShop implements EZShopInterface{
             st.setString(1, username);
             st.setString(2, password);
             st.setString(3, role);
-
             int updatedRows = st.executeUpdate();
-            if(updatedRows==0){
+
+            if(updatedRows == 0){
                 return -1;
             }
-
             isUserListUpdated = false;
-
             return st.getGeneratedKeys().getInt(1);
         } catch (SQLException e) {
-
             return -1;
         }
     }
@@ -137,12 +117,12 @@ public class EZShop implements EZShopInterface{
     public boolean deleteUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
         // check role of the user (only administrator)
         if(loggedUser == null || !loggedUser.getRole().equals("Administrator")) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("Unauthorized");
         }
 
         // id not null, not <= 0
         if(id == null || id <= 0) {
-            throw new InvalidUserIdException();
+            throw new InvalidUserIdException("Invalid User id");
         }
 
         // delete user using id
@@ -318,7 +298,7 @@ public class EZShop implements EZShopInterface{
 
         // productCode not null, not empty
         if(productCode == null || productCode.equals(""))
-            throw new InvalidProductCodeException();
+            throw new InvalidProductCodeException("Invalid Product Code");
 
         // check if productCode is valid
         if(!validateProductCode(productCode)) {
@@ -327,29 +307,13 @@ public class EZShop implements EZShopInterface{
 
         // description not null, not empty
         if(description == null || description.equals("")){
-            throw new InvalidProductDescriptionException();
+            throw new InvalidProductDescriptionException("Invalid Product Description");
         }
 
         // pricePerUnit not <= 0
         if(pricePerUnit <= 0){
-            throw new InvalidPricePerUnitException();
+            throw new InvalidPricePerUnitException("Invalid Price Per unit");
         }
-
-//        // check if productCode is already present
-//        String sql = "SELECT productCode FROM ProductType WHERE productCode=?";
-//        try {
-//            PreparedStatement st = conn.prepareStatement(sql);
-//            st.setString(1, productCode);
-//            ResultSet rs = st.executeQuery();
-//
-//            if(rs.getString("productCode").equals(productCode)) {
-//                // product already present
-//                return -1;
-//            }
-//        } catch (SQLException e) {
-//            // problems with db connection
-//            return -1;
-//        }
 
         // insert the new productType
         String sql="INSERT INTO productType(productCode, description, pricePerUnit, quantity, notes) VALUES (?, ?, ?, ?, ?)";
@@ -384,7 +348,7 @@ public class EZShop implements EZShopInterface{
 
         // check id of the product (not <=0)
         if(id == null || id <= 0)
-            throw new InvalidProductIdException();
+            throw new InvalidProductIdException("Invalid Product Id");
 
         // description not null, not empty
         if(newDescription == null || newDescription.equals("")){
@@ -506,22 +470,6 @@ public class EZShop implements EZShopInterface{
             throw new InvalidProductCodeException();
         }
 
-//        // check if productCode is already present
-//        String sql = "SELECT productCode FROM productType WHERE productCode=?";
-//        try {
-//            PreparedStatement st = conn.prepareStatement(sql);
-//            st.setString(1, barCode);
-//            ResultSet rs = st.executeQuery();
-//
-//            if(rs.getString("productCode").equals(barCode)) {
-//                // product already present
-//                return null;
-//            }
-//        } catch (SQLException e) {
-//            // problems with db connection
-//            return null;
-//        }
-
         ProductType product;
         String sql = "SELECT id, productCode, description, pricePerUnit, quantity, notes, position FROM productType WHERE productCode=?";
         try {
@@ -596,24 +544,6 @@ public class EZShop implements EZShopInterface{
         if(productId == null || productId <= 0)
             throw new InvalidProductIdException();
 
-//        // query the product quantity
-//        String sql="SELECT quantity, position FROM productType WHERE id=? " ;
-//        int quantity;
-//        try {
-//            PreparedStatement st = conn.prepareStatement(sql);
-//
-//            st.setInt(1,productId);
-//            ResultSet rs = st.executeQuery();
-//            quantity = rs.getInt("quantity");
-//            if(rs.getString("position").equals("")){
-//                return false;
-//            }
-//        } catch (SQLException e) {
-//            return false;
-//        }
-//
-//        // updating the value to quantity
-//        quantity= quantity+toBeAdded;
         String sql="UPDATE productType SET quantity=quantity+? WHERE id=? AND position IS NOT NULL";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
@@ -651,24 +581,8 @@ public class EZShop implements EZShopInterface{
 
         // check position format (number-string-number)
         if(!newPos.equals("") && !newPos.matches("[0-9]+-[a-zA-Z]+-[0-9]+")){
-            throw new InvalidLocationException();
+            throw new InvalidLocationException("Invalid Location");
         }
-
-//        // query for checking the uniqueness of position
-//        String sql="SELECT position FROM productType WHERE position=?" ;
-//
-//        try {
-//            PreparedStatement st = conn.prepareStatement(sql);
-//
-//            st.setString(1,newPos);
-//            ResultSet rs = st.executeQuery();
-//
-//            if(rs.getString("position").equals(newPos)){
-//                return false;
-//            }
-//        } catch (SQLException e) {
-//            return false;
-//        }
 
         String sql="UPDATE productType SET position=? WHERE id=?" ;
         try {
@@ -703,7 +617,7 @@ public class EZShop implements EZShopInterface{
 
         //check quantity is not <=0
         if(quantity <= 0)
-            throw new InvalidQuantityException();
+            throw new InvalidQuantityException("Invalid Quantity");
 
         //check pricePerUnit is not <=0
         if(pricePerUnit <= 0)
@@ -735,7 +649,7 @@ public class EZShop implements EZShopInterface{
     // issue order + pay order
     @Override
     public Integer payOrderFor(String productCode, int quantity, double pricePerUnit) throws InvalidProductCodeException, InvalidQuantityException, InvalidPricePerUnitException, UnauthorizedException {
-        // check role of the user (only administrator, cashier and shopManager)
+        // check role of the user (only administrator and shopManager)
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && (!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
 
@@ -752,33 +666,29 @@ public class EZShop implements EZShopInterface{
         if(pricePerUnit <= 0)
             throw new InvalidPricePerUnitException();
 
-        // insert the new productType
-        String sql = "INSERT INTO 'order'(productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?)";
-        try {
-            PreparedStatement st = conn.prepareStatement(sql);
-            st.setString(1, productCode);
-            st.setDouble(2, pricePerUnit);
-            st.setInt(3, quantity);
-            st.setString(4,"PAYED");
-            int updatedRows = st.executeUpdate();
+        // check balance and THEN record payed order if enough money
+        if(recordBalanceUpdate(-pricePerUnit*quantity)) {
+            String sql = "INSERT INTO 'order'(productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?)";
+            try {
+                PreparedStatement st = conn.prepareStatement(sql);
+                st.setString(1, productCode);
+                st.setDouble(2, pricePerUnit);
+                st.setInt(3, quantity);
+                st.setString(4, "PAYED");
+                int updatedRows = st.executeUpdate();
 
-            if(updatedRows == 0)
-                return -1;
+                if (updatedRows == 0)
+                    return -1;
 
-            // record the order on the balance
-            int res=st.getGeneratedKeys().getInt(1);
-            boolean out = this.recordBalanceUpdate(-pricePerUnit*quantity);
-            if(!out) {
-                // not enough balance to pay for order
-                this.deleteOrderId(st.getGeneratedKeys().getInt(1));
+                // record the order on the balance
+                isOrderListUpdated = false;
+                return st.getGeneratedKeys().getInt(1);
+            } catch (SQLException e) {
                 return -1;
             }
-
-            isOrderListUpdated = false;
-            return res;
-        } catch (SQLException e) {
-            return -1;
         }
+        else
+            return -1;
     }
 
     @Override
@@ -788,14 +698,13 @@ public class EZShop implements EZShopInterface{
             throw new UnauthorizedException();
 
         // orderId not null, not <=0
-        if(orderId == null || orderId <= 0){
-            throw new InvalidOrderIdException();
+        if(orderId == null || orderId <= 0) {
+            throw new InvalidOrderIdException("Invalid order Id");
         }
 
-        String sql2 = "SELECT quantity, pricePerUnit, status FROM 'order' WHERE id=?" ;
-        String actualStatus;
+        String sql2 = "SELECT quantity, pricePerUnit FROM 'order' WHERE id=? AND status='ISSUED'" ;
+        //String actualStatus;
         double toBeAdded;
-
         try {
             PreparedStatement st = conn.prepareStatement(sql2);
 
@@ -806,43 +715,45 @@ public class EZShop implements EZShopInterface{
                 // no orderId found
                 return false;
 
-            actualStatus = rs.getString("status");
+            //actualStatus = rs.getString("status");
             toBeAdded = -rs.getDouble("pricePerUnit") * rs.getInt("quantity");
         } catch (SQLException e) {
             return false;
         }
 
-        if(actualStatus.equals("PAYED"))
-            // order not in ISSUED state
-            return false;
+//        if(actualStatus.equals("PAYED"))
+//            // order not in ISSUED state
+//            return false;
 
-        // change status to PAYED
-        String sql3 = "UPDATE 'order' SET status=? WHERE id=?";
-        try {
-            PreparedStatement st = conn.prepareStatement(sql3);
+        // check balance and THEN record payed order if enough money
+        //String oldRole=loggedUser.getRole();
+        //loggedUser.setRole("Administrator");
+        if(recordBalanceUpdate(toBeAdded)) {
+            // change status to PAYED
+            String sql3 = "UPDATE 'order' SET status=? WHERE id=?";
+            try {
+                PreparedStatement st = conn.prepareStatement(sql3);
+                st.setString(1, "PAYED");
+                st.setInt(2, orderId);
+                int updatedRows = st.executeUpdate();
 
-            st.setString(1, "PAYED");
-            st.setInt(2, orderId);
-            int updatedRows = st.executeUpdate();
+                if (updatedRows == 0)
+                    return false;
 
-            if(updatedRows == 0)
-                return false;
-
-            // record order on balance
-            if(recordBalanceUpdate(toBeAdded))
-            {
                 isOrderListUpdated = false;
+                //loggedUser.setRole(oldRole);
                 return true;
-            }
-            else
+            } catch (SQLException e) {
+                //loggedUser.setRole(oldRole);
                 return false;
-
-        } catch (SQLException e) {
+            }
+        }
+        else {
+            //loggedUser.setRole(oldRole);
             return false;
         }
     }
 
-    // TODO da checkare
     @Override
     public boolean recordOrderArrival(Integer orderId) throws InvalidOrderIdException, UnauthorizedException, InvalidLocationException {
         // check role of the user (only administrator, cashier and shopManager)
@@ -854,14 +765,13 @@ public class EZShop implements EZShopInterface{
             throw new InvalidOrderIdException();
         }
 
-        String sql = "SELECT quantity, productCode, status FROM 'order' WHERE id=?";
         int quantity;
         String productCode;
         ProductType product;
-        String actualStatus;
+        //String actualStatus;
         try {
+            String sql = "SELECT quantity, productCode FROM 'order' WHERE id=? AND status='PAYED'";
             PreparedStatement st = conn.prepareStatement(sql);
-
             st.setInt(1, orderId);
             ResultSet rs = st.executeQuery();
 
@@ -871,28 +781,30 @@ public class EZShop implements EZShopInterface{
 
             quantity = rs.getInt("quantity");
             productCode = rs.getString("productCode");
-            actualStatus = rs.getString("status");
+            //actualStatus = rs.getString("status");
             product = this.getProductTypeByBarCode(productCode);
         } catch (Exception e) {
             return false;
         }
 
-        if(product.getLocation()==null || product.getLocation().equals("")){
+        if(product.getLocation() == null || product.getLocation().equals("")){
             throw new InvalidLocationException();
         }
-        if(actualStatus.equals("COMPLETED"))
-            return false;
+//        if(actualStatus.equals("COMPLETED"))
+//            return false;
 
+        // update product quantity
         try {
             this.updateQuantity(product.getId(), quantity);
-        }catch(Exception e){
+            isInventoryUpdated = false;
+        } catch(Exception e){
             return false;
         }
 
-        String sql3="UPDATE 'order' SET status=? WHERE id=?" ;
+        // set order status to COMPLETED
         try {
+            String sql3="UPDATE 'order' SET status=? WHERE id=?";
             PreparedStatement st = conn.prepareStatement(sql3);
-
             st.setString(1,"COMPLETED");
             st.setInt(2,orderId);
             int updatedRows = st.executeUpdate();
@@ -905,7 +817,6 @@ public class EZShop implements EZShopInterface{
         } catch (SQLException e) {
             return false;
         }
-
     }
 
     @Override
@@ -914,36 +825,43 @@ public class EZShop implements EZShopInterface{
         if(loggedUser==null || (!loggedUser.getRole().equals("Administrator")&&(!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
 
-        String sql3="SELECT * FROM 'order'" ;
-        try {
-            PreparedStatement st = conn.prepareStatement(sql3);
-            ResultSet rs = st.executeQuery();
-            while(rs.next()){
-                this.orderList.add( new it.polito.ezshop.model.Order(
-                                                rs.getInt("id"),
-                                                rs.getString("productCode"),
-                                                rs.getDouble("pricePerUnit"),
-                                                rs.getInt("quantity"),
-                                                rs.getString("status")
-                ));
-            }
-            return orderList;
-        } catch (SQLException e) {
-            return null;
-        }
+        if(!isOrderListUpdated)
+        {
+            String sql3="SELECT * FROM 'order'";
+            List<Order> orders= new ArrayList<>();
+            try {
+                PreparedStatement st = conn.prepareStatement(sql3);
+                ResultSet rs = st.executeQuery();
 
+                while(rs.next()){
+                    orders.add( new it.polito.ezshop.model.Order(
+                            rs.getInt("id"),
+                            rs.getString("productCode"),
+                            rs.getDouble("pricePerUnit"),
+                            rs.getInt("quantity"),
+                            rs.getString("status")));
+                }
+                orderList = orders;
+                isOrderListUpdated = true;
+
+            } catch (SQLException e) {
+                return orders;
+            }
+        }
+        return this.orderList;
     }
 
     @Override
     public Integer defineCustomer(String customerName) throws InvalidCustomerNameException, UnauthorizedException {
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-        else if (customerName==null || customerName.isEmpty())
+        else if (customerName == null || customerName.isEmpty())
             throw new InvalidCustomerNameException();
         else
         {
-            String sql = "INSERT INTO customer(customerName, loyaltyCardId) VALUES (?, ?)";
             try {
+                // N.B. customerName must be unique
+                String sql = "INSERT INTO customer(customerName, loyaltyCardId) VALUES (?, ?)";
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setString(1,customerName);
                 st.setString(2,"");
@@ -963,20 +881,17 @@ public class EZShop implements EZShopInterface{
     public boolean modifyCustomer(Integer id, String newCustomerName, String newCustomerCard) throws InvalidCustomerNameException, InvalidCustomerCardException, InvalidCustomerIdException, UnauthorizedException {
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-        else if (newCustomerName==null || newCustomerName.isEmpty())
-            throw new InvalidCustomerNameException();
-        else if (newCustomerCard!=null && !newCustomerCard.isEmpty() && !it.polito.ezshop.model.ProductType.validateProductCode(newCustomerCard) ) {
-            throw new InvalidCustomerCardException(); //Only when customer card is full but not a string of 10 digits, bypassed empty and null cases otherwise exception conflicts
-        }
-        else if ( id== null || id<=0) {
-            throw new InvalidCustomerIdException();
+        else if (newCustomerName == null || newCustomerName.isEmpty())
+            throw new InvalidCustomerNameException("Invalid Customer Name");
+        else if ( id == null || id <= 0) {
+            throw new InvalidCustomerIdException("Invalid Customer Id");
         }
         else {
             try{
-
-                if(newCustomerCard==null)
+                // update only customername
+                if(newCustomerCard == null)
                 {
-                    String sql = "UPDATE customer SET customerName = ? WHERE id=?";
+                    String sql = "UPDATE customer SET customerName=? WHERE id=?";
                     PreparedStatement st = conn.prepareStatement(sql);
                     st.setString(1,newCustomerName);
                     st.setInt(2,id);
@@ -986,12 +901,14 @@ public class EZShop implements EZShopInterface{
                         return true;
                     }
                 }
+                // delete customercard from customer
                 else if(newCustomerCard.isEmpty())
                 {
-                    String sql = "UPDATE customer SET loyaltyCardId=NULL, customerName = ? WHERE id=?";
+                    String sql = "UPDATE customer SET loyaltyCardId=?, customerName=? WHERE id=?";
                     PreparedStatement st = conn.prepareStatement(sql);
-                    st.setString(1,newCustomerName);
-                    st.setInt(2,id);
+                    st.setString(1,"");
+                    st.setString(2,newCustomerName);
+                    st.setInt(3,id);
                     if(st.executeUpdate()>0)
                     {
                         this.isCustomerListUpdated = false;
@@ -999,8 +916,12 @@ public class EZShop implements EZShopInterface{
                     }
                     
                 }
-                else
-                {
+                // update customercard
+                else {
+                    //if (newCustomerCard.length()!=10 || !newCustomerCard.matches("[0-9]+") ) {
+                    if (!newCustomerCard.matches("^[0-9]{10}$") ) {
+                        throw new InvalidCustomerCardException("Invalid Customer Card");
+                    }
                     String sql1 = "SELECT * FROM customer WHERE loyaltyCardId=?";
                     PreparedStatement st1 = conn.prepareStatement(sql1);
                     st1.setString(1, newCustomerCard);
@@ -1009,11 +930,11 @@ public class EZShop implements EZShopInterface{
                     ResultSet rs1 = st1.getResultSet();
                     if(!rs1.next())
                     {
-                        String sql = "UPDATE customer SET loyaltyCardId=?, customerName = ? WHERE id=?";
+                        String sql = "UPDATE customer SET loyaltyCardId=?, customerName=? WHERE id=?";
                         PreparedStatement st = conn.prepareStatement(sql);
-                        st.setString(1,newCustomerCard);
-                        st.setString(2,newCustomerName);
-                        st.setInt(3,id);
+                        st.setString(1, newCustomerCard);
+                        st.setString(2, newCustomerName);
+                        st.setInt(3, id);
                         if(st.executeUpdate()>0)
                         {
                             this.isCustomerListUpdated = false;
@@ -1021,13 +942,10 @@ public class EZShop implements EZShopInterface{
                         }
                     }
                 }
-
                 return false;
-                
             } catch (SQLException e){
                 return false;
             }
-
         }
     }
 
@@ -1040,11 +958,15 @@ public class EZShop implements EZShopInterface{
             throw new InvalidCustomerIdException();
         }
         else {
-            String sql = "DELETE FROM customer WHERE id=?";
             try {
+                String sql = "DELETE FROM customer WHERE id=?";
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setInt(1,id);
-                return (st.executeUpdate()>0);
+                if(st.executeUpdate() == 0)
+                    return false;
+
+                isCustomerListUpdated = false;
+                return true;
             }
             catch (SQLException e)
             {
@@ -1057,42 +979,49 @@ public class EZShop implements EZShopInterface{
     public Customer getCustomer(Integer id) throws InvalidCustomerIdException, UnauthorizedException {
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-        else if ( id== null || id<=0) {
+        else if ( id == null || id <= 0) {
             throw new InvalidCustomerIdException();
         }
         else {
             try {
-                String sql = "SELECT * FROM customer AS C WHERE C.id=?";
+                //String sql = "SELECT * FROM customer AS C WHERE C.id=?";
+                String sql = "SELECT C.id AS id, C.customerName as customerName , C.loyaltyCardId as loyaltyCardId, points FROM customer AS C, loyaltyCard AS LC LEFT JOIN customer ON C.loyaltyCardId=LC.cardId  WHERE C.id=?";
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setInt(1,id);
                 ResultSet rs = st.executeQuery();
 
                 if(!rs.isBeforeFirst())
                     return null;
+                rs.next();
+                return new it.polito.ezshop.model.Customer(
+                        rs.getInt("id"),
+                        rs.getString("customerName"),
+                        rs.getString("loyaltyCardId"),
+                        rs.getInt("points")
+                );
 
-                Customer cust = new it.polito.ezshop.model.Customer(
-                                rs.getInt("id"),
-                                rs.getString("customerName"),
-                                "",
-                                0);
-                if(rs.getString(3)==null || rs.getString(3).isEmpty())
-                    return cust;
-                String loyaltyCardTmp = rs.getString("loyaltyCardId");
-                cust.setCustomerCard(loyaltyCardTmp);
-                String sql2 = "SELECT * FROM LoyaltyCard L WHERE id=?";
-                PreparedStatement st2 = conn.prepareStatement(sql2);
-                st2.setString(1,loyaltyCardTmp);
-                ResultSet rs2 = st2.executeQuery();
+//                Customer cust = new it.polito.ezshop.model.Customer(
+//                                rs.getInt("id"),
+//                                rs.getString("customerName"),
+//                                "",
+//                                0);
+//
+//                if(rs.getString(3)==null || rs.getString(3).isEmpty())
+//                    return cust;
+//                String loyaltyCardTmp = rs.getString("loyaltyCardId");
+//                cust.setCustomerCard(loyaltyCardTmp);
+//                String sql2 = "SELECT * FROM LoyaltyCard L WHERE id=?";
+//                PreparedStatement st2 = conn.prepareStatement(sql2);
+//                st2.setString(1,loyaltyCardTmp);
+//                ResultSet rs2 = st2.executeQuery();
+//
+//                if(!rs.isBeforeFirst())
+//                    return cust;
+//
+//                cust.setPoints(rs2.getInt("points"));
 
-                if(!rs.isBeforeFirst())
-                    return cust;
-
-                cust.setPoints(rs2.getInt("points"));
-
-                return cust;
-            } catch (SQLException e)
-            {
-                e.printStackTrace();
+                //return cust;
+            } catch (SQLException e) {
                 return null;
             }
         }
@@ -1102,30 +1031,28 @@ public class EZShop implements EZShopInterface{
     public List<Customer> getAllCustomers() throws UnauthorizedException {
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-        else if (this.isCustomerListUpdated)
-            return this.customerList;
-        else {
+        if(!this.isCustomerListUpdated) {
+            String sql = "SELECT C.id AS id, customerName, loyaltyCardId, points FROM customer AS C LEFT JOIN loyaltyCard ON loyaltyCard.cardId=C.loyaltyCardId";
+            List<Customer> customers = new ArrayList<>();
             try {
-                String sql = "SELECT * FROM customer INNER JOIN loyaltyCard ON loyaltyCard.id=customer.loyaltyCardId";
                 PreparedStatement st = conn.prepareStatement(sql);
                 ResultSet rs = st.executeQuery();
-                this.customerList.clear();
+
                 while(rs.next()){
-                    customerList.add(new it.polito.ezshop.model.Customer(
-                            rs.getInt("customerId"),
+                    customers.add(new it.polito.ezshop.model.Customer(
+                            rs.getInt("id"),
                             rs.getString("customerName"),
                             rs.getString("loyaltyCardId"),
                             rs.getInt("points")
                     ));
                 }
+                customerList = customers;
                 this.isCustomerListUpdated=true;
-
-            } catch (SQLException ignored) {
-
+            } catch (SQLException e) {
+                return customers;
             }
-            return this.customerList;
         }
-
+        return this.customerList;
     }
 
     @Override
@@ -1133,17 +1060,23 @@ public class EZShop implements EZShopInterface{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
         else{
-            String nextId; int temp;
+            String nextId;
+            int temp;
             try {
                 String sql = "SELECT id FROM loyaltyCard ORDER BY id DESC LIMIT 1";
                 PreparedStatement st = conn.prepareStatement(sql);
                 ResultSet rs = st.executeQuery();
 
                 if(!rs.next())
-                    return "";
-                temp=rs.getInt("id");
-                temp++;
-                nextId=String.format("%1$10d",temp).replace(' ', '0');
+                {
+                    temp = 1;
+                    nextId="0000000001";
+                }else
+                {
+                    temp = rs.getInt("id");
+                    temp++;
+                    nextId = String.format("%1$10d",temp).replace(' ', '0');
+                }
                 String sql2 = "INSERT INTO loyaltyCard(id,cardId) VALUES (?,?)";
                 PreparedStatement st2 = conn.prepareStatement(sql2);
                 st2.setInt(1,temp);
@@ -1151,8 +1084,7 @@ public class EZShop implements EZShopInterface{
                 st2.executeUpdate();
                 return nextId;
 
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 return "";
             }
         }
@@ -1162,14 +1094,14 @@ public class EZShop implements EZShopInterface{
     public boolean attachCardToCustomer(String customerCard, Integer customerId) throws InvalidCustomerIdException, InvalidCustomerCardException, UnauthorizedException {
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-        else if (customerCard==null || customerCard.length()!=10 || !customerCard.matches("[0-9]+") ) {
-            throw new InvalidCustomerCardException();
+        //else if (customerCard==null || customerCard.length()!=10 || !customerCard.matches("[0-9]+") ) {
+        else if (customerCard == null || !customerCard.matches("^[0-9]{10}$")) {
+            throw new InvalidCustomerCardException("Invalid customer card.");
         }
-        else if ( customerId== null || customerId<=0) {
-            throw new InvalidCustomerIdException();
+        else if (customerId == null || customerId <= 0) {
+            throw new InvalidCustomerIdException("Invalid customer id.");
         }
-        else
-        {
+        else {
             try{
                 //Card already assigned
                 String sql1 = "SELECT * FROM customer WHERE loyaltyCardId=?";
@@ -1180,8 +1112,7 @@ public class EZShop implements EZShopInterface{
                 if(rs1.next())
                     return false;
 
-            } catch(SQLException e)
-            {
+            } catch(SQLException e) {
                 return false;
             }
 
@@ -1194,28 +1125,24 @@ public class EZShop implements EZShopInterface{
                 //conn.commit();
                 if(!rs2.next())
                     return false;
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 return false;
             }
 
-            try
-            {
+            try {
                 String sql3 = "UPDATE customer SET loyaltyCardId=? WHERE id=?";
                 PreparedStatement st3 = conn.prepareStatement(sql3);
                 st3.setString(1,customerCard);
                 st3.setInt(2,customerId);
                 int updatedRows = st3.executeUpdate();
 
-                if(updatedRows == 0)
-                {
+                if(updatedRows == 0) {
                     return false;
                 }
 
                 this.isCustomerListUpdated = false;
 
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 return false;
             }
             return true;
@@ -1226,7 +1153,8 @@ public class EZShop implements EZShopInterface{
     public boolean modifyPointsOnCard(String customerCard, int pointsToBeAdded) throws InvalidCustomerCardException, UnauthorizedException {
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-        else if (customerCard==null || customerCard.length()!=10 || !customerCard.matches("[0-9]+") ) {
+        //else if (customerCard==null || customerCard.equals("") || customerCard.length()!=10 || !customerCard.matches("[0-9]+") ) {
+        else if (customerCard==null || !customerCard.matches("^[0-9]{10}$")) {
             throw new InvalidCustomerCardException();
         }
         else {
@@ -1235,8 +1163,7 @@ public class EZShop implements EZShopInterface{
                 PreparedStatement st1 = conn.prepareStatement(sql1);
                 st1.setString(1, customerCard);
                 ResultSet rs1 = st1.executeQuery();
-                if(rs1.next())
-                {
+                if(rs1.next()) {
                     if(pointsToBeAdded<0 && rs1.getInt("points")+pointsToBeAdded<0) {
                         return false;
                     }
@@ -1248,11 +1175,15 @@ public class EZShop implements EZShopInterface{
                 PreparedStatement st2 = conn.prepareStatement(sql2);
                 st2.setInt(1,pointsToBeAdded);
                 st2.setString(2,customerCard);
-                st2.executeUpdate();
+                int updatedRows = st2.executeUpdate();
                 //conn.commit();
+                if(updatedRows == 0) {
+                    return false;
+                }
+
+                this.isCustomerListUpdated = false;
                 return true;
-            } catch(SQLException e)
-            {
+            } catch(SQLException e) {
                 return false;
             }
         }
@@ -1264,18 +1195,15 @@ public class EZShop implements EZShopInterface{
         // check authorization
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-        int res;
-        String sql = "INSERT INTO saleTransaction (DiscountRate, balanceId, total, status) VALUES (0.0,'',0.0,'OPEN')";
+
+        String sql = "INSERT INTO saleTransaction (discountRate, balanceId, total, status) VALUES (0.0,'',0.0,'OPEN')";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.executeUpdate();
-            res= st.getGeneratedKeys().getInt(1);
+            return st.getGeneratedKeys().getInt(1);
         }catch(SQLException e){
             return -1;
         }
-
-        return res;
-
     }
 
     @Override
@@ -1284,10 +1212,114 @@ public class EZShop implements EZShopInterface{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
         //check id
-        if(transactionId==null||transactionId<=0)
+        if(transactionId == null || transactionId <= 0)
             throw new InvalidTransactionIdException();
         //check amount
-        if(amount<=0)
+        if(amount < 0)
+            throw new InvalidQuantityException();
+
+        // productCode not null, not empty
+        if(productCode == null || productCode.equals("") )
+            throw new InvalidProductCodeException();
+
+        // check if productCode is valid
+        if(!validateProductCode(productCode)) {
+            throw new InvalidProductCodeException();
+        }
+
+        ProductType product;
+
+        //check transaction status
+        String sql = "SELECT id from SaleTransaction WHERE id=? AND status='OPEN'";
+        try {
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1,transactionId);
+            ResultSet rs=st.executeQuery();
+            rs.next();
+            if(rs.getInt("id")!=transactionId){
+                return false;
+            }
+        }catch(SQLException e){
+            // transactionId not an existing or open transaction
+            return false;
+        }
+
+        String actualRole = loggedUser.getRole();
+        //check presence of the product;
+        try {
+            loggedUser.setRole("Administrator");
+            product = getProductTypeByBarCode(productCode);
+            if(product == null) {
+                loggedUser.setRole(actualRole);
+                return false;
+            }
+        } catch(Exception e) {
+            loggedUser.setRole(actualRole);
+            return false;
+        }
+        // check availability of the product
+        try {
+            loggedUser.setRole("Administrator");
+            // eventually decrease amount of product if available
+            if (!this.updateQuantity(product.getId(),-amount)){
+                loggedUser.setRole(actualRole);
+                return false;
+            }
+            isInventoryUpdated = false;
+        } catch(Exception e){
+            loggedUser.setRole(actualRole);
+            return false;
+        }
+
+        loggedUser.setRole(actualRole);
+
+        // insert a new product entry for a new sale transaction
+        try {
+            String sql2 = "INSERT INTO productEntry (transactionId, barcode, amount) VALUES (?,?,?)";
+            PreparedStatement st = conn.prepareStatement(sql2);
+            st.setInt(1, transactionId);
+            st.setString(2, productCode);
+            st.setInt(3, amount);
+            int updatedRows = st.executeUpdate();
+
+            return !(updatedRows == 0);
+        } catch(SQLException e) {
+            // update an existing product entry for an existing sale transaction
+            try{
+                String sql3 = "UPDATE ProductEntry SET amount=amount+? WHERE transactionId=? AND barcode=?";
+                PreparedStatement st3= conn.prepareStatement(sql3);
+                st3.setInt(1,amount);
+                st3.setInt(2,transactionId);
+                st3.setString(3, productCode);
+                int updatedRows = st3.executeUpdate();
+
+                return !(updatedRows == 0);
+            } catch (SQLException e2) {
+                return false;
+//                try {
+//                    loggedUser.setRole("Administrator");
+//                    this.updateQuantity(product.getId(),amount);
+//                    isInventoryUpdated = false;
+//                    loggedUser.setRole(actualRole);
+//                } catch(Exception e3){
+//                    loggedUser.setRole(actualRole);
+//                    throw new InvalidQuantityException();
+//                }
+            }
+            //return false;
+        }
+    }
+
+    @Override
+    public boolean deleteProductFromSale(Integer transactionId, String productCode, int amount) throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException, UnauthorizedException {
+        //check authorization
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
+            throw new UnauthorizedException();
+        //check id
+        if(transactionId == null || transactionId <= 0)
+            throw new InvalidTransactionIdException();
+        //check amount
+        if(amount < 0)
             throw new InvalidQuantityException();
 
         // productCode not null, not empty
@@ -1301,109 +1333,83 @@ public class EZShop implements EZShopInterface{
 
         ProductType product;
 
-        // check id
-        String sql = "SELECT id from SaleTransaction WHERE id=? ";
+        //check transaction status
         try {
+            String sql = "SELECT id, status from SaleTransaction WHERE id=? AND status='OPEN'";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,transactionId);
-            ResultSet rs=st.executeQuery();
-
-            if(rs.getInt("id")!=transactionId){
+            ResultSet rs = st.executeQuery();
+            if(rs.getInt("id") != transactionId){
                 return false;
             }
         }catch(SQLException e){
+            // transactionId not an existing or open transaction
             return false;
         }
 
-        //check availability and the presence of the product;
+        String actualRole = loggedUser.getRole();
+        //check presence of the product;
         try {
-            product = this.getProductTypeByBarCode(productCode);
-        }catch(Exception e) {
-            return false;
-        }
-
-        try{
-            this.updateQuantity(product.getId(),-amount);
-        }catch(Exception e){
-            return false;
-        }
-
-        String sql2 = "INSERT INTO productEntry (transactionId, barcode, amount) VALUES (?,?,?) ";
-        try {
-            PreparedStatement st = conn.prepareStatement(sql2);
-            st.setInt(1,transactionId);
-            st.setString(2,productCode);
-            st.setInt(3,amount);
-            st.executeUpdate();
-
-        }catch(SQLException e){
-            try{
-            this.updateQuantity(product.getId(),amount);
-            }catch(Exception e2){
-                throw new InvalidQuantityException();
-            }
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean deleteProductFromSale(Integer transactionId, String productCode, int amount) throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException, UnauthorizedException {
-        //check authorization
-        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
-            throw new UnauthorizedException();
-        //check id
-        if(transactionId==null||transactionId<=0)
-            throw new InvalidTransactionIdException();
-        //check amount
-        if(amount<=0)
-            throw new InvalidQuantityException();
-
-        // productCode not null, not empty
-        if(productCode == null|| productCode.equals("") )
-            throw new InvalidProductCodeException();
-
-        // check if productCode is valid
-        if(!validateProductCode(productCode)) {
-            throw new InvalidProductCodeException();
-        }
-
-        //check id
-        String sql = "SELECT id from SaleTransaction WHERE id=? ";
-        try {
-            PreparedStatement st = conn.prepareStatement(sql);
-            st.setInt(1,transactionId);
-            ResultSet rs=st.executeQuery();
-            if(rs.getInt("id")!=transactionId){
+            loggedUser.setRole("Administrator");
+            product = getProductTypeByBarCode(productCode);
+            if(product == null) {
+                loggedUser.setRole(actualRole);
                 return false;
             }
-
-        }catch(SQLException e){
+        } catch(Exception e) {
+            loggedUser.setRole(actualRole);
             return false;
         }
 
+        loggedUser.setRole(actualRole);
 
         //update quantity
-        String sql2 = "UPDATE productEntry SET amount=amount-? WHERE transactionId=? AND barcode=?";
         try {
+            String sql2 = "UPDATE productEntry SET amount=amount-? WHERE transactionId=? AND barcode=?";
             PreparedStatement st = conn.prepareStatement(sql2);
             st.setInt(1,amount);
             st.setInt(2,transactionId);
             st.setString(3,productCode);
+            int updatedRows = st.executeUpdate();
 
-            // TODO check di updatedRows==0
-            // TODO aggiungere isListUpdated
-            st.executeUpdate();
+            if(updatedRows == 0)
+                return false;
+            // check availability of the product
             try {
-                ProductType product = this.getProductTypeByBarCode(productCode);
-                this.updateQuantity(product.getId(), amount);
-            }catch (Exception e2) {
+                loggedUser.setRole("Administrator");
+                // eventually increase amount of product available
+                if (!this.updateQuantity(product.getId(), amount)){
+                    loggedUser.setRole(actualRole);
+                    return false;
+                }
+                isInventoryUpdated = false;
+            } catch(Exception e) {
+                loggedUser.setRole(actualRole);
                 return false;
             }
+
+            // delete row if productentry amount is 0
+            String sql3 = "DELETE FROM productEntry WHERE amount=0 AND transactionId=? AND barcode=?";
+            PreparedStatement st2 = conn.prepareStatement(sql3);
+            st2.setInt(1,transactionId);
+            st2.setString(2,productCode);
+            st2.executeUpdate();
+
+
+            return true;
+//            String oldRole= loggedUser.getRole();
+//            try {
+//                loggedUser.setRole("Administrator");
+//                ProductType product = this.getProductTypeByBarCode(productCode);
+//                this.updateQuantity(product.getId(), amount);
+//                loggedUser.setRole(oldRole);
+//            }catch (Exception e2) {
+//                loggedUser.setRole(oldRole);
+//                return false;
+//            }
         }catch(SQLException e){
             return false;
         }
-        return true;
     }
 
     @Override
@@ -1412,14 +1418,14 @@ public class EZShop implements EZShopInterface{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
         //check id
-        if(transactionId==null||transactionId<=0)
+        if(transactionId == null || transactionId <= 0)
             throw new InvalidTransactionIdException();
         //check discountRate
-        if(discountRate>=0.0 && discountRate<=1.0)
-            throw new InvalidDiscountRateException();
+        if(discountRate >= 1.0 || discountRate < 0)
+            throw new InvalidDiscountRateException("Invalid DiscountRate");
 
         // productCode not null, not empty
-        if(productCode == null|| productCode.equals("") )
+        if(productCode == null || productCode.equals("") )
             throw new InvalidProductCodeException();
 
         // check if productCode is valid
@@ -1427,31 +1433,50 @@ public class EZShop implements EZShopInterface{
             throw new InvalidProductCodeException();
         }
 
-        //check status
-        String sql = "SELECT status FROM SaleTransaction WHERE id=?";
+        ProductType product;
+
+        //check transaction status
+        String sql = "SELECT status FROM SaleTransaction WHERE id=? AND status='OPEN'";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1, transactionId);
-
             ResultSet rs = st.executeQuery();
-            if(!rs.getString("status").equals("OPEN"))
+
+            if(!rs.isBeforeFirst())
+                // no transaction id open
                 return false;
+            //if(!rs.getString("status").equals("OPEN"))
+            //    return false;
         }catch (SQLException e) {
             return false;
         }
 
-        //check productCode
-        String sql1 = "SELECT barcode from productEntry WHERE transactionId=? AND barcode=? ";
+//        //check productCode
+//        String sql1 = "SELECT barcode from productEntry WHERE transactionId=? AND barcode=?";
+//        try {
+//            PreparedStatement st = conn.prepareStatement(sql1);
+//            st.setInt(1,transactionId);
+//            st.setString(2,productCode);
+//            ResultSet rs=st.executeQuery();
+//            if(!rs.getString("barcode").equals(productCode)){
+//                return false;
+//            }
+//
+//        }catch(SQLException e){
+//            return false;
+//        }
+
+        String actualRole = loggedUser.getRole();
+        //check presence of the product;
         try {
-            PreparedStatement st = conn.prepareStatement(sql1);
-            st.setInt(1,transactionId);
-            st.setString(2,productCode);
-            ResultSet rs=st.executeQuery();
-            if(!rs.getString("barcode").equals(productCode)){
+            loggedUser.setRole("Administrator");
+            product = getProductTypeByBarCode(productCode);
+            if(product == null) {
+                loggedUser.setRole(actualRole);
                 return false;
             }
-
-        }catch(SQLException e){
+        } catch(Exception e) {
+            loggedUser.setRole(actualRole);
             return false;
         }
 
@@ -1461,50 +1486,52 @@ public class EZShop implements EZShopInterface{
             st.setDouble(1,discountRate);
             st.setInt(2,transactionId);
             st.setString(3,productCode);
-            st.executeUpdate();
-            return true;
+            int updatedRows = st.executeUpdate();
+
+            return !(updatedRows == 0);
         }catch(SQLException e){
             return false;
         }
-
     }
 
     @Override
     public boolean applyDiscountRateToSale(Integer transactionId, double discountRate) throws InvalidTransactionIdException, InvalidDiscountRateException, UnauthorizedException {
-        //check authorization
+        // check authorization
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-        //check id
+        // check id
         if(transactionId==null||transactionId<=0)
             throw new InvalidTransactionIdException();
-        //check discountRate
-        if(discountRate>=0.0 && discountRate<=1.0)
+        // check discountRate
+        if(discountRate>=1.0||discountRate<0.0)
             throw new InvalidDiscountRateException();
 
-        //check status
-        String sql = "SELECT status FROM saleTransaction WHERE id=?";
+        // check sale status
+        String sql = "SELECT status FROM saleTransaction WHERE id=? AND status!='PAYED'";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1, transactionId);
-
             ResultSet rs = st.executeQuery();
-            if(rs.getString("status").equals("PAYED"))
+//            if(rs.getString("status").equals("PAYED"))
+//                return false;
+            if(!rs.isBeforeFirst())
                 return false;
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             return false;
         }
 
         String sql2 ="UPDATE saleTransaction SET discountRate=? WHERE id=?";
         try {
             PreparedStatement st = conn.prepareStatement(sql2);
-            st.setDouble(1,discountRate);
-            st.setInt(2,transactionId);
-            st.executeUpdate();
-            return true;
-        }catch(SQLException e){
+            st.setDouble(1, discountRate);
+            st.setInt(2, transactionId);
+            int updatedRows = st.executeUpdate();
+
+            return !(updatedRows == 0);
+        } catch(SQLException e) {
+            // transaction does not exist
             return false;
         }
-
     }
 
     @Override
@@ -1513,22 +1540,26 @@ public class EZShop implements EZShopInterface{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
         //check id
-        if(transactionId==null||transactionId<=0)
+        if(transactionId == null || transactionId<=0)
             throw new InvalidTransactionIdException();
-        int points;
-        String sql="SELECT PE.amount, PE.discountRate, PT.pricePerUnit, ST.discountRate FROM productEntry PE,saleTransaction ST, productType PT WHERE ST.id=PE.transactionId AND ST.id=? AND PE.barcode=PT.productCode ";
         try {
+            String sql = "SELECT PE.amount AS amount, PE.discountRate AS PEdiscountRate, PT.pricePerUnit AS pricePerUnit, ST.discountRate AS STdiscountRate FROM productEntry PE,saleTransaction ST, productType PT WHERE ST.id=PE.transactionId AND ST.id=? AND PE.barcode=PT.productCode";
             double priceWithoutSaleDiscount=0.0;
             PreparedStatement st = conn.prepareStatement(sql);
-            st.setInt(1,transactionId);
+            st.setInt(1, transactionId);
             ResultSet rs = st.executeQuery();
+            double discountRate=0.0;
+
+            if(rs.isClosed())
+                return -1;
+
             while(rs.next()){
-                priceWithoutSaleDiscount+=rs.getInt("PE.amount")*rs.getDouble("PT.pricePerUnit")
-                        -(rs.getInt("PE.amount")*rs.getDouble("PT.pricePerUnit"))*rs.getDouble("PE.discountRate");
+                discountRate = rs.getDouble("STdiscountRate");
+                priceWithoutSaleDiscount+=rs.getInt("amount")*rs.getDouble("pricePerUnit")
+                        -(rs.getInt("amount")*rs.getDouble("pricePerUnit"))*rs.getDouble("PEdiscountRate");
             }
-            double finalPrice =priceWithoutSaleDiscount-priceWithoutSaleDiscount*rs.getDouble("ST.discountRate");
-            points = (int) (finalPrice/10);
-            return points;
+            double finalPrice = priceWithoutSaleDiscount - priceWithoutSaleDiscount*discountRate;
+            return (int) (finalPrice/10); // points
         }catch(SQLException e){
             return -1;
         }
@@ -1541,37 +1572,57 @@ public class EZShop implements EZShopInterface{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
         //check id
-        if(transactionId==null||transactionId<=0)
+        if(transactionId == null || transactionId <= 0)
             throw new InvalidTransactionIdException();
+
+        // check sale status
+        String sql2 = "SELECT status FROM saleTransaction WHERE id=?";
+        try {
+            PreparedStatement st2 = conn.prepareStatement(sql2);
+            st2.setInt(1, transactionId);
+            ResultSet rs2 = st2.executeQuery();
+
+            while(rs2.next()) {
+                if(rs2.getString("status").equals("PAYED") || rs2.getString("status").equals("CLOSED"))
+                    return false;
+            }
+
+        } catch (SQLException e) {
+            return false;
+        }
         
         //compute total price
-        String sql="SELECT PE.amount, PE.discountRate, PT.pricePerUnit, ST.discountRate, ST.status FROM productEntry PE,saleTransaction ST, productType PT WHERE ST.id=PE.transactionId AND ST.id=? AND PE.barcode=PT.productCode ";
+        String sql = "SELECT PE.amount, PE.discountRate AS PEDiscountRate, PT.pricePerUnit, ST.discountRate AS saleDiscountRate, ST.status FROM productEntry PE,saleTransaction ST, productType PT WHERE ST.id=PE.transactionId AND ST.id=? AND PE.barcode=PT.productCode";
         double total;
         try {
-            double priceWithoutSaleDiscount=0.0;
+            double priceWithoutSaleDiscount = 0.0;
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,transactionId);
             ResultSet rs = st.executeQuery();
-            if(rs.getString("status").equals("PAYED"))
-                return false;
+//            if(rs.getString("status").equals("PAYED") || rs.getString("status").equals("CLOSED"))
+//                return false;
+            double stDiscountR = 0;
             while(rs.next()){
-                priceWithoutSaleDiscount+=rs.getInt("PE.amount")*rs.getDouble("PT.pricePerUnit")
-                        -(rs.getInt("PE.amount")*rs.getDouble("PT.pricePerUnit"))*rs.getDouble("PE.discountRate");
+                stDiscountR = rs.getDouble("saleDiscountRate");
+                priceWithoutSaleDiscount += rs.getInt("amount")*rs.getDouble("pricePerUnit")
+                        - (rs.getInt("amount")*rs.getDouble("pricePerUnit"))*rs.getDouble("PEDiscountRate");
             }
-            total =priceWithoutSaleDiscount-priceWithoutSaleDiscount*rs.getDouble("ST.discountRate");
+            total = priceWithoutSaleDiscount - priceWithoutSaleDiscount*stDiscountR;
 
         }catch(SQLException e){
             return false;
         }
         
         // update transaction by setting the status and its total
-        String sql2 = "UPDATE saleTransaction SET status='CLOSED', total=? WHERE id=?";
-        try{
-            PreparedStatement st = conn.prepareStatement(sql2);
+        String sql3 = "UPDATE saleTransaction SET status='CLOSED', total=? WHERE id=?";
+        try {
+            PreparedStatement st = conn.prepareStatement(sql3);
             st.setDouble(1,total);
             st.setInt(2,transactionId);
-            return true;
-        }catch(SQLException e){
+            int updatedRows = st.executeUpdate();
+
+            return !(updatedRows == 0);
+        } catch(SQLException e) {
             return false;
         }
     }
@@ -1586,42 +1637,69 @@ public class EZShop implements EZShopInterface{
             throw new InvalidTransactionIdException();
 
         //check status
-        String sql="SELECT status FROM saleTransaction WHERE id=? ";
-
+        String sql="SELECT status FROM saleTransaction WHERE id=?";
         try {
-
             PreparedStatement st = conn.prepareStatement(sql);
-            st.setInt(1,saleNumber);
+            st.setInt(1, saleNumber);
             ResultSet rs = st.executeQuery();
-            if(rs.getString("status").equals("PAYED"))
-                return false;
-            
-        }catch(SQLException e){
+            while(rs.next()) {
+                if(rs.getString("status").equals("PAYED"))
+                    return false;
+            }
+        } catch(SQLException e) {
             return false;
         }
 
-        String sql2="DELETE FROM saleTransaction WHERE id=?";
+        //restore quantity
+        String oldRole = loggedUser.getRole();
         try {
+            String sql3 = "SELECT amount, barcode FROM productEntry WHERE transactionId=?";
+            PreparedStatement st = conn.prepareStatement(sql3);
+            st.setInt(1, saleNumber);
+            ResultSet rs = st.executeQuery();
 
+            loggedUser.setRole("Administrator");
+            while(rs.next()){
+                try {
+                    // TODO controlli da fare?
+                    this.updateQuantity(this.getProductTypeByBarCode(rs.getString("barcode")).getId(),rs.getInt("amount"));
+                } catch(Exception e) {
+                    loggedUser.setRole(oldRole);
+                }
+            }
+            loggedUser.setRole(oldRole);
+        } catch(SQLException e) {
+            loggedUser.setRole(oldRole);
+            return false;
+        }
+
+        // delete transaction
+        try {
+            String sql2="DELETE FROM saleTransaction WHERE id=?";
             PreparedStatement st = conn.prepareStatement(sql2);
             st.setInt(1,saleNumber);
-            st.executeUpdate();
+            int deletedRows = st.executeUpdate();
+
+            if(deletedRows == 0)
+                return false;
 
         }catch(SQLException e){
             return false;
         }
 
-        String sql3 = "DELETE FROM productEntry WHERE transactionId=?";
+        // delete productentry for transaction
+        String sql4 = "DELETE FROM productEntry WHERE transactionId=?";
         try {
-
-            PreparedStatement st = conn.prepareStatement(sql3);
+            PreparedStatement st = conn.prepareStatement(sql4);
             st.setInt(1,saleNumber);
-            st.executeUpdate();
+            int deletedRows = st.executeUpdate();
+
+            if(deletedRows == 0)
+                return false;
 
         }catch(SQLException e){
             return false;
         }
-        
         return true;
     }
 
@@ -1631,38 +1709,52 @@ public class EZShop implements EZShopInterface{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
         //check id
-        if(transactionId==null||transactionId<=0)
+        if(transactionId == null || transactionId <= 0)
             throw new InvalidTransactionIdException();
 
-        //check status
-        String sql="SELECT ST.id, ST.balanceId, ST.discountRate, ST.total, PE.barcode, PE.amount, PE.discountRate, PT.description, PT.pricePerUnit FROM saleTransaction ST, productEntry PE, productType PT WHERE PE.transactionId=ST.id AND ST.id=? AND PE.barcode=PT.productCode";
-        List<TicketEntry> entries;
+        List<TicketEntry> entries = new ArrayList<>();
         try {
-            entries = new ArrayList<>();
-            PreparedStatement st = conn.prepareStatement(sql);
-            st.setInt(1,transactionId);
-            ResultSet rs = st.executeQuery();
+            // create the saleTransaction, only if it is CLOSED
+            //if(rs.isClosed())
+            String sql2 = "SELECT ST.id, ST.discountRate, ST.total FROM saleTransaction ST WHERE ST.id=? AND status='CLOSED'";
+            PreparedStatement st2 = conn.prepareStatement(sql2);
+            st2.setInt(1, transactionId);
+            ResultSet rs2 = st2.executeQuery();
+            if(!rs2.isBeforeFirst())
+                return null;
+            rs2.next();
+            int id = rs2.getInt("id");
+            double discountRate = rs2.getDouble("discountRate");
+            double total = rs2.getDouble("total");
 
+            // create the list of ticketEntries to put inside saleTransaction
+            String sql="SELECT ST.id, ST.balanceId, ST.discountRate AS STDiscountRate, ST.total, PE.barcode AS barcode, PE.amount, PE.discountRate AS PEDiscountRate, PT.description AS description, PT.pricePerUnit AS pricePerUnit FROM saleTransaction ST, productEntry PE, productType PT WHERE PE.transactionId=ST.id AND ST.id=? AND PE.barcode=PT.productCode";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1, transactionId);
+            ResultSet rs = st.executeQuery();
+            if(!rs.isBeforeFirst())
+                return null;
             while(rs.next()){
                 entries.add(new it.polito.ezshop.model.TicketEntry(
-                                                rs.getString("PE.barcode"),
-                                                rs.getString("PT.productDescription"),
-                                                rs.getInt("PE.amount"),
-                                                rs.getDouble("PT.pricePerUnit"),
-                                                rs.getDouble("PE.discountRate")
-                                                                                ));
+                        rs.getString("barcode"),
+                        rs.getString("description"),
+                        rs.getInt("amount"),
+                        rs.getDouble("pricePerUnit"),
+                        rs.getDouble("PEDiscountRate")
+                ));
             }
 
-            return new it.polito.ezshop.model.SaleTransaction(
-                    rs.getInt("ST.id"),
-                    entries,
-                    rs.getDouble("ST.discountRate"),
-                    rs.getDouble("ST.total"));
-        }catch(SQLException e){
+            //rs2.next();
+            //if (rs.isClosed()) {
+            return new it.polito.ezshop.model.SaleTransaction(id, entries, discountRate, total);
+            //}
+        } catch(SQLException e) {
             return null;
         }
     }
 
+    // TODO CHECK A PARTIRE DA QUI
+    // TODO check di returntransaction
     @Override
     public Integer startReturnTransaction(Integer saleNumber) throws /*InvalidTicketNumberException,*/InvalidTransactionIdException, UnauthorizedException {
         //check authorization
@@ -1673,7 +1765,7 @@ public class EZShop implements EZShopInterface{
             throw new InvalidTransactionIdException();
         int res;
 
-        //check esistence of SaleTransaction
+        //check existence of SaleTransaction
         String sql2 = "SELECT id FROM saleTransaction WHERE id=?";
         try {
             PreparedStatement st2 = conn.prepareStatement(sql2);
@@ -1738,16 +1830,18 @@ public class EZShop implements EZShopInterface{
         }
 
         // check if there is the product and the proper quantity in the sale transaction
-
-        String sql3 = "SELECT amount FROM productEntry WHERE transactionId=? AND barcode=?";
+        double discountOfProduct;
+        String sql3 = "SELECT amount, discountRate FROM productEntry WHERE transactionId=? AND barcode=?";
         try {
             PreparedStatement st3 = conn.prepareStatement(sql3);
             st3.setInt(1,saleTransactionId);
             st3.setString(2,productCode);
 
             ResultSet rs3 = st3.executeQuery();
+
             if(!rs3.next())
                 return false;
+            discountOfProduct = rs3.getDouble("discountRate");
             if(amount> rs3.getDouble("amount"))
                 return false;
 
@@ -1755,26 +1849,24 @@ public class EZShop implements EZShopInterface{
             return false;
         }
 
-        String sql2 = "INSERT INTO productEntry (transactionId, barcode, amount) VALUES (?,?,?) ";
+        String sql2 = "INSERT INTO productEntry (transactionId, barcode, amount, discountRate) VALUES (?,?,?,?) ";
         try {
             PreparedStatement st2 = conn.prepareStatement(sql2);
             st2.setInt(1,returnId);
             st2.setString(2,productCode);
-            st2.setInt(3,amount);
+            st2.setInt(3,amount); //TODO aggiungere meno
+            st2.setDouble(4,discountOfProduct);
 
-            st2.executeUpdate();
+            int updatedRows = st2.executeUpdate();
+            return !(updatedRows == 0);
 
         }catch(SQLException e) {
             return false;
         }
-        return true;
     }
 
     @Override
     public boolean endReturnTransaction(Integer returnId, boolean commit) throws InvalidTransactionIdException, UnauthorizedException {
-        if(!commit){
-            this.deleteReturnTransaction(returnId);
-        }
         //check authorization
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
@@ -1782,49 +1874,115 @@ public class EZShop implements EZShopInterface{
         if(returnId==null||returnId<=0)
             throw new InvalidTransactionIdException();
 
+        if(!commit){
+            return this.deleteReturnTransaction(returnId);
+        }
+
         //check status
-        String sql5="SELECT 'status', 'barcode', 'amount' FROM returnTransaction RT, productEntry PE WHERE RT.id=? AND PE.transactionId=RT.id ";
+
         String productCode;
-
-        int amount;
+        int amount=0;
+        int idSaleTransaction;
+        ProductType product=null;
+        String oldRole=loggedUser.getRole();
         try {
-
+            String sql5="SELECT status, PE.barcode, amount, RT.saleTransactionId AS saleTransactionId FROM returnTransaction RT, productEntry PE WHERE RT.id=? AND PE.transactionId=RT.id AND status='OPEN'";
             PreparedStatement st5 = conn.prepareStatement(sql5);
-            st5.setInt(1,returnId);
+            st5.setInt(1, returnId);
             ResultSet rs5 = st5.executeQuery();
-            productCode= rs5.getString("barcode");
 
-            amount = rs5.getInt("amount");
+            if(!rs5.isBeforeFirst())
+                return false;
 
-             if(!rs5.getString("status").equals("OPEN"))
-                 return false;
-        }catch(SQLException e){
-            e.printStackTrace();
+            while (rs5.next()) {
+                productCode = rs5.getString("barcode");
+                amount = rs5.getInt("amount");
+                idSaleTransaction=rs5.getInt("saleTransactionId");
+                loggedUser.setRole("Administrator");
+                if((product = this.getProductTypeByBarCode(productCode)) == null)
+                    return false;
+
+                String sql9 = "UPDATE ProductEntry SET amount=amount-? WHERE transactionId=? AND barcode=?";
+                PreparedStatement st6 = conn.prepareStatement(sql9);
+                st6.setInt(1,amount);
+                st6.setInt(2,idSaleTransaction);
+                st6.setString(3,productCode);
+                int updatedRows = st6.executeUpdate();
+                if(updatedRows == 0)
+                    return false;
+
+                if(!this.updateQuantity(product.getId(),amount))
+                    return false;
+
+                loggedUser.setRole(oldRole);
+
+            }
+
+
+        }catch(Exception e){
+            loggedUser.setRole(oldRole);
             return false;
         }
 
-        ProductType product;
-        try {
-            product = this.getProductTypeByBarCode(productCode);
-        }catch(Exception e) {
-            return false;
-        }
+//        ProductType product;
+//        String oldRole=loggedUser.getRole();
+//        try {
+//            loggedUser.setRole("Administrator");
+//            product = this.getProductTypeByBarCode(productCode);
+//            loggedUser.setRole(oldRole);
+//        }catch(Exception e) {
+//            loggedUser.setRole(oldRole);
+//            return false;
+//        }
+//
+//        try{
+//            loggedUser.setRole("Administrator");
+//
+//            //decrease productEntry of sale
+//            String sql9 = "UPDATE ProductEntry SET amount=amount-? WHERE transactionId=? AND barcode=?";
+//            try{
+//                PreparedStatement st5 = conn.prepareStatement(sql9);
+//                st5.setInt(1,amount);
+//                st5.setInt(2,idSaleTransaction);
+//                st5.setString(3,productCode);
+//                st5.executeUpdate();
+//
+//                this.updateQuantity(product.getId(),amount);
+//            }catch (SQLException e){e.printStackTrace();}
+//            loggedUser.setRole(oldRole);
+//        }catch(Exception e) {
+//            loggedUser.setRole(oldRole);
+//            return false;
+//        }
 
+        double discountOfSale=0.0;
+        //get discountRate of sale
+        String sql4="SELECT ST.discountRate AS rate FROM returnTransaction RT, saleTransaction ST WHERE ST.id=RT.saleTransactionId AND RT.id=?";
         try{
-            this.updateQuantity(product.getId(),amount);
-        }catch(Exception e) {
+            PreparedStatement st = conn.prepareStatement(sql4);
+            st.setInt(1,returnId);
+            ResultSet rs = st.executeQuery();
+            if(rs.next())
+                discountOfSale=rs.getDouble("rate");
+        }catch(SQLException e){
             return false;
         }
 
-        String sql3="SELECT PE.amount, PT.pricePerUnit FROM productEntry PE, productType PT WHERE PE.barcode=PT.productCode AND PE.transactionId=?";
+
+
+        //discount rate products
+        String sql3="SELECT PE.amount AS amount, PT.pricePerUnit AS pricePerUnit, PE.discountRate AS discountRate FROM productEntry PE, productType PT WHERE PE.barcode=PT.productCode AND PE.transactionId=?";
         double total=0;
         try{
             PreparedStatement st = conn.prepareStatement(sql3);
             st.setInt(1,returnId);
             ResultSet rs = st.executeQuery();
             while(rs.next()){
-                total+=rs.getInt("PE.amount")*rs.getDouble("PT.pricePerUnit");
+                double price = rs.getDouble("pricePerUnit");
+                price = price - price*discountOfSale;
+                total+=rs.getInt("amount")* price  - (price* (rs.getDouble("discountRate"))*rs.getInt("amount"));
             }
+
         }catch(SQLException e){
             return false;
         }
@@ -1835,18 +1993,22 @@ public class EZShop implements EZShopInterface{
             PreparedStatement st = conn.prepareStatement(sql2);
             st.setDouble(1, total);
             st.setInt(2,returnId);
-
-            return true;
+            int updatedRows = st.executeUpdate();
+            return !(updatedRows == 0);
         }catch(SQLException e){
             try{
-                this.updateQuantity(product.getId(),-amount);
+                loggedUser.setRole("Administrator");
+                if(product != null)
+                    this.updateQuantity(product.getId(),-amount);
+                loggedUser.setRole(oldRole);
                 return false;
             }catch(Exception ee){
+                loggedUser.setRole(oldRole);
                 return false;
             }
         }
-
     }
+
 
     @Override
     public boolean deleteReturnTransaction(Integer returnId) throws InvalidTransactionIdException, UnauthorizedException {
@@ -1865,7 +2027,9 @@ public class EZShop implements EZShopInterface{
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,returnId);
             ResultSet rs = st.executeQuery();
-            if(rs.getString("status").equals("PAYED"))
+            rs.next();
+            String stat=rs.getString("status");
+            if(stat.equals("PAYED"))
                 return false;
 
         }catch(SQLException e){
@@ -1905,20 +2069,19 @@ public class EZShop implements EZShopInterface{
             throw new UnauthorizedException();
         //check id
         if(transactionId==null||transactionId<=0)
-            throw new InvalidTransactionIdException();
+            throw new InvalidTransactionIdException("Invalid Transaction Id");
         //check cash
         if(cash <= 0)
-            throw new InvalidPaymentException();
+            throw new InvalidPaymentException("Invalid Payment");
 
-        String sql="SELECT total FROM saleTransaction WHERE id=? AND status='CLOSE' ";
+        String sql="SELECT total FROM saleTransaction WHERE id=? AND status='CLOSED'";
         double total;
         try {
-
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,transactionId);
             ResultSet rs = st.executeQuery();
+            rs.next();
             total = rs.getDouble("total");
-
         }catch(SQLException e){
             return -1.0;
         }
@@ -1926,18 +2089,25 @@ public class EZShop implements EZShopInterface{
         if(total>cash){
             return -1.0;
         }else{
+            String actualRole= loggedUser.getRole();
+            loggedUser.setRole("Administrator");
             this.recordBalanceUpdate(total);
+            loggedUser.setRole(actualRole);
             // update transaction by setting the status
             String sql2 = "UPDATE saleTransaction SET status='PAYED' WHERE id=?";
             try{
                 PreparedStatement st = conn.prepareStatement(sql2);
                 st.setInt(1,transactionId);
+                int updatedRows = st.executeUpdate();
+
+                if (updatedRows>0)
+                    return cash-total;
 
             }catch(SQLException e) {
                 return -1.0;
             }
-                return cash-total;
         }
+        return -1.0;
     }
 
     @Override
@@ -1950,19 +2120,17 @@ public class EZShop implements EZShopInterface{
         if(creditCard==null || creditCard.isEmpty() || !CreditCard.validateWithLuhn(creditCard))
             throw new InvalidCreditCardException();
 
-        String sql="SELECT total FROM saleTransaction WHERE id=? AND status='CLOSE' ";
+        String sql="SELECT total FROM saleTransaction WHERE id=? AND status='CLOSED'";
         double total;
         try {
-
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,transactionId);
             ResultSet rs = st.executeQuery();
             total = rs.getDouble("total");
-
         }catch(SQLException e){
             return false;
         }
-
+/*
         String sql2="SELECT balance FROM creditCard WHERE cardNumber=?";
         try {
             PreparedStatement st = conn.prepareStatement(sql2);
@@ -1979,12 +2147,15 @@ public class EZShop implements EZShopInterface{
             PreparedStatement st = conn.prepareStatement(sql3);
             st.setDouble(1,total);
             st.setString(2,creditCard);
-            st.executeUpdate();
+            int updatedRows = st.executeUpdate();
+
+            if(updatedRows == 0)
+                return false;
 
         }catch(SQLException e){
             return false;
         }
-
+*/
         String sql4 = "UPDATE saleTransaction SET status='PAYED' WHERE id=?";
         try{
             PreparedStatement st = conn.prepareStatement(sql4);
@@ -1992,9 +2163,10 @@ public class EZShop implements EZShopInterface{
         }catch(SQLException e) {
             return false;
         }
-
+        String oldRole=loggedUser.getRole();
+        loggedUser.setRole("Administrator");
         this.recordBalanceUpdate(total);
-
+        loggedUser.setRole(oldRole);
         return true;
     }
 
@@ -2008,33 +2180,40 @@ public class EZShop implements EZShopInterface{
             throw new InvalidTransactionIdException();
 
 
-        String sql="SELECT total FROM returnTransaction WHERE id=? AND status='CLOSE'";
-        double total;
+        String sql="SELECT total FROM returnTransaction WHERE id=? AND status='CLOSED'";
+        double total=0.0;
         try {
 
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,returnId);
             ResultSet rs = st.executeQuery();
-            total = rs.getDouble("total");
+
+            if(rs.next())
+                total = rs.getDouble("total");
 
         }catch(SQLException e){
             return -1.0;
         }
 
+        String oldRole=loggedUser.getRole();
+        loggedUser.setRole("Administrator");
         this.recordBalanceUpdate(-total);
+        loggedUser.setRole(oldRole);
 
         // update transaction by setting the status
         String sql2 = "UPDATE returnTransaction SET status='PAYED' WHERE id=?";
         try{
             PreparedStatement st = conn.prepareStatement(sql2);
             st.setInt(1,returnId);
+            int updatedRows = st.executeUpdate();
 
+            if(updatedRows == 0)
+                return -1.0;
+            return total;
         }catch(SQLException e) {
             return -1.0;
         }
 
-
-        return total;
     }
 
     @Override
@@ -2045,9 +2224,9 @@ public class EZShop implements EZShopInterface{
         if(returnId==null||returnId<=0)
             throw new InvalidTransactionIdException();
         if(creditCard==null || creditCard.isEmpty() || !CreditCard.validateWithLuhn(creditCard))
-            throw new InvalidCreditCardException();
+            throw new InvalidCreditCardException("Invalid credit card.");
 
-        String sql="SELECT total FROM returnTransaction WHERE id=? AND status='CLOSE' ";
+        String sql="SELECT total FROM returnTransaction WHERE id=? AND status='CLOSED'";
         double total;
         try {
 
@@ -2059,7 +2238,7 @@ public class EZShop implements EZShopInterface{
         }catch(SQLException e){
             return -1.0;
         }
-
+/*
         String sql3 ="UPDATE creditCard SET balance=balance+? WHERE cardNumber=?";
         try {
             PreparedStatement st = conn.prepareStatement(sql3);
@@ -2070,16 +2249,22 @@ public class EZShop implements EZShopInterface{
         }catch(SQLException e){
             return -1.0;
         }
-
+*/
         String sql4 = "UPDATE returnTransaction SET status='PAYED' WHERE id=?";
         try{
             PreparedStatement st = conn.prepareStatement(sql4);
             st.setInt(1,returnId);
+            int updatedRows = st.executeUpdate();
+            if (updatedRows == 0)
+                return -1.0;
         }catch(SQLException e) {
             return -1.0;
         }
 
+        String oldRole=loggedUser.getRole();
+        loggedUser.setRole("Administrator");
         this.recordBalanceUpdate(-total);
+        loggedUser.setRole(oldRole);
 
         return total;
     }
@@ -2107,15 +2292,15 @@ public class EZShop implements EZShopInterface{
 
             String sql2 = "INSERT INTO balanceOperation(date,money,type) VALUES (?,?,?) ";
             PreparedStatement st2 = conn.prepareStatement(sql2);
-            st2.setDate(1, java.sql.Date.valueOf((new Date()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
+            st2.setDate(1, java.sql.Date.valueOf(LocalDate.of(LocalDate.now().getYear(),LocalDate.now().getMonthValue(),LocalDate.now().getDayOfMonth())));
             st2.setDouble(2,toBeAdded);
             st2.setString(3,type);
-            st2.executeUpdate();
+            int updatedRows = st2.executeUpdate();
 
+            return !(updatedRows == 0);
         }catch (SQLException e) {
             return false;
         }
-        return true;
     }
 
     @Override
@@ -2134,20 +2319,17 @@ public class EZShop implements EZShopInterface{
             }
 
             try {
-                String sql = "SELECT * FROM balanceOperation WHERE date > ? AND date < ? ";
+                String sql = "SELECT * FROM balanceOperation WHERE date >= ? AND date <= ?";
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setDate(1, java.sql.Date.valueOf(realFrom));
                 st.setDate(2, java.sql.Date.valueOf(realTo));
-                st.executeQuery();
-                rs = st.getResultSet();
+                rs=st.executeQuery();
                 while (rs.next())
                 {
                     l.add(
                             new it.polito.ezshop.model.BalanceOperation(
                                     rs.getInt("id"),
-                                    Instant.ofEpochMilli(rs.getDate("date").getTime())
-                                            .atZone(ZoneId.systemDefault())
-                                            .toLocalDate(),
+                                    Instant.ofEpochMilli(Long.parseLong(rs.getString("date"))).atZone(ZoneId.systemDefault()).toLocalDate(),
                                     rs.getDouble("money"),
                                     rs.getString("type")
                             )
@@ -2159,19 +2341,16 @@ public class EZShop implements EZShopInterface{
         }
         else if(from==null && to!=null) {
             try {
-                String sql = "SELECT * FROM balanceOperation WHERE date < ? ";
+                String sql = "SELECT * FROM balanceOperation WHERE date <= ?";
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setDate(1,java.sql.Date.valueOf(to));
-                st.executeQuery();
-                rs = st.getResultSet();
+                rs = st.executeQuery();
                 while (rs.next())
                 {
                     l.add(
                             new it.polito.ezshop.model.BalanceOperation(
                                     rs.getInt("id"),
-                                    Instant.ofEpochMilli(rs.getDate("date").getTime())
-                                            .atZone(ZoneId.systemDefault())
-                                            .toLocalDate(),
+                                    Instant.ofEpochMilli(Long.parseLong(rs.getString("date"))).atZone(ZoneId.systemDefault()).toLocalDate(),
                                     rs.getDouble("money"),
                                     rs.getString("type")
                             )
@@ -2184,20 +2363,19 @@ public class EZShop implements EZShopInterface{
         else if(from!=null)
         {
             try {
-                String sql = "SELECT * FROM balanceOperation WHERE date > ? ";
+                String sql = "SELECT * FROM balanceOperation WHERE date >= ?";
+
 
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setDate(1, java.sql.Date.valueOf(from));
-                st.executeQuery();
-                rs = st.getResultSet();
+
+                rs = st.executeQuery();
                 while (rs.next())
                 {
                     l.add(
                             new it.polito.ezshop.model.BalanceOperation(
                                     rs.getInt("id"),
-                                    Instant.ofEpochMilli(rs.getDate("date").getTime())
-                                            .atZone(ZoneId.systemDefault())
-                                            .toLocalDate(),
+                                    Instant.ofEpochMilli(Long.parseLong(rs.getString("date"))).atZone(ZoneId.systemDefault()).toLocalDate(),
                                     rs.getDouble("money"),
                                     rs.getString("type")
                             )
@@ -2205,6 +2383,26 @@ public class EZShop implements EZShopInterface{
                 }
             } catch (SQLException ignored) {
 
+            }
+        }else {
+            try {
+                String sql = "SELECT * FROM balanceOperation";
+                PreparedStatement st = conn.prepareStatement(sql);
+                rs = st.executeQuery();
+
+                while (rs.next())
+                {
+                    l.add(
+                            new it.polito.ezshop.model.BalanceOperation(
+                                    rs.getInt("id"),
+                                    Instant.ofEpochMilli(Long.parseLong(rs.getString("date"))).atZone(ZoneId.systemDefault()).toLocalDate(),
+                                    rs.getDouble("money"),
+                                    rs.getString("type")
+                            )
+                    );
+                }
+                return l;
+            }catch (SQLException ignored){
             }
         }
         return l;
@@ -2214,53 +2412,56 @@ public class EZShop implements EZShopInterface{
     public double computeBalance() throws UnauthorizedException {
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager")))
             throw new UnauthorizedException();
-        else
-        {
+        else {
             double sum = 0.0;
-            try
-            {
+            try {
                 String sql = "SELECT money FROM balanceOperation";
                 PreparedStatement st = conn.prepareStatement(sql);
                 ResultSet rs = st.executeQuery();
-                while (rs.next())
-                {
-                    sum+=rs.getInt("money");
+                while (rs.next()) {
+                    sum+=rs.getDouble("money");
                 }
                 return sum;
-            } catch (SQLException e)
-            {
+            } catch (SQLException e) {
                 return 0.0;
             }
         }
     }
 
-    //TODO ONLY FOR TEST, delete after the implementation of reset inside afterEach test
-    public void deleteOrderId(int orderId)
-    {
-        String sql = "DELETE FROM 'order' WHERE id=? ";
+//    public void deleteOrderId(int orderId)
+//    {
+//        String sql = "DELETE FROM 'order' WHERE id=?";
+//
+//        try {
+//            PreparedStatement st = conn.prepareStatement(sql);
+//            st.setInt(1, orderId);
+//            st.executeUpdate();
+//        }catch (SQLException ignored){
+//        }
+//    }
 
-        try {
-            PreparedStatement st = conn.prepareStatement(sql);
-            st.setInt(1, orderId);
-            st.executeUpdate();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-
-    }
-
-    //TODO ONLY FOR TEST, delete after the implementation of reset inside afterEach test
+    //ONLY FOR TEST
     public void detachCustomerCard(String customerCard)
     {
-        String sql = "UPDATE customer SET loyaltyCardId=NULL WHERE loyaltyCardId=? ";
+        String sql = "UPDATE customer SET loyaltyCardId=NULL WHERE loyaltyCardId=?";
 
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.setString(1, customerCard);
             st.executeUpdate();
-        }catch (SQLException e){
-            e.printStackTrace();
+        }catch (SQLException ignored){
         }
+    }
 
+    //ONLY FOR TEST
+    public void deleteCard(String id) {
+        String sql = "DELETE FROM loyaltyCard WHERE cardId=?";
+
+        try {
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, id);
+            st.executeUpdate();
+        } catch (SQLException ignored){
+        }
     }
 }

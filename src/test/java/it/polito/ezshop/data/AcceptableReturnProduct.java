@@ -12,17 +12,31 @@ import static org.junit.Assert.*;
 
 public class AcceptableReturnProduct {
 
-    private it.polito.ezshop.data.EZShop shop;
-    private int idSaleTransaction;
-    private int idReturnTransaction;
+    EZShop shop;
+    Integer idSaleTransaction,idReturnTransaction;
 
     @Before
-    public void before() throws Exception{
-        shop = new it.polito.ezshop.data.EZShop();
+    public void before() throws Exception {
+        shop = new EZShop();
+
+        shop.reset();
         shop.login("admin","ciao");
+        Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.updatePosition(idProd,"13-cacca-14");
+        shop.updateQuantity(idProd,40);
+        shop.logout();
+        shop.login("23","12345");
         idSaleTransaction = shop.startSaleTransaction();
-        idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
-        shop.addProductToSale(idSaleTransaction,"2424242424239",3);
+        shop.addProductToSale(idSaleTransaction,"2424242424239",11);
+        shop.endSaleTransaction(idSaleTransaction);
+        shop.receiveCashPayment(idSaleTransaction,1000.0);
+        idReturnTransaction=shop.startReturnTransaction(idSaleTransaction);
+    }
+
+    @After
+    public void after() throws Exception {
+        shop.reset();
+        shop.logout();
     }
 
     @Test
@@ -71,7 +85,7 @@ public class AcceptableReturnProduct {
 
     @Test
     public void testTooHighQuantity() throws Exception{
-        assertFalse(shop.returnProduct(idReturnTransaction,"2424242424239",4));
+        assertFalse(shop.returnProduct(idReturnTransaction,"2424242424239",12));
     }
 
     @Test
@@ -82,14 +96,6 @@ public class AcceptableReturnProduct {
     @Test
     public void testCorrectCase() throws Exception{
         assertTrue(shop.returnProduct(idReturnTransaction,"2424242424239",2));
-    }
-
-
-    @After
-    public void after() throws Exception {
-        shop.deleteSaleTransaction(idSaleTransaction);
-        shop.deleteReturnTransaction(idReturnTransaction);
-        shop.logout();
     }
 
 }

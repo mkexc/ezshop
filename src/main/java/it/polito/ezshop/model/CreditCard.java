@@ -27,20 +27,19 @@ public class CreditCard {
 
     public static boolean validateWithLuhn(String creditCard) {
         int dimension = creditCard.length();
-        boolean isOdd = true;
+
         int temp, sum = 0;
-        for (int i = dimension - 2; i >= 0; --i) {
+        for (int i = dimension - 1; i >= 0; i--) {
             temp = Character.getNumericValue((creditCard.charAt(i)));
-            if (isOdd) {
+            if (i % 2 == 0) {
                 temp =  temp * 2;
                 //sum += temp / 10;
                 if (temp>9)
                     temp-=9;
             }
-            isOdd = !isOdd;
             sum += temp;
         }
-        return ((sum % 10) == creditCard.charAt(dimension-1)-'0');
+        return ((sum % 10) == 0);//creditCard.charAt(dimension-1)-'0');
     }
 
 

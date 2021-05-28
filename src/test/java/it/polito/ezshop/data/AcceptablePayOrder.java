@@ -13,22 +13,23 @@ import static org.junit.Assert.assertThrows;
 public class AcceptablePayOrder {
 
     private it.polito.ezshop.data.EZShop shop;
-    private int orderIdPayed,  orderIdIssued;
+    private int orderIdPayed, orderIdIssued;
 
     @Before
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
+        shop.reset();
         shop.login("admin","ciao");
-        orderIdPayed = shop.payOrderFor("2143325343648",1,1.0);
-        orderIdIssued= shop.issueOrder("11234567890125",1,1.0);
-
+        Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.recordBalanceUpdate(1000);
+        orderIdPayed = shop.payOrderFor("2424242424239",1,1.0);
+        orderIdIssued= shop.issueOrder("2424242424239",1,1.0);
     }
 
     @After
     public void after(){
         shop.logout();
-        shop.deleteOrderId(orderIdPayed);
-        shop.deleteOrderId(orderIdIssued);
+        shop.reset();
     }
 
     @Test
@@ -44,8 +45,7 @@ public class AcceptablePayOrder {
     }
 
     @Test
-    public void TestInvalidOrderId() throws Exception {
-        shop.login("admin", "ciao");
+    public void testInvalidOrderId() throws Exception {
         assertFalse(shop.payOrder(300));
 
         assertThrows(InvalidOrderIdException.class, () ->
@@ -57,15 +57,12 @@ public class AcceptablePayOrder {
     }
 
     @Test
-    public void TestJustPayed() throws Exception {
-        shop.login("admin", "ciao");
+    public void testJustPayed() throws Exception {
         assertFalse(shop.payOrder(orderIdPayed));
     }
 
     @Test
-    public void TestCorrectCase() throws Exception {
-
+    public void testCorrectCase() throws Exception {
         assertTrue(shop.payOrder(orderIdIssued));
     }
-
 }

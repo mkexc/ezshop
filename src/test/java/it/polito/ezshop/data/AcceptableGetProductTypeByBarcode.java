@@ -2,21 +2,33 @@ package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.UnauthorizedException;
 import it.polito.ezshop.exceptions.InvalidProductCodeException;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class AcceptableGetProductTypeByBarcode {
+    private EZShop shop;
+
+    @Before
+    public void before() throws Exception{
+        shop = new EZShop();
+        shop.reset();
+        shop.login("admin","ciao");
+        Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
+        shop.updatePosition(idProd,"13-cacca-14");
+        shop.updateQuantity(idProd,4);
+    }
     @Test
     public void testAuthorization() throws Exception{
-
-        EZShop shop = new EZShop();
+        shop.logout();
         assertThrows(UnauthorizedException.class,()->
-                shop.getProductTypeByBarCode("00012345678905")
+                shop.getProductTypeByBarCode("2424242424239")
         );
         shop.login("23","12345");
         assertThrows(UnauthorizedException.class,()->
-                shop.getProductTypeByBarCode("00012345678905")
+                shop.getProductTypeByBarCode("2424242424239")
         );
 
     }
@@ -24,8 +36,7 @@ public class AcceptableGetProductTypeByBarcode {
     @Test
     public void testProductCode() throws Exception{
 
-        EZShop shop = new EZShop();
-        shop.login("admin","ciao");
+
 
         assertThrows(InvalidProductCodeException.class,()-> shop.getProductTypeByBarCode(""));
 
@@ -41,8 +52,7 @@ public class AcceptableGetProductTypeByBarcode {
     @Test
     public void testNoProduct() throws Exception{
 
-        EZShop shop = new EZShop();
-        shop.login("admin","ciao");
+
         assertNull(shop.getProductTypeByBarCode("1234565432436"));
 
     }
@@ -50,10 +60,16 @@ public class AcceptableGetProductTypeByBarcode {
     @Test
     public void testCorrectCase() throws Exception{
 
-        EZShop shop = new EZShop();
         shop.login("admin","ciao");
-        assertTrue(shop.getProductTypeByBarCode("11234567890125") instanceof it.polito.ezshop.model.ProductType);
+        assertTrue(shop.getProductTypeByBarCode("2424242424239") instanceof it.polito.ezshop.model.ProductType);
 
+    }
+
+    @After
+    public void after() throws Exception{
+
+        shop.logout();
+        shop.reset();
     }
 
 }

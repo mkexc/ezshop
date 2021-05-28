@@ -7,9 +7,9 @@ public class Customer implements it.polito.ezshop.data.Customer {
      private String customerName;
      private Integer points=0;
 
-     public Customer(String customerName) {
-         this.customerName=customerName;
-     }
+//     public Customer(String customerName) {
+//         this.customerName=customerName;
+//     }
 
 
      public Customer (Integer customerId, String customerName, String loyaltyCardId, Integer points){
