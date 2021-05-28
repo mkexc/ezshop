@@ -253,30 +253,34 @@ public class EZShop implements EZShopInterface{
         // there is already a logged user
         if(loggedUser != null)
             return null;
+        // username not null, not empty
+        if(username == null || username.isEmpty())
+            throw new InvalidUsernameException();
+        // password not null, not empty
+        if(password == null || password.isEmpty())
+            throw new InvalidPasswordException();
 
-        String sql = "SELECT id, password, role, username FROM user WHERE username=?";
-        User user;
+        String sql = "SELECT id, password, role, username FROM user WHERE username=? AND password=?";
         try {
             PreparedStatement st = conn.prepareStatement(sql);
             st.setString(1, username);
+            st.setString(2, password);
             ResultSet rs = st.executeQuery();
 
-            user = new it.polito.ezshop.model.User(rs.getInt("id"),
+            if(!rs.isBeforeFirst())
+                return null;
+
+            User user = new it.polito.ezshop.model.User(rs.getInt("id"),
                     rs.getString("username"),
                     rs.getString("password"),
                     rs.getString("role")
             );
 
-            // check password
-            if(rs.getString("password").equals(password)) {
-                // do the login
-                loggedUser = user;
-                return user;
-            }
-            else
-                throw new InvalidPasswordException();
+            loggedUser = user;
+            return user;
+
         } catch (SQLException e) {
-            throw new InvalidUsernameException();
+            return null;
         }
     }
 
@@ -610,14 +614,14 @@ public class EZShop implements EZShopInterface{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && (!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
 
+        //check quantity is not <=0
+        if(quantity <= 0)
+            throw new InvalidQuantityException("Invalid Quantity");
+
         //check if the product exist and if barcode is valid
         ProductType product = this.getProductTypeByBarCode(productCode);
         if(product == null)
             return -1;
-
-        //check quantity is not <=0
-        if(quantity <= 0)
-            throw new InvalidQuantityException("Invalid Quantity");
 
         //check pricePerUnit is not <=0
         if(pricePerUnit <= 0)
@@ -1694,8 +1698,9 @@ public class EZShop implements EZShopInterface{
             st.setInt(1,saleNumber);
             int deletedRows = st.executeUpdate();
 
-            if(deletedRows == 0)
-                return false;
+            //if(deletedRows == 0)
+            // no error needed if there are no products to delete
+            //    return false;
 
         }catch(SQLException e){
             return false;
@@ -1732,8 +1737,8 @@ public class EZShop implements EZShopInterface{
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1, transactionId);
             ResultSet rs = st.executeQuery();
-            if(!rs.isBeforeFirst())
-                return null;
+            //if(!rs.isBeforeFirst())
+                //return null;
             while(rs.next()){
                 entries.add(new it.polito.ezshop.model.TicketEntry(
                         rs.getString("barcode"),
@@ -1746,6 +1751,7 @@ public class EZShop implements EZShopInterface{
 
             //rs2.next();
             //if (rs.isClosed()) {
+            // if no product entry is found, return a saleTransaction with empty "entries" list
             return new it.polito.ezshop.model.SaleTransaction(id, entries, discountRate, total);
             //}
         } catch(SQLException e) {
