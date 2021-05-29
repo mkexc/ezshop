@@ -52,8 +52,12 @@ public class EZShop implements EZShopInterface{
         this.isCustomerListUpdated = false;
         this.isUserListUpdated = false;
         this.isInventoryUpdated = false;
+
+        // logout current user
+        this.loggedUser = null;
         
         try {
+            // empty all tables
             String sql = "DELETE FROM balanceOperation WHERE true";
             PreparedStatement st = conn.prepareStatement(sql);
             st.executeUpdate();
@@ -72,6 +76,22 @@ public class EZShop implements EZShopInterface{
             sql = "DELETE FROM productEntry WHERE true";
             st = conn.prepareStatement(sql);
             st.executeUpdate();
+            sql = "DELETE FROM user WHERE true";
+            st = conn.prepareStatement(sql);
+            st.executeUpdate();
+            sql = "DELETE FROM customer WHERE true";
+            st = conn.prepareStatement(sql);
+            st.executeUpdate();
+            sql = "DELETE FROM loyaltyCard WHERE true";
+            st = conn.prepareStatement(sql);
+            st.executeUpdate();
+            sql = "DELETE FROM creditCard WHERE true";
+            st = conn.prepareStatement(sql);
+            st.executeUpdate();
+
+            // commit&close connection
+            conn.commit();
+            conn.close();
 
         } catch (SQLException ignored) {
             
@@ -657,14 +677,14 @@ public class EZShop implements EZShopInterface{
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && (!loggedUser.getRole().equals("ShopManager"))))
             throw new UnauthorizedException();
 
+        //check quantity is not <=0
+        if(quantity <= 0)
+            throw new InvalidQuantityException();
+
         //check if the product exist
         ProductType product = this.getProductTypeByBarCode(productCode);
         if(product == null)
             return -1;
-
-        //check quantity is not <=0
-        if(quantity <= 0)
-            throw new InvalidQuantityException();
 
         //check pricePerUnit is not <=0
         if(pricePerUnit <= 0)
