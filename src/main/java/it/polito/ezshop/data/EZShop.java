@@ -202,7 +202,7 @@ public class EZShop implements EZShopInterface{
     @Override
     public User getUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
         // check role of the user (only administrator)
-        if (!loggedUser.getRole().equals("Administrator")) {
+        if (loggedUser == null || !loggedUser.getRole().equals("Administrator")) {
             throw new UnauthorizedException();
         }
 
@@ -246,7 +246,7 @@ public class EZShop implements EZShopInterface{
         }
 
         // role is Administrator||ShopManager||Cashier
-        if (!role.equals("Administrator") && !role.equals("ShopManager") && !role.equals("Cashier")) {
+        if (role == null || !role.equals("Administrator") && !role.equals("ShopManager") && !role.equals("Cashier")) {
             throw new InvalidRoleException();
         }
 
@@ -339,6 +339,10 @@ public class EZShop implements EZShopInterface{
             throw new InvalidPricePerUnitException("Invalid Price Per unit");
         }
 
+        // if note is null an empty string should be saved
+        if(note == null)
+            note = "";
+
         // insert the new productType
         String sql="INSERT INTO productType(productCode, description, pricePerUnit, quantity, notes) VALUES (?, ?, ?, ?, ?)";
         try {
@@ -387,6 +391,10 @@ public class EZShop implements EZShopInterface{
         // barCode not null, not empty
         if(newCode == null || newCode.equals(""))
             throw  new InvalidProductCodeException();
+
+        // if note is null an empty string should be saved
+        if(newNote == null)
+            newNote = "";
 
         // check if newCode is valid
         if(!validateProductCode(newCode)) {
@@ -638,14 +646,14 @@ public class EZShop implements EZShopInterface{
         if(quantity <= 0)
             throw new InvalidQuantityException("Invalid Quantity");
 
+        //check pricePerUnit is not <=0
+        if(pricePerUnit <= 0)
+            throw new InvalidPricePerUnitException();
+
         //check if the product exist and if barcode is valid
         ProductType product = this.getProductTypeByBarCode(productCode);
         if(product == null)
             return -1;
-
-        //check pricePerUnit is not <=0
-        if(pricePerUnit <= 0)
-            throw new InvalidPricePerUnitException();
 
         // insert the new productType
         String sql = "INSERT INTO 'order'(productCode, pricePerUnit, quantity, status) VALUES (?, ?, ?, ?)";
@@ -681,14 +689,14 @@ public class EZShop implements EZShopInterface{
         if(quantity <= 0)
             throw new InvalidQuantityException();
 
+        //check pricePerUnit is not <=0
+        if(pricePerUnit <= 0)
+            throw new InvalidPricePerUnitException();
+
         //check if the product exist
         ProductType product = this.getProductTypeByBarCode(productCode);
         if(product == null)
             return -1;
-
-        //check pricePerUnit is not <=0
-        if(pricePerUnit <= 0)
-            throw new InvalidPricePerUnitException();
 
         // check balance and THEN record payed order if enough money
         if(recordBalanceUpdate(-pricePerUnit*quantity)) {
@@ -1887,8 +1895,22 @@ public class EZShop implements EZShopInterface{
             return !(updatedRows == 0);
 
         }catch(SQLException e) {
+            e.printStackTrace();
             return false;
         }
+//        String sql2 = "UPDATE productEntry SET amount=amount-? WHERE transactionId=? AND barcode=?";
+//        try {
+//            PreparedStatement st2 = conn.prepareStatement(sql2);
+//            st2.setInt(1,amount);
+//            st2.setInt(2,saleTransactionId);
+//            st2.setString(3,productCode);
+//
+//            int updatedRows = st2.executeUpdate();
+//            return !(updatedRows == 0);
+//
+//        }catch(SQLException e) {
+//            return false;
+//        }
     }
 
     @Override
