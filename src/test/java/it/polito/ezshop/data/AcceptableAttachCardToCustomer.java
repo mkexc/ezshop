@@ -72,5 +72,6 @@ public class AcceptableAttachCardToCustomer {
     public void correctCase() throws InvalidCustomerIdException, UnauthorizedException, InvalidCustomerCardException {
         assertTrue(shop.attachCardToCustomer(card,customerId));
         shop.detachCustomerCard(card);
+        // TODO sostituire detachCustomerCard con modifyCustomer con card=""
     }
 }

@@ -36,7 +36,7 @@ public class AcceptableCreateCard {
     public void correctCase() throws Exception {
         String c = shop.createCard();
         assertEquals(10,c.length());
-        //TODO togliere card
+        //TODO rimuovere card con modifyCustomer
     }
 
 }

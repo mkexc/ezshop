@@ -22,7 +22,7 @@ public class AcceptableModifyPointsOnCard {
 
     @After
     public void after() {
-        //TODO rimuovere card
+        //TODO rimuovere card con modifyCustomer
         shop.logout();
         shop.reset();
     }
