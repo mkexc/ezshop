@@ -2522,6 +2522,7 @@ public class EZShop implements EZShopInterface{
 //    }
 
     //ONLY FOR TEST
+    // TODO cancellare? meglio usare reset()
     public void detachCustomerCard(String customerCard)
     {
         String sql = "UPDATE customer SET loyaltyCardId=NULL WHERE loyaltyCardId=?";
@@ -2535,6 +2536,7 @@ public class EZShop implements EZShopInterface{
     }
 
     //ONLY FOR TEST
+    // TODO cancellare? meglio usare reset()
     public void deleteCard(String id) {
         String sql = "DELETE FROM loyaltyCard WHERE cardId=?";
 
