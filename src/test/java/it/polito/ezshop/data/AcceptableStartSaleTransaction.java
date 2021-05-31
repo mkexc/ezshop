@@ -14,6 +14,8 @@ public class AcceptableStartSaleTransaction {
     public void beforeEach() throws Exception
     {
         shop = new EZShop();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("23","12345");
     }
 

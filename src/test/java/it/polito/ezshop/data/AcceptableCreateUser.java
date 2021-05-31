@@ -3,6 +3,7 @@ package it.polito.ezshop.data;
 import it.polito.ezshop.exceptions.InvalidPasswordException;
 import it.polito.ezshop.exceptions.InvalidRoleException;
 import it.polito.ezshop.exceptions.InvalidUsernameException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,9 +15,17 @@ public class AcceptableCreateUser {
     private EZShop shop;
 
     @Before
-    public void before() throws InvalidPasswordException, InvalidUsernameException {
+    public void before() throws InvalidPasswordException, InvalidUsernameException, InvalidRoleException {
         shop = new EZShop();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
+    }
+
+    @After
+    public void after() {
+        shop.logout();
+        shop.reset();
     }
 
     @Test

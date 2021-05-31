@@ -15,12 +15,16 @@ public class AcceptableDefineCustomer {
     @Before
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
+        shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
     }
 
     @After
     public void after() throws Exception{
         shop.logout();
+        shop.reset();
     }
 
     @Test

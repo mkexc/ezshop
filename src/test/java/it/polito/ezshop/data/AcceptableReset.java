@@ -14,6 +14,8 @@ public class AcceptableReset {
     {
         shop = new EZShop();
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
     }
 
@@ -36,6 +38,11 @@ public class AcceptableReset {
     public void check4() throws Exception{
         assertTrue(shop.getAllCustomers() instanceof ArrayList);
         assertTrue(shop.getAllUsers() instanceof ArrayList);
+    }
+
+    @After
+    public void after() throws Exception{
+        shop.reset();
     }
 
 }

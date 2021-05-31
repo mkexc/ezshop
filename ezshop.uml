@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>/Users/mkexc/IdeaProjects/ezshop/src/main/java/it/polito/ezshop</OriginalElement>
+  <nodes>
+    <node x="110.25" y="160.0">it.polito.ezshop.model.SaleTransaction</node>
+    <node x="0.0" y="545.0">it.polito.ezshop.model.CreditCard</node>
+    <node x="0.0" y="80.0">it.polito.ezshop.model.BalanceOperation</node>
+    <node x="0.0" y="470.0">it.polito.ezshop.model.Customer</node>
+    <node x="174.0" y="470.0">it.polito.ezshop.model.Order</node>
+    <node x="182.0" y="545.0">it.polito.ezshop.EZShop</node>
+    <node x="316.0" y="470.0">it.polito.ezshop.model.User</node>
+    <node x="228.0" y="315.0">it.polito.ezshop.model.ProductType</node>
+    <node x="212.0" y="80.0">it.polito.ezshop.data.SaleTransaction</node>
+    <node x="0.0" y="390.0">it.polito.ezshop.data.Customer</node>
+    <node x="424.0" y="315.0">it.polito.ezshop.model.TicketEntry</node>
+    <node x="174.0" y="390.0">it.polito.ezshop.data.Order</node>
+    <node x="0.0" y="235.0">it.polito.ezshop.data.EZShopInterface</node>
+    <node x="316.0" y="390.0">it.polito.ezshop.data.User</node>
+    <node x="0.0" y="0.0">it.polito.ezshop.data.BalanceOperation</node>
+    <node x="228.0" y="235.0">it.polito.ezshop.data.ProductType</node>
+    <node x="424.0" y="235.0">it.polito.ezshop.data.TicketEntry</node>
+    <node x="34.5" y="315.0">it.polito.ezshop.data.EZShop</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="it.polito.ezshop.model.SaleTransaction" target="it.polito.ezshop.model.BalanceOperation" relationship="GENERALIZATION">
+      <point x="-43.75" y="-15.0" />
+      <point x="154.0" y="135.0" />
+      <point x="96.0" y="135.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="it.polito.ezshop.model.BalanceOperation" target="it.polito.ezshop.data.BalanceOperation" relationship="REALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="it.polito.ezshop.model.Customer" target="it.polito.ezshop.data.Customer" relationship="REALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="it.polito.ezshop.model.Order" target="it.polito.ezshop.data.Order" relationship="REALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="it.polito.ezshop.model.SaleTransaction" target="it.polito.ezshop.data.SaleTransaction" relationship="REALIZATION">
+      <point x="43.75" y="-15.0" />
+      <point x="241.5" y="135.0" />
+      <point x="299.5" y="135.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="it.polito.ezshop.model.TicketEntry" target="it.polito.ezshop.data.TicketEntry" relationship="REALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="it.polito.ezshop.data.EZShop" target="it.polito.ezshop.data.EZShopInterface" relationship="REALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="it.polito.ezshop.model.ProductType" target="it.polito.ezshop.data.ProductType" relationship="REALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="it.polito.ezshop.model.User" target="it.polito.ezshop.data.User" relationship="REALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.7204409052658702" showDependencies="false" x="759.5980225583019" y="405.58690428002205" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

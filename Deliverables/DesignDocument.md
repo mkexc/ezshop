@@ -2,9 +2,9 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 18/05/2021
+Date: 31/05/2021
 
-Version: 2.1
+Version: 2.2
 
 
 # Contents
@@ -198,9 +198,6 @@ package it.polito.ezshop.data{
         + recordBalanceUpdate()
         + getCreditsAndDebits()
         + computeBalance()
-
-        + detachCustomerCard()
-        + deleteCard()
     }
 }
 

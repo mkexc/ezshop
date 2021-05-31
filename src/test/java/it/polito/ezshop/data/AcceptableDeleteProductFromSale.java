@@ -20,6 +20,8 @@ public class AcceptableDeleteProductFromSale {
         shop = new EZShop();
 
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
         Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
         shop.updatePosition(idProd,"13-cacca-14");

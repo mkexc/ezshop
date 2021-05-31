@@ -2,6 +2,7 @@ package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.InvalidProductIdException;
 import it.polito.ezshop.exceptions.UnauthorizedException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,7 +16,15 @@ public class AcceptableDeleteProductType {
     public void before() throws  Exception{
         shop = new EZShop();
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
+    }
+
+    @After
+    public void after() {
+        shop.logout();
+        shop.reset();
     }
 
     @Test

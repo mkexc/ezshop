@@ -16,6 +16,8 @@ public class AcceptableGetAllProductTypes {
     {
         shop = new EZShop();
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
         shop.createProductType("Pane","2424242424239",10.0,"Boh");
         shop.logout();

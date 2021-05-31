@@ -18,6 +18,8 @@ public class AcceptableCreateProductType {
     public void before() throws Exception {
         shop = new EZShop();
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin", "ciao");
     }
 

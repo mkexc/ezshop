@@ -16,8 +16,11 @@ public class AcceptableGetAllOrders {
     @Before
     public void before() throws Exception {
         shop = new it.polito.ezshop.data.EZShop();
-        shop.login("admin","ciao");
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
+        shop.login("admin","ciao");
+
         shop.createProductType("Pane","2424242424239",10.0,"Boh");
         shop.issueOrder("2424242424239",1,1.1);
     }

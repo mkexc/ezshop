@@ -19,6 +19,8 @@ public class AcceptableUpdatePosition {
     {
         shop=new EZShop();
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
         prodID=shop.createProductType("Latte", "2424242424239", 1.5, "scaduto");
         prodId2=shop.createProductType("Choco", "12345678901286", 1.5, "scaduto");

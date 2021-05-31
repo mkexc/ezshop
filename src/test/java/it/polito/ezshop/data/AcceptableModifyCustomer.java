@@ -18,6 +18,8 @@ public class AcceptableModifyCustomer {
     public void before() throws Exception {
         shop = new EZShop();
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("23","12345");
         id = shop.defineCustomer("Brazorf");
         id2 = shop.defineCustomer("Ajeje");
@@ -29,10 +31,6 @@ public class AcceptableModifyCustomer {
 
     @After
     public void after() throws Exception{
-        shop.deleteCustomer(id);
-        shop.deleteCustomer(id2);
-        shop.deleteCard(card);
-        shop.deleteCard(card2);
         shop.reset();
         shop.logout();
     }

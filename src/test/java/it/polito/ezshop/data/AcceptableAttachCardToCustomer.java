@@ -18,6 +18,8 @@ public class AcceptableAttachCardToCustomer {
     public void before() throws Exception {
         shop = new EZShop();
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("23","12345");
         card=shop.createCard();
         customerId=shop.defineCustomer("Jonny");
@@ -28,10 +30,6 @@ public class AcceptableAttachCardToCustomer {
 
     @After
     public void after() throws Exception{
-        shop.deleteCustomer(customerId);
-        shop.deleteCustomer(customerIdWithCard);
-        shop.deleteCard(card);
-        shop.deleteCard(cardAssengated);
         shop.logout();
         shop.reset();
     }
@@ -71,7 +69,5 @@ public class AcceptableAttachCardToCustomer {
     @Test
     public void correctCase() throws InvalidCustomerIdException, UnauthorizedException, InvalidCustomerCardException {
         assertTrue(shop.attachCardToCustomer(card,customerId));
-        shop.detachCustomerCard(card);
-        // TODO sostituire detachCustomerCard con modifyCustomer con card=""
     }
 }

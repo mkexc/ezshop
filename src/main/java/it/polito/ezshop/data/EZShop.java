@@ -1013,7 +1013,7 @@ public class EZShop implements EZShopInterface{
         else {
             try {
                 //String sql = "SELECT * FROM customer AS C WHERE C.id=?";
-                String sql = "SELECT C.id AS id, C.customerName as customerName , C.loyaltyCardId as loyaltyCardId, points FROM customer AS C, loyaltyCard AS LC LEFT JOIN customer ON C.loyaltyCardId=LC.cardId  WHERE C.id=?";
+                String sql = "SELECT C.id AS id, C.customerName as customerName , C.loyaltyCardId as loyaltyCardId, points FROM customer AS C LEFT JOIN loyaltyCard ON C.loyaltyCardId=loyaltyCard.cardId WHERE C.id=?";
                 PreparedStatement st = conn.prepareStatement(sql);
                 st.setInt(1,id);
                 ResultSet rs = st.executeQuery();
@@ -1137,7 +1137,7 @@ public class EZShop implements EZShopInterface{
                 st1.setString(1,customerCard);
                 ResultSet rs1 = st1.executeQuery();
                 //conn.commit();
-                if(!rs1.next())
+                if(rs1.next())
                     return false;
 
             } catch(SQLException e) {
@@ -2506,45 +2506,6 @@ public class EZShop implements EZShopInterface{
             } catch (SQLException e) {
                 return 0.0;
             }
-        }
-    }
-
-//    public void deleteOrderId(int orderId)
-//    {
-//        String sql = "DELETE FROM 'order' WHERE id=?";
-//
-//        try {
-//            PreparedStatement st = conn.prepareStatement(sql);
-//            st.setInt(1, orderId);
-//            st.executeUpdate();
-//        }catch (SQLException ignored){
-//        }
-//    }
-
-    //ONLY FOR TEST
-    // TODO cancellare? meglio usare reset()
-    public void detachCustomerCard(String customerCard)
-    {
-        String sql = "UPDATE customer SET loyaltyCardId=NULL WHERE loyaltyCardId=?";
-
-        try {
-            PreparedStatement st = conn.prepareStatement(sql);
-            st.setString(1, customerCard);
-            st.executeUpdate();
-        }catch (SQLException ignored){
-        }
-    }
-
-    //ONLY FOR TEST
-    // TODO cancellare? meglio usare reset()
-    public void deleteCard(String id) {
-        String sql = "DELETE FROM loyaltyCard WHERE cardId=?";
-
-        try {
-            PreparedStatement st = conn.prepareStatement(sql);
-            st.setString(1, id);
-            st.executeUpdate();
-        } catch (SQLException ignored){
         }
     }
 }

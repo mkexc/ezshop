@@ -16,6 +16,9 @@ public class AcceptableGetCustomer {
     @Before
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
+        shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
         customerId=shop.defineCustomer("Obama");
 

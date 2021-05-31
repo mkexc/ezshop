@@ -16,6 +16,9 @@ public class AcceptableDeleteCustomer {
     @Before
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
+        shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
         customerId=shop.defineCustomer("Obama");
 
@@ -23,8 +26,9 @@ public class AcceptableDeleteCustomer {
 
     @After
     public void after() throws Exception {
-        shop.deleteCustomer(customerId);
+        //shop.deleteCustomer(customerId);
         shop.logout();
+        shop.reset();
     }
 
     @Test

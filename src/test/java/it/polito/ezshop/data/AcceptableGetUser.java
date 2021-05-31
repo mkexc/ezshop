@@ -15,6 +15,8 @@ public class AcceptableGetUser {
     @Before
     public void before() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
         shop=new EZShop();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin", "ciao");
     }
 
