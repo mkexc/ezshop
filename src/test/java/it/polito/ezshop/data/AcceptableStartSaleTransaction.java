@@ -14,6 +14,7 @@ public class AcceptableStartSaleTransaction {
     public void beforeEach() throws Exception
     {
         shop = new EZShop();
+        shop.reset();
         shop.createUser("admin","ciao","Administrator");
         shop.createUser("23","12345","Cashier");
         shop.login("23","12345");
@@ -23,6 +24,7 @@ public class AcceptableStartSaleTransaction {
     public void afterEach()
     {
         shop.logout();
+        shop.reset();
     }
 
     @Test
@@ -37,7 +39,7 @@ public class AcceptableStartSaleTransaction {
     public void correctCase() throws Exception
     {
         Integer id = shop.startSaleTransaction();
-        assertTrue(id.intValue()>=0);
+        assertTrue(id>=0);
         shop.deleteSaleTransaction(id);
     }
 

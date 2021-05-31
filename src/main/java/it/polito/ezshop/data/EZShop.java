@@ -89,6 +89,14 @@ public class EZShop implements EZShopInterface{
             st = conn.prepareStatement(sql);
             st.executeUpdate();
 
+            sql = "UPDATE sqlite_sequence SET seq=0 WHERE name!='returnTransaction'";
+            st = conn.prepareStatement(sql);
+            st.executeUpdate();
+
+            sql = "UPDATE sqlite_sequence SET seq=1 WHERE name='returnTransaction'";
+            st = conn.prepareStatement(sql);
+            st.executeUpdate();
+
             // commit&close connection
             conn.commit();
             conn.close();
@@ -1223,12 +1231,21 @@ public class EZShop implements EZShopInterface{
         // check authorization
         if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
             throw new UnauthorizedException();
-
+        int tempId=2;
         try {
-            String sql = "INSERT INTO saleTransaction (discountRate, total, status) VALUES (0.0,0.0,'OPEN')";
+            String sql = "SELECT id FROM saleTransaction ORDER BY id DESC LIMIT 1";
             PreparedStatement st = conn.prepareStatement(sql);
-            st.executeUpdate();
-            return st.getGeneratedKeys().getInt(1);
+            ResultSet rs = st.executeQuery();
+            if(rs.isBeforeFirst()) {
+                rs.next();
+                tempId = rs.getInt("id") + 2;
+            }
+
+            String sql2 = "INSERT INTO saleTransaction (id, discountRate, total, status) VALUES (?,0.0,0.0,'OPEN')";
+            PreparedStatement st2 = conn.prepareStatement(sql2);
+            st2.setInt(1, tempId);
+            st2.executeUpdate();
+            return st2.getGeneratedKeys().getInt(1);
         }catch(SQLException e){
             return -1;
         }
@@ -1799,7 +1816,7 @@ public class EZShop implements EZShopInterface{
         if(saleNumber == null || saleNumber <= 0)
             throw new InvalidTransactionIdException();
         //int res;
-
+        int tempId=1;
         //check existence of a payed SaleTransaction
         try {
             String sql2 = "SELECT id FROM saleTransaction WHERE id=? AND status='PAYED'";
@@ -1815,12 +1832,21 @@ public class EZShop implements EZShopInterface{
 
         // create a new and empty return transaction
         try {
-            String sql = "INSERT INTO returnTransaction (saleTransactionId,discountRate,total,status) VALUES (?,0.0,0.0,'OPEN')";
+            String sql = "SELECT id FROM returnTransaction ORDER BY id DESC LIMIT 1";
             PreparedStatement st = conn.prepareStatement(sql);
-            st.setInt(1,saleNumber);
-            st.executeUpdate();
+            ResultSet rs = st.executeQuery();
+            if(rs.isBeforeFirst())
+            {
+                rs.next();
+                tempId=rs.getInt("id")+2;
+            }
+            String sql2 = "INSERT INTO returnTransaction (id, saleTransactionId,discountRate,total,status) VALUES (?,?,0.0,0.0,'OPEN')";
+            PreparedStatement st2 = conn.prepareStatement(sql2);
+            st2.setInt(1,tempId);
+            st2.setInt(2,saleNumber);
+            st2.executeUpdate();
             //res= st.getGeneratedKeys().getInt(1);
-            return st.getGeneratedKeys().getInt(1);
+            return st2.getGeneratedKeys().getInt(1);
         }catch(SQLException e){
             return -1;
         }
