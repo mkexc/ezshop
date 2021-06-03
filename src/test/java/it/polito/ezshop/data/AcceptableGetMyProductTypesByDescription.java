@@ -55,7 +55,7 @@ public class AcceptableGetMyProductTypesByDescription {
     @Test
     public void testMultipleValid() throws Exception
     {
-        Integer id1 = shop.createProductType("Latte","23452427445635",23.0,"Parzialmente scremato");
+        shop.createProductType("Latte","23452427445635",23.0,"Parzialmente scremato");
         List<ProductType> l=shop.getProductTypesByDescription("Latte");
         assertTrue(l.size()>1);
     }

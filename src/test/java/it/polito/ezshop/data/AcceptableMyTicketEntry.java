@@ -1,6 +1,5 @@
 package it.polito.ezshop.data;
 
-import it.polito.ezshop.data.MyTicketEntry;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -36,7 +36,7 @@ public class AcceptableGetMyProductTypeByBarcode {
     }
 
     @Test
-    public void testProductCode() throws Exception{
+    public void testProductCode(){
 
 
 

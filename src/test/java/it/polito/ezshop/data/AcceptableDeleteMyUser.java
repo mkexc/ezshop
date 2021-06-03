@@ -24,7 +24,7 @@ public class AcceptableDeleteMyUser {
     }
 
     @Test
-    public void deleteUsernameNotAuthorized() throws InvalidPasswordException, InvalidUsernameException, InvalidRoleException {
+    public void deleteUsernameNotAuthorized() throws InvalidPasswordException, InvalidUsernameException {
         shop.login("23","12345"); //not an Admin
         assertThrows(UnauthorizedException.class, ()->
             shop.deleteUser(1)

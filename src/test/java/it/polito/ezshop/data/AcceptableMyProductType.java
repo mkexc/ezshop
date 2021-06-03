@@ -1,6 +1,5 @@
 package it.polito.ezshop.data;
 
-import it.polito.ezshop.data.MyProductType;
 import org.junit.*;
 import org.junit.Before;
 

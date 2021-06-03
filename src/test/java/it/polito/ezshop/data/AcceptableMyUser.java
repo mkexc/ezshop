@@ -1,6 +1,5 @@
 package it.polito.ezshop.data;
 
-import it.polito.ezshop.data.MyUser;
 import org.junit.Before;
 import org.junit.Test;
 
