@@ -7,25 +7,22 @@ on April 30, discuss whether the design could be improved>
 ```
 
 # Levelized structure map
-```
-<Applying Structure 101 to your project, version to be delivered on june 4, produce the Levelized structure map,
-with all elements explosed, all dependencies, NO tangles; and report it here as a picture>
-```
+
+![LSM](assets/img/LSM.png)
 
 # Structural over complexity chart
+
 ```
 <Applying Structure 101 to your project, version to be delivered on june 4, produce the structural over complexity chart; and report it here as a picture>
 ```
 
-
+![Structural-over-complexity-chart](assets/img/structural-over-complexity.png)
 
 # Size metrics
 
 ```
 <Report here the metrics about the size of your project, collected using Structure 101>
 ```
-
-
 
 | Metric                                    | Measure |
 | ----------------------------------------- | ------- |
@@ -34,8 +31,6 @@ with all elements explosed, all dependencies, NO tangles; and report it here as 
 | Classes (all)                             |         |
 | NI (number of bytecode instructions)      |         |
 | LOC (non comment non blank lines of code) |         |
-
-
 
 # Items with XS
 
@@ -48,8 +43,6 @@ with all elements explosed, all dependencies, NO tangles; and report it here as 
 |      |         |      |      |      |
 |      |         |      |      |      |
 
-
-
 # Package level tangles
 
 ```
@@ -58,7 +51,15 @@ with all elements explosed, all dependencies, NO tangles; and report it here as 
 ```
 
 # Summary analysis
+
 ```
 <Discuss here main differences of the current structure of your project vs the design delivered on April 30>
 <Discuss if the current structure shows weaknesses that should be fixed>
 ```
+
+## Old design vs. new design
+
+
+## Weakness
+
+

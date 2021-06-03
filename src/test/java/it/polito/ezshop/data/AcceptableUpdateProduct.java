@@ -99,10 +99,10 @@ public class AcceptableUpdateProduct {
 
     @Test
     public void testValidBarcode() {
-        assertTrue(it.polito.ezshop.model.ProductType.validateProductCode("11234567890125"));
-        assertFalse(it.polito.ezshop.model.ProductType.validateProductCode("12345678901234"));
-        assertTrue(it.polito.ezshop.model.ProductType.validateProductCode("1234567890128"));
-        assertTrue(it.polito.ezshop.model.ProductType.validateProductCode("123456789012"));
+        assertTrue(MyProductType.validateProductCode("11234567890125"));
+        assertFalse(MyProductType.validateProductCode("12345678901234"));
+        assertTrue(MyProductType.validateProductCode("1234567890128"));
+        assertTrue(MyProductType.validateProductCode("123456789012"));
     }
 
 

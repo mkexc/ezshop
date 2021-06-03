@@ -6,14 +6,12 @@ Date: 31/05/2021
 
 Version: 2.2
 
-
 # Contents
 
 - [High level design](#package-diagram)
 - [Low level design](#class-diagram)
 - [Verification traceability matrix](#verification-traceability-matrix)
 - [Verification sequence diagrams](#verification-sequence-diagrams)
-
 
 # High level design
 
@@ -22,25 +20,14 @@ EZShop is a standalone application working indipendently on a single cash regist
 ```plantuml
 @startuml
 scale 1024 width
-top to bottom direction
+left to right direction
 allow_mixing
 
 package it.polito.ezshop {
     package it.polito.ezshop.gui {}
     
     package it.polito.ezshop.exceptions {}
-    
-    package it.polito.ezshop.model {
-        class it.polito.ezshop.model.BalanceOperation
-        class it.polito.ezshop.model.CreditCard
-        class it.polito.ezshop.model.Customer
-        class it.polito.ezshop.model.Order
-        class it.polito.ezshop.model.ProductType
-        class it.polito.ezshop.model.SaleTransaction
-        class it.polito.ezshop.model.TicketEntry
-        class it.polito.ezshop.model.User
-    }
-
+   
     package it.polito.ezshop.data {
         interface it.polito.ezshop.data.EZShopInterface
         interface it.polito.ezshop.data.BalanceOperation
@@ -50,24 +37,32 @@ package it.polito.ezshop {
         interface it.polito.ezshop.data.SaleTransaction
         interface it.polito.ezshop.data.TicketEntry
         interface it.polito.ezshop.data.User
+        class it.polito.ezshop.data.MyBalanceOperation
+        class it.polito.ezshop.data.MyCreditCard
+        class it.polito.ezshop.data.MyCustomer
+        class it.polito.ezshop.data.MyOrder
+        class it.polito.ezshop.data.MyProductType
+        class it.polito.ezshop.data.MySaleTransaction
+        class it.polito.ezshop.data.MyTicketEntry
+        class it.polito.ezshop.data.MyUser
         class it.polito.ezshop.data.EZShop
     }
-
-    note as modelImpl
-        The classes implements all the interface
-        inside package it.polito.ezshop.data,
-        respectively.
-    end note
 }
 
 
 it.polito.ezshop.data.EZShop .|> it.polito.ezshop.data.EZShopInterface
-it.polito.ezshop.model .|> it.polito.ezshop.data
-it.polito.ezshop.model .up. modelImpl
-it.polito.ezshop.model.BalanceOperation <.. "<<extends>>" it.polito.ezshop.model.SaleTransaction
+it.polito.ezshop.data.MyBalanceOperation .|> it.polito.ezshop.data.BalanceOperation
+it.polito.ezshop.data.MyOrder .|> it.polito.ezshop.data.Order
+it.polito.ezshop.data.MyUser .|> it.polito.ezshop.data.User
+it.polito.ezshop.data.MyCustomer .|> it.polito.ezshop.data.Customer
+it.polito.ezshop.data.MySaleTransaction .|> it.polito.ezshop.data.SaleTransaction
+it.polito.ezshop.data.MyTicketEntry .|> it.polito.ezshop.data.TicketEntry
+it.polito.ezshop.data.MyCreditCard .|> it.polito.ezshop.data.CreditCard
+it.polito.ezshop.data.MyProductType .|> it.polito.ezshop.data.ProductType
+
+it.polito.ezshop.data.MyBalanceOperation <.. "<<extends>>" it.polito.ezshop.data.MySaleTransaction
 it.polito.ezshop.data.EZShop <-up- it.polito.ezshop.gui
 it.polito.ezshop.exceptions <-- it.polito.ezshop.data.EZShop
-it.polito.ezshop.model <-- it.polito.ezshop.data.EZShop
 
 @enduml
 ```
@@ -80,16 +75,16 @@ top to bottom direction
 scale 1024 width 
 scale 768 height
 
-package it.polito.ezshop.model{
+package it.polito.ezshop.data{
 
-    class User <<Persistent>> {
+    class MyUser <<Persistent>> {
         - id: Integer
         - username: String
         - password: String
         - role : enum{"Administrator"|"Cashier"|"ShopManager"}
     }
 
-    class ProductType <<Persistent>> {
+    class MyProductType <<Persistent>> {
         - id: Integer
         - productCode: String
         - description: String
@@ -101,7 +96,7 @@ package it.polito.ezshop.model{
         + {static} validateProductCode()
     }
 
-    class Order <<Persistent>> {
+    class MyOrder <<Persistent>> {
         - orderId: Integer
         - productCode: String
         - pricePerUnit: double
@@ -109,44 +104,43 @@ package it.polito.ezshop.model{
         - status: enum{ISSUED|ORDERED|COMPLETED}
     }
 
-    class Customer <<Persistent>> {
+    class MyCustomer <<Persistent>> {
         - customerId: Integer
         - loyaltyCardId: String
         - customerName: String
         - points: Integer
     }
 
-    class BalanceOperation <<Persistent>> {
+    class MyBalanceOperation <<Persistent>> {
         - balanceId: Integer
         - date: LocalDate
         - money: double
         - type: enum{DEBIT|CREDIT} 
     }
 
-    class SaleTransaction {
+    class MySaleTransaction {
         - transactionId: Integer
-        - entries: List<TicketEntry>
+        - entries: List<MyTicketEntry>
         - discountRate: double
         - price: double
     }
 
-    class CreditCard <<Persistent>> {
+    class MyCreditCard <<Persistent>> {
         - cardNumber: String
         - balance: double
         
         + {static} validateWithLuhn()
     }
 
-    class TicketEntry {
+    class MyTicketEntry {
         - barCode: String
         - productDescription: String
         - amount: int
         - pricePerUnit: double
         - discountRate: double
     }
-}
 
-package it.polito.ezshop.data{
+
     class EZShop{
         + reset()
         + createUser()
@@ -201,27 +195,25 @@ package it.polito.ezshop.data{
     }
 }
 
-SaleTransaction --> TicketEntry
-TicketEntry --> "*" ProductType
-Order "*" --> ProductType
-SaleTransaction --|> BalanceOperation
-EZShop -right-> it.polito.ezshop.model
+MySaleTransaction --> MyTicketEntry
+MyTicketEntry --> "*" MyProductType
+MyOrder "*" --> MyProductType
+MySaleTransaction --|> MyBalanceOperation
 
 @enduml
 ```
 
 # Verification traceability matrix
 
-| FR  | Customer | ProductType | SaleTransaction | Exception | Order | User | TicketEntry | BalanceOperation | CreditCard | EZShop |
-| --- | :------: | :---------: | :-------------: | :-------: | :---: | :--: | :---------: | :--------------: | :--------: | :----: |
-| FR1 |          |             |                 |         x |       |    x |             |                  |            |      x | 
-| FR3 |          |           x |                 |         x |     x |    x |             |                x |            |      x | 
-| FR4 |          |           x |               x |         x |     x |    x |             |                x |            |      x | 
-| FR5 |        x |             |                 |         x |       |    x |             |                  |            |      x | 
-| FR6 |        x |           x |               x |         x |       |    x |           x |                x |            |      x | 
-| FR7 |        x |             |               x |         x |       |    x |             |                x |          x |      x | 
-| FR8 |          |             |                 |         x |     x |    x |             |                x |            |      x |
-
+| FR  | MyCustomer | MyProductType | MySaleTransaction | MyException | MyOrder | MyUser | MyTicketEntry | MyBalanceOperation | MyCreditCard | EZShop |
+| --- | :--------: | :-----------: | :---------------: | :---------: | :-----: | :----: | :-----------: | :----------------: | :----------: | :----: |
+| FR1 |            |               |                   |           x |         |      x |               |                    |              |      x |
+| FR3 |            |             x |                   |           x |       x |      x |               |                  x |              |      x |
+| FR4 |            |             x |                 x |           x |       x |      x |               |                  x |              |      x |
+| FR5 |          x |               |                   |           x |         |      x |               |                    |              |      x |
+| FR6 |          x |             x |                 x |           x |         |      x |             x |                  x |              |      x |
+| FR7 |          x |               |                 x |           x |         |      x |               |                  x |            x |      x |
+| FR8 |            |               |                   |           x |       x |      x |               |                  x |              |      x |
 
 # Verification sequence diagrams
 
@@ -233,11 +225,11 @@ EZShop -right-> it.polito.ezshop.model
 @startuml
 autonumber
 EZShopGUI -> EZShop : createProductType()
-EZShop -> ProductType : new ProductType()
-ProductType --> EZShop : ProductType
+EZShop -> MyProductType : new MyProductType()
+MyProductType --> EZShop : MyProductType
 EZShopGUI <-- EZShop : Integer:id
 EZShopGUI -> EZShop : updatePosition()
-EZShop -> ProductType : setPosition()
+EZShop -> MyProductType : setPosition()
 EZShopGUI <-- EZShop : boolean:true
 @enduml
 ```
@@ -248,9 +240,9 @@ EZShopGUI <-- EZShop : boolean:true
 @startuml
 autonumber
 EZShopGUI -> EZShop : getProductTypeByBarcode()
-EZShop -> ProductType : new ProductType() 
-ProductType --> EZShop : ProductType
-EZShop -> EZShopGUI : ProductType
+EZShop -> MyProductType : new MyProductType() 
+MyProductType --> EZShop : MyProductType
+EZShop -> EZShopGUI : MyProductType
 EZShopGUI -> EZShop : updateProduct()
 EZShop -> EZShopGUI : boolean:true
 @enduml
@@ -289,9 +281,9 @@ EZShopGUI <-- EZShop : boolean:true
 autonumber
 EZShopGUI -> EZShop : issueOrder()
 EZShop -> EZShop : getProductTypeByBarcode()
-EZShop -> ProductType : new ProductType()
-ProductType --> EZShop : ProductType
-EZShop --> EZShop : ProductType
+EZShop -> MyProductType : new MyProductType()
+MyProductType --> EZShop : MyProductType
+EZShop --> EZShop : MyProductType
 EZShopGUI <-- EZShop : Integer : id
 @enduml
 ```
@@ -315,11 +307,11 @@ EZShop --> EZShopGUI : boolean:true
 autonumber
 EZShopGUI -> EZShop : recordOrderArrival()
 EZShop -> EZShop : getProductTypeByBarcode()
-EZShop -> ProductType : new ProductType()
-ProductType --> EZShop : ProductType
-EZShop --> EZShop : ProductType
-EZShop -> ProductType : getLocation()
-ProductType --> EZShop : String
+EZShop -> MyProductType : new MyProductType()
+MyProductType --> EZShop : MyProductType
+EZShop --> EZShop : MyProductType
+EZShop -> MyProductType : getLocation()
+MyProductType --> EZShop : String
 EZShop -> EZShop : updateQuantity()
 EZShop --> EZShop : boolean: true
 EZShop --> EZShopGUI : boolean: true
@@ -328,7 +320,7 @@ EZShop --> EZShopGUI : boolean: true
 
 ## Use Case 4
 
-### Scenario 4-1 
+### Scenario 4-1
 
 ```plantuml
 @startuml
@@ -354,8 +346,8 @@ EZShop -> EZShopGUI : boolean : true
 @startuml
 autonumber
 EZShopGUI -> EZShop : modifyCustomer()
-EZShop -> ProductType : static validateProductCode()
-ProductType --> EZShop : boolean:true
+EZShop -> MyProductType : static validateProductCode()
+MyProductType --> EZShop : boolean:true
 EZShop --> EZShopGUI : boolean:true
 @enduml
 ```
@@ -368,9 +360,9 @@ EZShop --> EZShopGUI : boolean:true
 @startuml
 autonumber
 EZShopGUI -> EZShop : login()
-EZShop -> User : new User()
-EZShop <-- User : User
-EZShop -> EZShopGUI : User
+EZShop -> MyUser : new MyUser()
+EZShop <-- MyUser : MyUser
+EZShop -> EZShopGUI : MyUser
 @enduml
 ```
 
@@ -380,9 +372,9 @@ EZShop -> EZShopGUI : User
 @startuml
 autonumber
 EZShopGUI -> EZShop : getUser()
-EZShop -> User : new User()
-EZShop <-- User : User
-EZShopGUI <-- EZShop : User
+EZShop -> MyUser : new MyUser()
+EZShop <-- MyUser : MyUser
+EZShopGUI <-- EZShop : MyUser
 EZShopGUI -> EZShop : logout()
 EZShopGUI <-- EZShop : boolean:true
 @enduml
@@ -399,8 +391,8 @@ EZShopGUI -> EZShop : startSaleTransaction()
 EZShopGUI <-- EZShop : Integer:id
 EZShopGUI -> EZShop : addProductToSale()
 EZShop -> EZShop : getProductTypeByBarCode()
-EZShop -> ProductType : new ProductType()
-EZShop <-- ProductType : productType
+EZShop -> MyProductType : new MyProductType()
+EZShop <-- MyProductType : MyProductType
 EZShop -> EZShop : updateQuantity()
 EZShop <-- EZShop : boolean:true
 EZShopGUI -> EZShop : endSaleTransaction()
@@ -419,8 +411,8 @@ EZShopGUI -> EZShop : startSaleTransaction()
 EZShopGUI -> EZShop : Integer: id
 EZShopGUI -> EZShop : addProductToSale()
 EZShop -> EZShop : getProductTypeByBarCode()
-EZShop -> ProductType : new ProductType()
-EZShop <-- ProductType : ProductType: productType
+EZShop -> MyProductType : new MyProductType()
+EZShop <-- MyProductType : MyProductType: MyProductType
 EZShop -> EZShop : updateQuantity()
 EZShop <-- EZShop : boolean:true
 EZShopGUI -> EZShop : applyDiscountRateToProduct()
@@ -441,8 +433,8 @@ EZShopGUI -> EZShop : startSaleTransaction()
 EZShopGUI -> EZShop : Integer:id
 EZShopGUI -> EZShop : addProductToSale()
 EZShop -> EZShop : getProductTypeByBarCode()
-EZShop -> ProductType : new ProductType()
-EZShop <-- ProductType : ProductType
+EZShop -> MyProductType : new MyProductType()
+EZShop <-- MyProductType : MyProductType
 EZShop -> EZShop : updateQuantity()
 EZShop <-- EZShop : boolean:true
 EZShopGUI -> EZShop : endSaleTransaction()
@@ -466,8 +458,8 @@ EZShopGUI -> EZShop : startSaleTransaction()
 EZShopGUI <-- EZShop : Integer:id 
 EZShopGUI -> EZShop : addProductToSale()
 EZShop -> EZShop : getProductTypeByBarCode()
-EZShop -> ProductType : ProductType: new ProductType()
-EZShop <-- ProductType : ProductType
+EZShop -> MyProductType : MyProductType: new MyProductType()
+EZShop <-- MyProductType : MyProductType
 EZShop -> EZShop : updateQuantity()
 EZShop <-- EZShop : boolean: true
 EZShopGUI -> EZShop : endSaleTransaction() 
@@ -504,8 +496,8 @@ autonumber
 EZShopGUI -> EZShop : startReturnTransaction()
 EZShopGUI <-- EZShop : Integer: id
 EZShop -> EZShop : getProductTypeByBarCode()
-EZShop -> ProductType : new ProductType()
-EZShop <-- ProductType :  productType
+EZShop -> MyProductType : new MyProductType()
+EZShop <-- MyProductType :  MyProductType
 EZShopGUI -> EZShop : addProductToSale()
 EZShopGUI <-- EZShop : boolean: true
 EZShopGUI -> EZShop : returnProduct()
@@ -529,13 +521,13 @@ EZShopGUI <-- EZShop : double: total
 @startuml
 autonumber
 EZShopGUI -> EZShop : getCreditsAndDebits()
-EZShop -> BalanceOperation : new BalanceOperation()
-EZShop <-- BalanceOperation : BalanceOperation: balanceOperation
-EZShop -> BalanceOperation : new BalanceOperation()
-EZShop <-- BalanceOperation : BalanceOperation
-EZShop -> BalanceOperation : ...
-EZShop <-- BalanceOperation : ...
-EZShopGUI <-- EZShop  : ArrayList<BalanceOperation>
+EZShop -> MyBalanceOperation : new MyBalanceOperation()
+EZShop <-- MyBalanceOperation : MyBalanceOperation: MyBalanceOperation
+EZShop -> MyBalanceOperation : new MyBalanceOperation()
+EZShop <-- MyBalanceOperation : MyBalanceOperation
+EZShop -> MyBalanceOperation : ...
+EZShop <-- MyBalanceOperation : ...
+EZShopGUI <-- EZShop  : ArrayList<MyBalanceOperation>
 @enduml
 ```
 

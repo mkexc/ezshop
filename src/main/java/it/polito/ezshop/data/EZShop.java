@@ -3,14 +3,13 @@ package it.polito.ezshop.data;
 import java.sql.*;
 
 import it.polito.ezshop.exceptions.*;
-import it.polito.ezshop.model.CreditCard;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.*;
 
-import static it.polito.ezshop.model.ProductType.validateProductCode;
+import static it.polito.ezshop.data.MyProductType.validateProductCode;
 
 public class EZShop implements EZShopInterface{
     private static Connection conn;
@@ -188,7 +187,7 @@ public class EZShop implements EZShopInterface{
                 ResultSet rs = st.executeQuery();
 
                 while (rs.next()) {
-                    list.add(new it.polito.ezshop.model.User(rs.getInt("id"),
+                    list.add(new MyUser(rs.getInt("id"),
                             rs.getString("username"),
                             rs.getString("password"),
                             rs.getString("role")
@@ -229,7 +228,7 @@ public class EZShop implements EZShopInterface{
                 // no product with the given code
                 return null;
 
-            user = new it.polito.ezshop.model.User(rs.getInt("id"),
+            user = new MyUser(rs.getInt("id"),
                         rs.getString("username"),
                         rs.getString("password"),
                         rs.getString("role")
@@ -297,7 +296,7 @@ public class EZShop implements EZShopInterface{
             if(!rs.next())
                 return null;
 
-            User user = new it.polito.ezshop.model.User(rs.getInt("id"),
+            User user = new MyUser(rs.getInt("id"),
                     rs.getString("username"),
                     rs.getString("password"),
                     rs.getString("role")
@@ -471,7 +470,7 @@ public class EZShop implements EZShopInterface{
                 PreparedStatement st = conn.prepareStatement(sql);
                 ResultSet rs = st.executeQuery();
                 while (rs.next()) {
-                    list.add(new it.polito.ezshop.model.ProductType(
+                    list.add(new MyProductType(
                             rs.getInt("id"),
                             rs.getString("productCode"),
                             rs.getString("description"),
@@ -519,7 +518,7 @@ public class EZShop implements EZShopInterface{
                 // no product with the given code
                 return null;
 
-            product = new it.polito.ezshop.model.ProductType(
+            product = new MyProductType(
                     rs.getInt("id"),
                     rs.getString("productCode"),
                     rs.getString("description"),
@@ -553,7 +552,7 @@ public class EZShop implements EZShopInterface{
             ResultSet rs = st.executeQuery();
 
             while (rs.next()){
-                list.add(new it.polito.ezshop.model.ProductType(
+                list.add(new MyProductType(
                         rs.getInt("id"),
                         rs.getString("productCode"),
                         rs.getString("description"),
@@ -870,7 +869,7 @@ public class EZShop implements EZShopInterface{
                 ResultSet rs = st.executeQuery();
 
                 while(rs.next()){
-                    orders.add( new it.polito.ezshop.model.Order(
+                    orders.add( new MyOrder(
                             rs.getInt("id"),
                             rs.getString("productCode"),
                             rs.getDouble("pricePerUnit"),
@@ -1029,7 +1028,7 @@ public class EZShop implements EZShopInterface{
                 if(!rs.next())
                     return null;
 
-                return new it.polito.ezshop.model.Customer(
+                return new MyCustomer(
                         rs.getInt("id"),
                         rs.getString("customerName"),
                         rs.getString("loyaltyCardId"),
@@ -1075,7 +1074,7 @@ public class EZShop implements EZShopInterface{
                 ResultSet rs = st.executeQuery();
 
                 while(rs.next()){
-                    customers.add(new it.polito.ezshop.model.Customer(
+                    customers.add(new MyCustomer(
                             rs.getInt("id"),
                             rs.getString("customerName"),
                             rs.getString("loyaltyCardId"),
@@ -1788,7 +1787,7 @@ public class EZShop implements EZShopInterface{
             //if(!rs.isBeforeFirst())
                 //return null;
             while(rs.next()){
-                entries.add(new it.polito.ezshop.model.TicketEntry(
+                entries.add(new MyTicketEntry(
                         rs.getString("barcode"),
                         rs.getString("description"),
                         rs.getInt("amount"),
@@ -1800,7 +1799,7 @@ public class EZShop implements EZShopInterface{
             //rs2.next();
             //if (rs.isClosed()) {
             // if no product entry is found, return a saleTransaction with empty "entries" list
-            return new it.polito.ezshop.model.SaleTransaction(id, entries, discountRate, total);
+            return new MySaleTransaction(id, entries, discountRate, total);
             //}
         } catch(SQLException e) {
             return null;
@@ -2215,7 +2214,7 @@ public class EZShop implements EZShopInterface{
         //check id
         if(transactionId==null||transactionId<=0)
             throw new InvalidTransactionIdException();
-        if(creditCard==null || creditCard.isEmpty() || !CreditCard.validateWithLuhn(creditCard))
+        if(creditCard==null || creditCard.isEmpty() || !MyCreditCard.validateWithLuhn(creditCard))
             throw new InvalidCreditCardException();
 
         double total;
@@ -2329,7 +2328,7 @@ public class EZShop implements EZShopInterface{
         //check id
         if(returnId==null||returnId<=0)
             throw new InvalidTransactionIdException();
-        if(creditCard==null || creditCard.isEmpty() || !CreditCard.validateWithLuhn(creditCard))
+        if(creditCard==null || creditCard.isEmpty() || !MyCreditCard.validateWithLuhn(creditCard))
             throw new InvalidCreditCardException("Invalid credit card.");
 
         double total;
@@ -2436,7 +2435,7 @@ public class EZShop implements EZShopInterface{
                 while (rs.next())
                 {
                     l.add(
-                            new it.polito.ezshop.model.BalanceOperation(
+                            new MyBalanceOperation(
                                     rs.getInt("id"),
                                     Instant.ofEpochMilli(Long.parseLong(rs.getString("date"))).atZone(ZoneId.systemDefault()).toLocalDate(),
                                     rs.getDouble("money"),
@@ -2457,7 +2456,7 @@ public class EZShop implements EZShopInterface{
                 while (rs.next())
                 {
                     l.add(
-                            new it.polito.ezshop.model.BalanceOperation(
+                            new MyBalanceOperation(
                                     rs.getInt("id"),
                                     Instant.ofEpochMilli(Long.parseLong(rs.getString("date"))).atZone(ZoneId.systemDefault()).toLocalDate(),
                                     rs.getDouble("money"),
@@ -2480,7 +2479,7 @@ public class EZShop implements EZShopInterface{
                 while (rs.next())
                 {
                     l.add(
-                            new it.polito.ezshop.model.BalanceOperation(
+                            new MyBalanceOperation(
                                     rs.getInt("id"),
                                     Instant.ofEpochMilli(Long.parseLong(rs.getString("date"))).atZone(ZoneId.systemDefault()).toLocalDate(),
                                     rs.getDouble("money"),
@@ -2500,7 +2499,7 @@ public class EZShop implements EZShopInterface{
                 while (rs.next())
                 {
                     l.add(
-                            new it.polito.ezshop.model.BalanceOperation(
+                            new MyBalanceOperation(
                                     rs.getInt("id"),
                                     Instant.ofEpochMilli(Long.parseLong(rs.getString("date"))).atZone(ZoneId.systemDefault()).toLocalDate(),
                                     rs.getDouble("money"),
