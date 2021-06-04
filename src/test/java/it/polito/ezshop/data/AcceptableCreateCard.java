@@ -15,8 +15,11 @@ public class AcceptableCreateCard {
     public void before() throws Exception
     {
         shop = new EZShop();
-        shop.login("23","12345");
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
+        shop.login("23","12345");
+
     }
 
     @After
@@ -36,7 +39,6 @@ public class AcceptableCreateCard {
     public void correctCase() throws Exception {
         String c = shop.createCard();
         assertEquals(10,c.length());
-        //TODO togliere card
     }
 
 }

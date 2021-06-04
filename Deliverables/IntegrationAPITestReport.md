@@ -2,10 +2,9 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 26/05/2021
+Date: 03/06/2021
 
-Version: 1.0
-
+Version: 1.1
 
 # Contents
 
@@ -21,54 +20,62 @@ Version: 1.0
 - [Coverage of non-functional requirements](#nfr-coverage)
 - [Coverage of methods and code lines](#Coverage-of-methods-and-code-lines)
 
-
-# Dependency graph 
+# Dependency graph
 
 ```plantuml
 @startuml
 class EZShop {}
 
-class ProductType {}
-class BalanceOperation {}
-class User {}
-class Customer {}
-class SaleTransaction {}
-class TicketEntry {}
-class CreditCard {}
-class Order {}
+class MyProductType {}
+class MyBalanceOperation {}
+class MyUser {}
+class MyCustomer {}
+class MySaleTransaction {}
+class MyTicketEntry {}
+class MyCreditCard {}
+class MyOrder {}
 
 
-EZShop --> ProductType
-EZShop -> BalanceOperation
-SaleTransaction ---> BalanceOperation
-EZShop --> User
-EZShop --> Customer
-EZShop --> SaleTransaction
-EZShop --> TicketEntry
-EZShop --> CreditCard
-EZShop --> Order
+EZShop --> MyProductType
+EZShop -> MyBalanceOperation
+MySaleTransaction ---> MyBalanceOperation
+EZShop --> MyUser
+EZShop --> MyCustomer
+EZShop --> MySaleTransaction
+EZShop --> MyTicketEntry
+EZShop --> MyCreditCard
+EZShop --> MyOrder
 
 @enduml
 ```
 
-![Dependency Graph from IDE: IntelliJ IDEA](assets/img/dependency_graph.jpg)
-
+![Dependency Graph from IDE: IntelliJ IDEA](assets/img/dependency_graph.png)
 
 # Integration approach
-    
-## Step 1
-Unit test of classes User, Customer, ProductType, Order, SaleTransaction, TicketEntry, CreditCard, BalanceOperation
-## Step 2
-Integration test of User methods from API and reset
-## Step 3
-Integration test of Customer, ProductType, LoyalityCard methods from API
-## Step 4
-Integration test of Order methods from API
-## Step 5
-Integration test of SaleTransaction, ReturnTransaction, TicketEntry methods from API
-## Step 6
-Integration test of CreditCard, BalanceOperation methods from API
 
+## Step 1
+
+Unit test of classes MyUser, MyCustomer, MyProductType, MyOrder, MySaleTransaction, MyTicketEntry, MyCreditCard, MyBalanceOperation
+
+## Step 2
+
+Integration test of MyUser methods from API and reset
+
+## Step 3
+
+Integration test of MyCustomer, ProductType, LoyalityCard methods from API
+
+## Step 4
+
+Integration test of MyOrder methods from API
+
+## Step 5
+
+Integration test of MySaleTransaction, MyReturnTransaction, MyTicketEntry methods from API
+
+## Step 6
+
+Integration test of MyCreditCard, MyBalanceOperation methods from API
 
 #  Tests
 
@@ -77,6 +84,7 @@ Integration test of CreditCard, BalanceOperation methods from API
 This step corresponds to Unit testing.
 
 ## Step 2
+
 | Classes                   | JUnit test cases           |
 |---------------------------|----------------------------|
 |AcceptableReset            |check1                      |
@@ -112,7 +120,7 @@ This step corresponds to Unit testing.
 |                         * |testCorrectCase             |
 
 ## Step 3 
-               
+
 | Classes                               | JUnit test cases           |
 |-------------------------------------- |----------------------------|
 |AcceptableDefineCustomer               |authTest                    |
@@ -214,7 +222,7 @@ This step corresponds to Unit testing.
 |                                     * |correctCase                 |
 
 ## Step 5 
-               
+
 | Classes                                | JUnit test cases               |
 |--------------------------------------- |------------------------------- |
 |AcceptableAddProductToSale              |authTest                        |
@@ -274,7 +282,7 @@ This step corresponds to Unit testing.
 |                                      * |testProductCase                 |
 | AcceptableStartReturnTransaction       |authTest                        |
 |                                      * |testIdCorrect                   |
-|                                      * |testNoTrans ctionPresent        
+|                                      * |testNoTransactionPresent        |
 |                                      * |testCorrectCase                 |
 | AcceptableStartSaleTransaction         |authTest                        |
 |                                      * |testCorrectCase                 |
@@ -289,7 +297,7 @@ This step corresponds to Unit testing.
 |                                      * |testCorrectCase                 |
 
 ## Step 6 
-               
+
 | Classes                               | JUnit test cases           |
 |-------------------------------------- |----------------------------|
 |AcceptableReceiveCashPayment           |authTest                    |
@@ -328,7 +336,7 @@ This step corresponds to Unit testing.
 ## Scenario 1-4
 
 | Scenario           |  name                              |
-| ------------------ |:----------------------------------:| 
+| ------------------ |:----------------------------------:|
 | Precondition       | Employee C exists and is logged in |
 |                    | Product type X exists              |
 | Post condition     | X.quantity = new quantity          |
@@ -375,53 +383,51 @@ This step corresponds to Unit testing.
 | Step #         | Description                      |
 | 1              | C is retrieved                   |
 
-
 # Coverage of Scenarios and FR
 
 We define coverage of Scenarios and FRs in relation to test classes, instead of single JUnit test.
 
-| Scenario ID | Functional Requirements covered                                                           | JUnit Test(s)                                                                                                                                                                                                                                                                       | 
-| ----------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | 
-| 1.1         | FR3.1                                                                                     | AcceptableCreateProductType                                                                                                                                                                                                                                                         |             
-| 1.2         | FR3.1                                                                                     | AcceptableUpdatePosition                                                                                                                                                                                                                                                            |             
-| 1.3         | FR3.1                                                                                     | AcceptableUpdateProduct                                                                                                                                                                                                                                                             |             
-| 1.4         | FR3.4                                                                                     | AcceptableUpdateQuantity                                                                                                                                                                                                                                                            |
-| 1.5         | FR3.3                                                                                     | AcceptableGetAllProducts                                                                                                                                                                                                                                                            |
-| 2.1         | FR1.1                                                                                     | AcceptableCreateUser                                                                                                                                                                                                                                                                |
-| 2.2         | FR1.2                                                                                     | AcceptableDeleteUser                                                                                                                                                                                                                                                                |
-| 2.3         | FR1.5                                                                                     | AcceptableUpdateUserRight                                                                                                                                                                                                                                                           |
-| 2.4         | FR1.3                                                                                     | AcceptableGetAllUsers                                                                                                                                                                                                                                                               |
-| 3.1         | FR4.3                                                                                     | AcceptableIssueOrder                                                                                                                                                                                                                                                                |
-| 3.2         | FR4.5 + FR8.1                                                                             | AcceptablePayOrder                                                                                                                                                                                                                                                                  |
-| 3.3         | FR4.6                                                                                     | AcceptableRecordOrderArrival                                                                                                                                                                                                                                                        |
-| 3.4         | FR4.7                                                                                     | AcceptableGetAllOrders                                                                                                                                                                                                                                                              |
-| 4.1         | FR5.1                                                                                     | AcceptableDefineCustomer                                                                                                                                                                                                                                                            |
-| 4.2         | FR5.6                                                                                     | AcceptableAttachCardToCustomer                                                                                                                                                                                                                                                      |
-| 4.3         | FR5.1                                                                                     | AcceptableModifyCustomer                                                                                                                                                                                                                                                            |
-| 4.4         | FR5.1                                                                                     | AcceptableModifyCustomer                                                                                                                                                                                                                                                            |
-| 4.5         | FR5.4                                                                                     | AcceptableGetAllCustormer                                                                                                                                                                                                                                                           |
-| 5.1         | FR1.5                                                                                     | AcceptableLogin                                                                                                                                                                                                                                                                     |
-| 5.2         | FR1.5                                                                                     | AcceptableLogout                                                                                                                                                                                                                                                                    |
+| Scenario ID | Functional Requirements covered                                                           | JUnit Test(s)                                                                                                                                                                                                                                                                        |
+| ----------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1.1         | FR3.1                                                                                     | AcceptableCreateProductType                                                                                                                                                                                                                                                          |
+| 1.2         | FR3.1                                                                                     | AcceptableUpdatePosition                                                                                                                                                                                                                                                             |
+| 1.3         | FR3.1                                                                                     | AcceptableUpdateProduct                                                                                                                                                                                                                                                              |
+| 1.4         | FR3.4                                                                                     | AcceptableUpdateQuantity                                                                                                                                                                                                                                                             |
+| 1.5         | FR3.3                                                                                     | AcceptableGetAllProducts                                                                                                                                                                                                                                                             |
+| 2.1         | FR1.1                                                                                     | AcceptableCreateUser                                                                                                                                                                                                                                                                 |
+| 2.2         | FR1.2                                                                                     | AcceptableDeleteUser                                                                                                                                                                                                                                                                 |
+| 2.3         | FR1.5                                                                                     | AcceptableUpdateUserRight                                                                                                                                                                                                                                                            |
+| 2.4         | FR1.3                                                                                     | AcceptableGetAllUsers                                                                                                                                                                                                                                                                |
+| 3.1         | FR4.3                                                                                     | AcceptableIssueOrder                                                                                                                                                                                                                                                                 |
+| 3.2         | FR4.5 + FR8.1                                                                             | AcceptablePayOrder                                                                                                                                                                                                                                                                   |
+| 3.3         | FR4.6                                                                                     | AcceptableRecordOrderArrival                                                                                                                                                                                                                                                         |
+| 3.4         | FR4.7                                                                                     | AcceptableGetAllOrders                                                                                                                                                                                                                                                               |
+| 4.1         | FR5.1                                                                                     | AcceptableDefineCustomer                                                                                                                                                                                                                                                             |
+| 4.2         | FR5.6                                                                                     | AcceptableAttachCardToCustomer                                                                                                                                                                                                                                                       |
+| 4.3         | FR5.1                                                                                     | AcceptableModifyCustomer                                                                                                                                                                                                                                                             |
+| 4.4         | FR5.1                                                                                     | AcceptableModifyCustomer                                                                                                                                                                                                                                                             |
+| 4.5         | FR5.4                                                                                     | AcceptableGetAllCustormer                                                                                                                                                                                                                                                            |
+| 5.1         | FR1.5                                                                                     | AcceptableLogin                                                                                                                                                                                                                                                                      |
+| 5.2         | FR1.5                                                                                     | AcceptableLogout                                                                                                                                                                                                                                                                     |
 | 6.1         | FR6.1 + FR6.2 + FR6.7 + FR6.8 + FR6.10  + FR6.11 + FR7.1/2 + FR8.2 + FR4.1                | AcceptableStartSaleTransaction + AcceptableGetProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate                                                                 |
 | 6.2         | FR6.1 + FR6.2 + FR6.5 + FR6.7 + FR6.8 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1         | AcceptableStartSaleTransaction + AcceptableGetProductByBarcode + AcceptableAddProductToSale + AcceptableApplyDiscountRateToProduct + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate                          |
-| 6.3         | FR6.1 + FR6.2 + FR6.4 + FR6.7 + FR6.8 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1         | AcceptableStartSaleTransaction + AcceptableGetProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableApplyDiscountRateToSale + AcceptableEndSaleTransaction + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate                             |   
-| 6.4         | FR6.1 + FR6.2 + FR6.6 + FR6.7 + FR6.8 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1 + FR5.7 | AcceptableStartSaleTransaction + AcceptableGetProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableComputePointsForSale + AcceptableModifyPointsOnCard + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate |   
-| 6.5         | FR6.1 + FR6.2 + FR6.7 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1                         | AcceptableStartSaleTransaction + AcceptableGetProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableDeleteSaleTransaction                                                                                              |   
-| 6.6         | FR6.1 + FR6.2 + FR6.6 + FR6.7 + FR6.8 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1         | AcceptableStartSaleTransaction + AcceptableGetProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate                                                                 |   
-| 7.1         | FR7.2                                                                                     | testValidateWithLuhn + AcceptableReceiveCreditCardPayment                                                                                                                                                                                                                           |   
-| 7.2         | FR7.2                                                                                     | testValidateWithLuhn                                                                                                                                                                                                                                                                |   
-| 7.3         | FR7.2                                                                                     | testValidateWithLuhn + AcceptableReceiveCreditCardPayment                                                                                                                                                                                                                           |   
-| 7.4         | FR7.3                                                                                     | AcceptableReceiveCashPayment                                                                                                                                                                                                                                                        |   
-| 8.1         | FR6.12 + FR6.13 + FR6.14 + FR8.1 + FR7.4                                                  | All test of UseCase 6.3 + AcceptableStartReturnTransaction + AcceptableReturnProduct + AcceptableUpdateQuantity + AcceptableEndReturnTransaction + AcceptableReturnCreditCardPayment + AcceptableRecordBalanceUpdate                                                                |     
-| 8.2         | FR6.12 + FR6.13 + FR6.14 + FR8.1 + FR7.3                                                  | All test of UseCase 6.3 + AcceptableStartReturnTransaction + AcceptableReturnProduct + AcceptableUpdateQuantity + AcceptableEndReturnTransaction + AcceptableReturnCashPayment + AcceptableRecordBalanceUpdate                                                                      |   
-| 9.1         | FR8.3                                                                                     | AcceptableGetCreditsAndDebits                                                                                                                                                                                                                                                       |   
-| 10.1        | FR7.4                                                                                     | testValidateWithLunh + AcceptableReturnCreditCardPayment                                                                                                                                                                                                                            |     
-| 10.2        | FR7.3                                                                                     | AcceptableReturnCashPayment + AcceptableRecordBalanceUpdate                                                                                                                                                                                                                         |   
-
+| 6.3         | FR6.1 + FR6.2 + FR6.4 + FR6.7 + FR6.8 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1         | AcceptableStartSaleTransaction + AcceptableGetProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableApplyDiscountRateToSale + AcceptableEndSaleTransaction + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate                             |
+| 6.4         | FR6.1 + FR6.2 + FR6.6 + FR6.7 + FR6.8 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1 + FR5.7 | AcceptableStartSaleTransaction + AcceptableGetProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableComputePointsForSale + AcceptableModifyPointsOnCard + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate |
+| 6.5         | FR6.1 + FR6.2 + FR6.7 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1                         | AcceptableStartSaleTransaction + AcceptableGetProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableDeleteSaleTransaction                                                                                              |
+| 6.6         | FR6.1 + FR6.2 + FR6.6 + FR6.7 + FR6.8 + FR6.10 + FR6.11 + FR7.1/2 + FR8.2 + FR4.1         | AcceptableStartSaleTransaction + AcceptableGetProductByBarcode + AcceptableAddProductToSale + AcceptableUpdateQuantity + AcceptableEndSaleTransaction + AcceptableReceiveCashPayment + AcceptableRecordBalanceUpdate                                                                 |
+| 7.1         | FR7.2                                                                                     | testValidateWithLuhn + AcceptableReceiveCreditCardPayment                                                                                                                                                                                                                            |
+| 7.2         | FR7.2                                                                                     | testValidateWithLuhn                                                                                                                                                                                                                                                                 |
+| 7.3         | FR7.2                                                                                     | testValidateWithLuhn + AcceptableReceiveCreditCardPayment                                                                                                                                                                                                                            |
+| 7.4         | FR7.3                                                                                     | AcceptableReceiveCashPayment                                                                                                                                                                                                                                                         |
+| 8.1         | FR6.12 + FR6.13 + FR6.14 + FR8.1 + FR7.4                                                  | All test of UseCase 6.3 + AcceptableStartReturnTransaction + AcceptableReturnProduct + AcceptableUpdateQuantity + AcceptableEndReturnTransaction + AcceptableReturnCreditCardPayment + AcceptableRecordBalanceUpdate                                                                 |
+| 8.2         | FR6.12 + FR6.13 + FR6.14 + FR8.1 + FR7.3                                                  | All test of UseCase 6.3 + AcceptableStartReturnTransaction + AcceptableReturnProduct + AcceptableUpdateQuantity + AcceptableEndReturnTransaction + AcceptableReturnCashPayment + AcceptableRecordBalanceUpdate                                                                       |
+| 9.1         | FR8.3                                                                                     | AcceptableGetCreditsAndDebits                                                                                                                                                                                                                                                        |
+| 10.1        | FR7.4                                                                                     | testValidateWithLunh + AcceptableReturnCreditCardPayment                                                                                                                                                                                                                             |
+| 10.2        | FR7.3                                                                                     | AcceptableReturnCashPayment + AcceptableRecordBalanceUpdate                                                                                                                                                                                                                          |
 
 # Coverage of Non Functional Requirements
 
-### 
+###
 
 | Non Functional Requirement | Test name                                                                                            |
 | -------------------------- | ---------------------------------------------------------------------------------------------------- |
@@ -438,4 +444,4 @@ Here's the test's timing, the complete test report is report is linked in the ta
 
 Complete coverage report by IntelliJ IDEA IDE is available [here](assets/testReports/index.html).
 
-![Test coverage from IDE: IntelliJ IDEA](assets/img/testCoverage.jpg)
+![Test coverage from IDE: IntelliJ IDEA](assets/img/testCoverage.png)

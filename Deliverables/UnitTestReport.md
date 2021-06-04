@@ -2,9 +2,9 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 19/05/2021
+Date: 03/06/2021
 
-Version: 1.0
+Version: 1.1
 
 # Contents
 
@@ -14,11 +14,11 @@ Version: 1.0
 
 # Black Box Unit Tests - EZShop
 
-### **All *it.polito.ezshop.model* Classes - all methods *setters***
+### **All *it.polito.ezshop.data* Classes - all methods *setters***
 
 Despite we already tested the setters methods through JUnits tests, we decided to omit them from this documentation because their testing is very trivial since all the correct data checks are made in the DB with ad-hoc constraints and get handled by SQLExceptions in EZShop Class.
 
- ### **Class *it.polito.ezshop.model.ProductType* - method *validateProductCode***
+ ### **Class *it.polito.ezshop.data.MyProductType* - method *validateProductCode***
 
 **Criteria for method *validateProductCode*:**
 	
@@ -48,8 +48,7 @@ Despite we already tested the setters methods through JUnits tests, we decided t
 |  Invalid(17)            |   Invalid       | T6("12345678901111112")->false | testValidationProductCode |
 |  Valid(14)              |   Valid         | T7("11234567890200")   ->true  | testValidationProductCode |
 
-
-### **Class *it.polito.ezshop.model.CreditCard* - method *validateWithLuhn***
+### **Class *it.polito.ezshop.data.MyCreditCard* - method *validateWithLuhn***
 
 **Criteria for method *validateWithLuhn*:**
 	
@@ -76,10 +75,10 @@ Despite we already tested the setters methods through JUnits tests, we decided t
 
 # White Box Unit Tests - EZShop
 
- ### **Class *it.polito.ezshop.model.ProductType* - method *validateProductCode***
+### **Class *it.polito.ezshop.data.MyProductType* - method *validateProductCode***
 
 There's no need to execute White Box tests for this method because with BlackBox testing we can reach the 100% coverage of the method's code.
 
-### **Class *it.polito.ezshop.model.CreditCard* - method *validateWithLuhn***
+### **Class *it.polito.ezshop.data.MyCreditCard* - method *validateWithLuhn***
 
 There's no need to execute White Box tests for this method because with BlackBox testing we can reach the 100% coverage of the method's code.

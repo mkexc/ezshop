@@ -15,8 +15,10 @@ public class AcceptableGetCreditsAndDebits {
     @Before
     public void before() throws Exception{
         shop = new EZShop();
-        shop.login("admin","ciao");
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
+        shop.login("admin","ciao");
         shop.recordBalanceUpdate(100);
         shop.recordBalanceUpdate(899);
         shop.recordBalanceUpdate(172);

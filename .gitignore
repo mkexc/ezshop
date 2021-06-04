@@ -17,6 +17,11 @@ local.properties
 data/*
 .vscode
 ezshop.iml
+ezshop.uml
+testReports/
+Test\ Results\ -\ EzShop_Test.html
+ezshop_db.sqlite.bk
+
 
 API_EZShopInterface.java
 

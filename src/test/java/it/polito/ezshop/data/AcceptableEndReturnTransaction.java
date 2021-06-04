@@ -17,6 +17,8 @@ public class AcceptableEndReturnTransaction {
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
         idSaleTransaction = shop.startSaleTransaction();
         Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
@@ -26,6 +28,7 @@ public class AcceptableEndReturnTransaction {
         shop.login("23","12345");
         shop.addProductToSale(idSaleTransaction,"2424242424239",3);
         shop.endSaleTransaction(idSaleTransaction);
+        shop.receiveCashPayment(idSaleTransaction, 100);
         idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
         shop.returnProduct(idReturnTransaction,"2424242424239",2);
     }

@@ -14,8 +14,11 @@ public class AcceptableComputeBalance {
     @Before
     public void before() throws Exception{
         shop = new it.polito.ezshop.data.EZShop();
-        shop.login("admin","ciao");
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
+        shop.login("admin","ciao");
+
     }
 
     @Test

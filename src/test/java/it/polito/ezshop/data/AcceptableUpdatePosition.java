@@ -19,6 +19,8 @@ public class AcceptableUpdatePosition {
     {
         shop=new EZShop();
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
         prodID=shop.createProductType("Latte", "2424242424239", 1.5, "scaduto");
         prodId2=shop.createProductType("Choco", "12345678901286", 1.5, "scaduto");
@@ -42,7 +44,7 @@ public class AcceptableUpdatePosition {
 
     }
     @Test
-    public void testProductId() throws Exception{
+    public void testProductId() {
         assertThrows(InvalidProductIdException.class,()-> shop.updatePosition(null,"332-casa-321"));
 
         assertThrows(InvalidProductIdException.class,()-> shop.updatePosition(-1,"332-casa-321"));
@@ -50,7 +52,7 @@ public class AcceptableUpdatePosition {
     }
 
     @Test
-    public void testCorrectPosition() throws Exception{
+    public void testCorrectPosition() {
         assertThrows(InvalidLocationException.class,()-> shop.updatePosition(prodID,"332-331-321"));
         assertThrows(InvalidLocationException.class,()-> shop.updatePosition(prodID,"casa-331-casa"));
         assertThrows(InvalidLocationException.class,()-> shop.updatePosition(prodID,"33a2-3a31-3a21"));

@@ -16,6 +16,8 @@ public class AcceptableLogin {
     @Before
     public void before() throws Exception {
         shop=new EZShop();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
         userId=shop.createUser("Carlo", "1321", "Cashier");
     }

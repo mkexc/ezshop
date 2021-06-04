@@ -1,64 +1,112 @@
 # Design assessment
 
+Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-```
-<The goal of this document is to analyse the structure of your project, compare it with the design delivered
-on April 30, discuss whether the design could be improved>
-```
+Date: 03/06/2021
+
+Version: 1.0
 
 # Levelized structure map
-```
-<Applying Structure 101 to your project, version to be delivered on june 4, produce the Levelized structure map,
-with all elements explosed, all dependencies, NO tangles; and report it here as a picture>
-```
+
+## Before untangle
+
+![LSM-without-untagle](assets/img/LSMOld.png)
+
+## After untangle
+
+![LSM-with-untagle](assets/img/LSMNew.png)
 
 # Structural over complexity chart
-```
-<Applying Structure 101 to your project, version to be delivered on june 4, produce the structural over complexity chart; and report it here as a picture>
-```
 
+## Before untangle
 
+![Structural-over-complexity-chart-without-untagle](assets/img/structural-over-complexity-old.png)
+
+## After untangle
+
+![Structural-over-complexity-chart-with-untagle](assets/img/structural-over-complexity-new.png)
 
 # Size metrics
 
-```
-<Report here the metrics about the size of your project, collected using Structure 101>
-```
-
-
+## Before untangle
 
 | Metric                                    | Measure |
 | ----------------------------------------- | ------- |
-| Packages                                  |         |
-| Classes (outer)                           |         |
-| Classes (all)                             |         |
-| NI (number of bytecode instructions)      |         |
-| LOC (non comment non blank lines of code) |         |
+| Packages                                  | 6       |
+| Classes (outer)                           | 37      |
+| Classes (all)                             | 37      |
+| NI (number of bytecode instructions)      | 6359    |
+| LOC (non comment non blank lines of code) | ~2734   |
 
+## After untangle
 
+| Metric                                    | Measure |
+| ----------------------------------------- | ------- |
+| Packages                                  | 5       |
+| Classes (outer)                           | 37      |
+| Classes (all)                             | 37      |
+| NI (number of bytecode instructions)      | 6359    |
+| LOC (non comment non blank lines of code) | ~2734   |
 
 # Items with XS
 
-```
-<Report here information about code tangles and fat packages>
-```
+## Before untangle
 
-| Item | Tangled | Fat  | Size | XS   |
-| ---- | ------- | ---- | ---- | ---- |
-|      |         |      |      |      |
-|      |         |      |      |      |
+| Item                                                                                                                 | Tangled | Fat  | Size | XS   |
+| -------------------------------------------------------------------------------------------------------------------- | ------- | ---- | ---- | ---- |
+| ezshop.it.polito.ezshop.data.EZShop                                                                                  | 0%      | 158  | 5318 | 1279 |
+| ezshop.it.polito.ezshop                                                                                              | 3%      |   4  | 6359 | 183  |
+| ezshop.it.polito.ezshop.data.EZShop.endReturnTransaction(java.lang.Integer, boolean):boolean                         | 0%      |  25  | 309  | 123  |
+| ezshop.it.polito.ezshop.data.EZShop.returnProduct(java.lang.Integer, java.lang.String, int):boolean                  | 0%      |  22  | 222  | 70   |
+| ezshop.it.polito.ezshop.data.EZShop.deleteProductFromSale(java.lang.Integer, java.lang.String, int):boolean          | 0%      |  21  | 192  | 54   |
+| ezshop.it.polito.ezshop.data.EZShop.addProductToSale(java.lang.Integer, java.lang.String, int):boolean               | 0%      |  20  | 207  | 51   |
+| ezshop.it.polito.ezshop.data.EZShop.deleteSaleTransaction(java.lang.Integer):boolean                                 | 0%      |  17  | 169  | 19   |
+| ezshop.it.polito.ezshop.data.EZShop.modifyCustomer(java.lang.Integer, java.lang.String, java.lang.String):boolean    | 0%      |  17  | 160  | 18   |
+| ezshop.it.polito.ezshop.data.EZShop.applyDiscountRateToProduct(java.lang.Integer, java.lang.String, double):boolean  | 0%      |  16  | 147  | 9    |
 
+## After untangle
 
+| Item                                                                                                                 | Tangled | Fat  | Size | XS   |
+| -------------------------------------------------------------------------------------------------------------------- | ------- | ---- | ---- | ---- |
+| ezshop.it.polito.ezshop.data.EZShop                                                                                  | 0%      | 158  | 5318 | 1279 |
+| ezshop.it.polito.ezshop.data.EZShop.endReturnTransaction(java.lang.Integer, boolean):boolean                         | 0%      |  25  | 309  | 123  |
+| ezshop.it.polito.ezshop.data.EZShop.returnProduct(java.lang.Integer, java.lang.String, int):boolean                  | 0%      |  22  | 222  | 70   |
+| ezshop.it.polito.ezshop.data.EZShop.deleteProductFromSale(java.lang.Integer, java.lang.String, int):boolean          | 0%      |  21  | 192  | 54   |
+| ezshop.it.polito.ezshop.data.EZShop.addProductToSale(java.lang.Integer, java.lang.String, int):boolean               | 0%      |  20  | 207  | 51   |
+| ezshop.it.polito.ezshop.data.EZShop.deleteSaleTransaction(java.lang.Integer):boolean                                 | 0%      |  17  | 169  | 19   |
+| ezshop.it.polito.ezshop.data.EZShop.modifyCustomer(java.lang.Integer, java.lang.String, java.lang.String):boolean    | 0%      |  17  | 160  | 18   |
+| ezshop.it.polito.ezshop.data.EZShop.applyDiscountRateToProduct(java.lang.Integer, java.lang.String, double):boolean  | 0%      |  16  | 147  | 9    |
 
 # Package level tangles
 
-```
-<Report screen captures of the package-level tangles by opening the items in the "composition perspective" 
-(double click on the tangle from the Views->Complexity page)>
-```
+## Before untangle
+
+![diagram-without-untagle](assets/img/tangle-diagram.png)
+
+## After untangle
+
+No tangles found.
 
 # Summary analysis
-```
-<Discuss here main differences of the current structure of your project vs the design delivered on April 30>
-<Discuss if the current structure shows weaknesses that should be fixed>
-```
+
+In relation to the previous project structure, it has been changed as following:
+
+- Removed the "list" classes (including Inventory and AccountBook) and implemented the corresponding methods directly inside `ezshop.it.polito.ezshop.data.EZShop` class;
+
+- Moved all the classes' implementation from `model` to `data` package (removing the tangle between data and model packages);
+
+- Removed `Quantity` and `Position` classes because they've been implemented as attributes of `ProductType` in the database;
+
+- Merged `LoyaltyCard` and `Customer` classes because it is a 1-to-1 association;
+
+- Removed `ReturnTransaction` class because it has been implemented on the database side and so was superfluous in the Java structure.
+
+Despite the fact that we managed to resolve the tangling between `data` and `model` packages, the main weakness in the current structure remains the fatness of `ezshop.it.polito.ezshop.data.EZShop` class which implements the APIs.
+The probable reason for this problem is the repetion of multiple lines of code which does the same things over multiple methods.
+Possible solutions to this problem could be:
+
+- semplification of methods called from the APIs which operate on the database using a "db management" class to group repetitively called operations;
+
+- a class that groups all the exceptions check at the start of each method.
+
+Following this coding methodology we can semplify the code and structural complexity of each method by calling smaller and distinct sub-methods.

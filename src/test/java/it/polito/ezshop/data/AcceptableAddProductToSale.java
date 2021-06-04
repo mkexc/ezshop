@@ -18,8 +18,9 @@ public class AcceptableAddProductToSale {
     {
         shop = new EZShop();
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("23","12345");
-
     }
 
     @After

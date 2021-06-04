@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > TicketEntry</title>
+  <title>Coverage Report > MySaleTransaction</title>
   <style type="text/css">
     @import "../../.css/coverage.css";
     @import "../../.css/highlight-idea.css";
@@ -20,14 +20,50 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">it.polito.ezshop.data</a>
 </div>
 
-<h1>Coverage Summary for Class: TicketEntry (it.polito.ezshop.data)</h1>
+<h1>Coverage Summary for Class: MySaleTransaction (it.polito.ezshop.data)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
 </tr>
 <tr>
-  <td class="name">TicketEntry</td>
+  <td class="name">MySaleTransaction</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/13)
+  </span>
+</td>
 </tr>
 
 </table>
@@ -39,29 +75,63 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <div class="sourceCode" id="sourceCode"><i class="no-highlight">1</i>&nbsp;package it.polito.ezshop.data;
 <i class="no-highlight">2</i>&nbsp;
-<i class="no-highlight">3</i>&nbsp;public interface TicketEntry {
+<i class="no-highlight">3</i>&nbsp;import java.util.List;
 <i class="no-highlight">4</i>&nbsp;
-<i class="no-highlight">5</i>&nbsp;    String getBarCode();
-<i class="no-highlight">6</i>&nbsp;
-<i class="no-highlight">7</i>&nbsp;    void setBarCode(String barCode);
-<i class="no-highlight">8</i>&nbsp;
-<i class="no-highlight">9</i>&nbsp;    String getProductDescription();
+<i class="no-highlight">5</i>&nbsp;public class MySaleTransaction extends MyBalanceOperation implements it.polito.ezshop.data.SaleTransaction {
+<i class="no-highlight">6</i>&nbsp;    private Integer transactionId;
+<i class="no-highlight">7</i>&nbsp;    private List&lt;TicketEntry&gt; entries;
+<i class="no-highlight">8</i>&nbsp;    private double discountRate;
+<i class="no-highlight">9</i>&nbsp;    private double price;
 <i class="no-highlight">10</i>&nbsp;
-<i class="no-highlight">11</i>&nbsp;    void setProductDescription(String productDescription);
-<i class="no-highlight">12</i>&nbsp;
-<i class="no-highlight">13</i>&nbsp;    int getAmount();
-<i class="no-highlight">14</i>&nbsp;
-<i class="no-highlight">15</i>&nbsp;    void setAmount(int amount);
-<i class="no-highlight">16</i>&nbsp;
-<i class="no-highlight">17</i>&nbsp;    double getPricePerUnit();
+<i class="no-highlight">11</i>&nbsp;    public MySaleTransaction(Integer transactionId, List&lt;TicketEntry&gt; entries, double discountRate, double price) {
+<b class="fc"><i class="no-highlight">12</i>&nbsp;        super();</b>
+<b class="fc"><i class="no-highlight">13</i>&nbsp;        this.transactionId=transactionId;</b>
+<b class="fc"><i class="no-highlight">14</i>&nbsp;        this.entries=entries;</b>
+<b class="fc"><i class="no-highlight">15</i>&nbsp;        this.discountRate=discountRate;</b>
+<b class="fc"><i class="no-highlight">16</i>&nbsp;        this.price=price;</b>
+<i class="no-highlight">17</i>&nbsp;    }
 <i class="no-highlight">18</i>&nbsp;
-<i class="no-highlight">19</i>&nbsp;    void setPricePerUnit(double pricePerUnit);
-<i class="no-highlight">20</i>&nbsp;
-<i class="no-highlight">21</i>&nbsp;    double getDiscountRate();
-<i class="no-highlight">22</i>&nbsp;
-<i class="no-highlight">23</i>&nbsp;    void setDiscountRate(double discountRate);
-<i class="no-highlight">24</i>&nbsp;
-<i class="no-highlight">25</i>&nbsp;}
+<i class="no-highlight">19</i>&nbsp;    @Override
+<i class="no-highlight">20</i>&nbsp;    public Integer getTicketNumber() {
+<b class="fc"><i class="no-highlight">21</i>&nbsp;        return transactionId;</b>
+<i class="no-highlight">22</i>&nbsp;    }
+<i class="no-highlight">23</i>&nbsp;
+<i class="no-highlight">24</i>&nbsp;    @Override
+<i class="no-highlight">25</i>&nbsp;    public void setTicketNumber(Integer ticketNumber) {
+<b class="fc"><i class="no-highlight">26</i>&nbsp;        this.transactionId=ticketNumber;</b>
+<i class="no-highlight">27</i>&nbsp;    }
+<i class="no-highlight">28</i>&nbsp;
+<i class="no-highlight">29</i>&nbsp;    @Override
+<i class="no-highlight">30</i>&nbsp;    public List&lt;TicketEntry&gt; getEntries() {
+<i class="no-highlight">31</i>&nbsp;        //list of entered products in the transactions/ticket
+<b class="fc"><i class="no-highlight">32</i>&nbsp;        return entries;</b>
+<i class="no-highlight">33</i>&nbsp;    }
+<i class="no-highlight">34</i>&nbsp;
+<i class="no-highlight">35</i>&nbsp;    @Override
+<i class="no-highlight">36</i>&nbsp;    public void setEntries(List&lt;TicketEntry&gt; entries) {
+<b class="fc"><i class="no-highlight">37</i>&nbsp;        this.entries=entries;</b>
+<i class="no-highlight">38</i>&nbsp;    }
+<i class="no-highlight">39</i>&nbsp;
+<i class="no-highlight">40</i>&nbsp;    @Override
+<i class="no-highlight">41</i>&nbsp;    public double getDiscountRate() {
+<b class="fc"><i class="no-highlight">42</i>&nbsp;        return discountRate;</b>
+<i class="no-highlight">43</i>&nbsp;    }
+<i class="no-highlight">44</i>&nbsp;
+<i class="no-highlight">45</i>&nbsp;    @Override
+<i class="no-highlight">46</i>&nbsp;    public void setDiscountRate(double discountRate) {
+<b class="fc"><i class="no-highlight">47</i>&nbsp;        this.discountRate=discountRate;</b>
+<i class="no-highlight">48</i>&nbsp;    }
+<i class="no-highlight">49</i>&nbsp;
+<i class="no-highlight">50</i>&nbsp;    @Override
+<i class="no-highlight">51</i>&nbsp;    public double getPrice() {
+<b class="fc"><i class="no-highlight">52</i>&nbsp;        return price;</b>
+<i class="no-highlight">53</i>&nbsp;    }
+<i class="no-highlight">54</i>&nbsp;
+<i class="no-highlight">55</i>&nbsp;    @Override
+<i class="no-highlight">56</i>&nbsp;    public void setPrice(double price) {
+<b class="fc"><i class="no-highlight">57</i>&nbsp;        this.price=price;</b>
+<i class="no-highlight">58</i>&nbsp;    }
+<i class="no-highlight">59</i>&nbsp;}
 </div>
 </pre>
 </div>
@@ -88,7 +158,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2021-05-26 18:32</div>
+    <div style="float:right;">generated on 2021-06-03 17:26</div>
 </div>
 </body>
 </html>

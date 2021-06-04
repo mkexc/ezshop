@@ -18,18 +18,21 @@ public class AcceptableDeleteReturnTransaction {
     public void before() throws Exception{
         shop = new EZShop();
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
-        idSaleTransaction = shop.startSaleTransaction();
         Integer idProd = shop.createProductType("Latte","2424242424239",1.0,"Scaduto");
         shop.updatePosition(idProd,"13-cacca-14");
         shop.updateQuantity(idProd,4);
+        shop.logout();
+        shop.login("23","12345");
+        idSaleTransaction = shop.startSaleTransaction();
         shop.addProductToSale(idSaleTransaction,"2424242424239",3);
         shop.endSaleTransaction(idSaleTransaction);
+        shop.receiveCashPayment(idSaleTransaction,200.0);
         // adding the product to return
         idReturnTransaction= shop.startReturnTransaction(idSaleTransaction);
         shop.returnProduct(idReturnTransaction,"2424242424239",2);
-        shop.logout();
-        shop.login("23","12345");
     }
 
     @Test

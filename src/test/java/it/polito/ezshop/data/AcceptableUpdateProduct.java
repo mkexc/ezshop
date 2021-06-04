@@ -16,6 +16,8 @@ public class AcceptableUpdateProduct {
     {
         shop=new EZShop();
         shop.reset();
+        shop.createUser("admin","ciao","Administrator");
+        shop.createUser("23","12345","Cashier");
         shop.login("admin","ciao");
         prodID=shop.createProductType("Latte", "2424242424239", 1.5, "scaduto");
         prod2=shop.createProductType("Lattosio", "12345678901286", 1.5, "scaduto");
@@ -97,10 +99,10 @@ public class AcceptableUpdateProduct {
 
     @Test
     public void testValidBarcode() {
-        assertTrue(it.polito.ezshop.model.ProductType.validateProductCode("11234567890125"));
-        assertFalse(it.polito.ezshop.model.ProductType.validateProductCode("12345678901234"));
-        assertTrue(it.polito.ezshop.model.ProductType.validateProductCode("1234567890128"));
-        assertTrue(it.polito.ezshop.model.ProductType.validateProductCode("123456789012"));
+        assertTrue(MyProductType.validateProductCode("11234567890125"));
+        assertFalse(MyProductType.validateProductCode("12345678901234"));
+        assertTrue(MyProductType.validateProductCode("1234567890128"));
+        assertTrue(MyProductType.validateProductCode("123456789012"));
     }
 
 
