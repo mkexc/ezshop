@@ -192,6 +192,10 @@ package it.polito.ezshop.data{
         + recordBalanceUpdate()
         + getCreditsAndDebits()
         + computeBalance()
+        + addProducttoSaleRFID()
+        + deleteProductFromSaleRFID()
+        + returnProductRFID()
+        + recordOrderArrivalRFID()
     }
 }
 
