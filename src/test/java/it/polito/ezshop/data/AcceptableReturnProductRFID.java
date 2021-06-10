@@ -26,11 +26,11 @@ public class AcceptableReturnProductRFID {
         //shop.updateQuantity(idProd,40);
         shop.recordBalanceUpdate(1000.0);
         Integer idOrder = shop.payOrderFor("2424242424239",4,1.0);
-        shop.recordOrderArrivalRFID(idOrder,"0000000010");
+        shop.recordOrderArrivalRFID(idOrder,"000000000010");
         shop.logout();
         shop.login("23","12345");
         idSaleTransaction = shop.startSaleTransaction();
-        shop.addProductToSaleRFID(idSaleTransaction,"0000000010");
+        shop.addProductToSaleRFID(idSaleTransaction,"000000000010");
         shop.endSaleTransaction(idSaleTransaction);
         shop.receiveCashPayment(idSaleTransaction,1000.0);
         idReturnTransaction=shop.startReturnTransaction(idSaleTransaction);
@@ -46,7 +46,7 @@ public class AcceptableReturnProductRFID {
     public void authTest() throws Exception {
         shop.logout();
         assertThrows(UnauthorizedException.class, () ->
-                shop.returnProductRFID(idReturnTransaction,"0000000010"));
+                shop.returnProductRFID(idReturnTransaction,"000000000010"));
 
         shop.login("admin","ciao");
     }
@@ -64,39 +64,48 @@ public class AcceptableReturnProductRFID {
 
     @Test
     public void testInvalidQuantity() throws Exception {
-        shop.returnProductRFID(idReturnTransaction, "0000000010");
-        assertFalse(shop.returnProductRFID(idReturnTransaction, "0000000010"));
+        shop.returnProductRFID(idReturnTransaction, "000000000010");
+        assertFalse(shop.returnProductRFID(idReturnTransaction, "000000000010"));
     }
 
     @Test
     public void testIdCorrect() {
         assertThrows(InvalidTransactionIdException.class, () ->
-                shop.returnProductRFID(null,"0000000010"));
+                shop.returnProductRFID(null,"000000000010"));
 
         assertThrows(InvalidTransactionIdException.class, () ->
-                shop.returnProductRFID(0,"0000000010"));
+                shop.returnProductRFID(0,"000000000010"));
 
         assertThrows(InvalidTransactionIdException.class, () ->
-                shop.returnProductRFID(-1,"0000000010"));
+                shop.returnProductRFID(-1,"000000000010"));
     }
 
     @Test
     public void testNoRFIDInSaleTransaction() throws Exception {
-        assertFalse(shop.returnProductRFID(idReturnTransaction,"0000000011"));
-    }
-
-    @Test
-    public void testNoProductInProductType() throws Exception{
-        assertFalse(shop.returnProductRFID(idReturnTransaction,"0000010010"));
+        assertFalse(shop.returnProductRFID(idReturnTransaction,"000000000111"));
     }
 
     @Test
     public void testNoReturnTransactionId() throws Exception{
-        assertFalse(shop.returnProductRFID(999,"0000000010"));
+        assertFalse(shop.returnProductRFID(999,"000000000010"));
     }
 
     @Test
     public void testCorrectCase() throws Exception{
-        assertTrue(shop.returnProductRFID(idReturnTransaction,"0000000010"));
+        assertTrue(shop.returnProductRFID(idReturnTransaction,"000000000010"));
+    }
+
+    @Test
+    public void testMultipleReturnTransaction() throws Exception {
+        shop.returnProductRFID(idReturnTransaction,"000000000010");
+        shop.endReturnTransaction(idReturnTransaction, true);
+        int idReturnTransaction2 = shop.startReturnTransaction(idSaleTransaction);
+        assertFalse(shop.returnProductRFID(idReturnTransaction2,"000000000010"));
+    }
+
+    @Test
+    public void testMultipleReturnSameRFID() throws Exception {
+        shop.returnProductRFID(idReturnTransaction,"000000000010");
+        assertFalse(shop.returnProductRFID(idReturnTransaction,"000000000010"));
     }
 }

@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class AcceptableDeleteProductFromSaleRFID {
     EZShop shop;
@@ -25,12 +24,12 @@ public class AcceptableDeleteProductFromSaleRFID {
         //shop.updateQuantity(idProd,4);
         shop.recordBalanceUpdate(1000.0);
         Integer idOrder = shop.payOrderFor("2424242424239",4,1.0);
-        shop.recordOrderArrivalRFID(idOrder,"0000000010");
+        shop.recordOrderArrivalRFID(idOrder,"000000000010");
 
         shop.logout();
         shop.login("23","12345");
         idSaleTransaction = shop.startSaleTransaction();
-        shop.addProductToSaleRFID(idSaleTransaction,"0000000010");
+        shop.addProductToSaleRFID(idSaleTransaction,"000000000010");
     }
 
     @After
@@ -43,17 +42,17 @@ public class AcceptableDeleteProductFromSaleRFID {
     public void authTest() throws Exception {
         // no logged user
         shop.logout();
-        assertThrows(UnauthorizedException.class, () -> shop.deleteProductFromSaleRFID(1,"0000000010"));
+        assertThrows(UnauthorizedException.class, () -> shop.deleteProductFromSaleRFID(1,"000000000010"));
     }
 
     @Test
     public void invalidTransactionId()  {
         // transactionid 0
-        assertThrows(InvalidTransactionIdException.class, () -> shop.deleteProductFromSaleRFID(0,"0000000010"));
+        assertThrows(InvalidTransactionIdException.class, () -> shop.deleteProductFromSaleRFID(0,"000000000010"));
         // transactionid <0
-        assertThrows(InvalidTransactionIdException.class, () -> shop.deleteProductFromSaleRFID(-1,"0000000010"));
+        assertThrows(InvalidTransactionIdException.class, () -> shop.deleteProductFromSaleRFID(-1,"000000000010"));
         // transactionid null
-        assertThrows(InvalidTransactionIdException.class, () -> shop.deleteProductFromSaleRFID(null,"0000000010"));
+        assertThrows(InvalidTransactionIdException.class, () -> shop.deleteProductFromSaleRFID(null,"000000000010"));
     }
 
     @Test
@@ -70,12 +69,12 @@ public class AcceptableDeleteProductFromSaleRFID {
     @Test
     public void transactionNotOpen() throws Exception {
         shop.endSaleTransaction(idSaleTransaction);
-        assertFalse(shop.deleteProductFromSaleRFID(idSaleTransaction,"0000000010"));
+        assertFalse(shop.deleteProductFromSaleRFID(idSaleTransaction,"000000000010"));
     }
 
     @Test
     public void correctCase() throws Exception {
-        assertTrue(shop.deleteProductFromSaleRFID(idSaleTransaction,"0000000010"));
+        assertTrue(shop.deleteProductFromSaleRFID(idSaleTransaction,"000000000010"));
         shop.endSaleTransaction(idSaleTransaction);
         shop.logout();
         shop.login("admin","ciao");

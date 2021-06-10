@@ -868,7 +868,7 @@ public class EZShop implements EZShopInterface{
             throw new InvalidOrderIdException();
         }
 
-        if(RFIDfrom== null || RFIDfrom.length()!=10 || !RFIDfrom.matches("^[0-9]{10}$"))
+        if(RFIDfrom== null || RFIDfrom.length()!=12 || !RFIDfrom.matches("^[0-9]{12}$"))
         {
             throw new InvalidRFIDException();
         }
@@ -901,7 +901,7 @@ public class EZShop implements EZShopInterface{
             try {
                 sql2 = "SELECT * FROM product WHERE RFID=?";
                 PreparedStatement st2 = conn.prepareStatement(sql2);
-                st2.setString(1, String.format("%1$10d", Integer.parseInt(RFIDfrom) + i).replace(' ', '0'));
+                st2.setString(1, String.format("%1$12d", Integer.parseInt(RFIDfrom) + i).replace(' ', '0'));
 
                 ResultSet rs2 = st2.executeQuery();
                 if(rs2.isBeforeFirst()){
@@ -948,7 +948,7 @@ public class EZShop implements EZShopInterface{
             try {
                 sql3 = "INSERT INTO product(RFID,barcode) VALUES (?,?)";
                 PreparedStatement st3 = conn.prepareStatement(sql3);
-                st3.setString(1, String.format("%1$10d", Integer.parseInt(RFIDfrom) + i).replace(' ', '0'));
+                st3.setString(1, String.format("%1$12d", Integer.parseInt(RFIDfrom) + i).replace(' ', '0'));
                 st3.setString(2, productCode);
                 st3.executeUpdate();
             }catch(SQLException e){
@@ -1470,7 +1470,7 @@ public class EZShop implements EZShopInterface{
         if(transactionId == null || transactionId <= 0)
             throw new InvalidTransactionIdException();
 
-        if(RFID== null || RFID.length()!=10 || !RFID.matches("^[0-9]{10}$")) {
+        if(RFID== null || RFID.length()!=12 || !RFID.matches("^[0-9]{12}$")) {
             throw new InvalidRFIDException();
         }
 
@@ -1490,9 +1490,62 @@ public class EZShop implements EZShopInterface{
             return false;
         }
 
+        ProductType product;
+
+        //check transaction status
         try {
-            return this.addProductToSale(transactionId, productCode, 1);
-        } catch (InvalidProductCodeException e) {
+            String sql = "SELECT id from SaleTransaction WHERE id=? AND status='OPEN'";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1,transactionId);
+            ResultSet rs=st.executeQuery();
+            if(!rs.isBeforeFirst())
+                return false;
+        }catch(SQLException e){
+            // transactionId not an existing or open transaction
+            return false;
+        }
+
+        String actualRole = loggedUser.getRole();
+        //check presence of the product;
+        try {
+            loggedUser.setRole("Administrator");
+            product = getProductTypeByBarCode(productCode);
+            if(product == null) {
+                loggedUser.setRole(actualRole);
+                return false;
+            }
+        } catch(Exception e) {
+            loggedUser.setRole(actualRole);
+            return false;
+        }
+        // check availability of the product
+        try {
+            loggedUser.setRole("Administrator");
+            // eventually decrease amount of product if available
+            if (!this.updateQuantity(product.getId(),-1)){
+                loggedUser.setRole(actualRole);
+                return false;
+            }
+            isInventoryUpdated = false;
+        } catch(Exception e){
+            loggedUser.setRole(actualRole);
+            return false;
+        }
+
+        loggedUser.setRole(actualRole);
+
+        // insert a new product entry for a new sale transaction
+        try {
+            String sql2 = "INSERT INTO productEntry (transactionId, barcode, amount, RFID) VALUES (?,?,?,?)";
+            PreparedStatement st = conn.prepareStatement(sql2);
+            st.setInt(1, transactionId);
+            st.setString(2, productCode);
+            st.setInt(3, 1);
+            st.setString(4, RFID);
+            int updatedRows = st.executeUpdate();
+
+            return !(updatedRows == 0);
+        } catch(SQLException e) {
             return false;
         }
     }
@@ -1610,7 +1663,7 @@ public class EZShop implements EZShopInterface{
         if(transactionId == null || transactionId <= 0)
             throw new InvalidTransactionIdException();
 
-        if(RFID== null || RFID.length()!=10 || !RFID.matches("^[0-9]{10}$")) {
+        if(RFID== null || RFID.length()!=12 || !RFID.matches("^[0-9]{12}$")) {
             throw new InvalidRFIDException();
         }
 
@@ -1630,9 +1683,62 @@ public class EZShop implements EZShopInterface{
             return false;
         }
 
+        ProductType product;
+
+        //check transaction status
         try {
-            return this.deleteProductFromSale(transactionId, productCode, 1);
-        } catch (InvalidProductCodeException e) {
+            String sql = "SELECT id, status from SaleTransaction WHERE id=? AND status='OPEN'";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1,transactionId);
+            ResultSet rs = st.executeQuery();
+            if(!rs.next())
+                return false;
+//            if(rs.getInt("id") != transactionId){
+//                return false;
+//            }
+        }catch(SQLException e){
+            // transactionId not an existing or open transaction
+            return false;
+        }
+
+        String actualRole = loggedUser.getRole();
+        //check presence of the product;
+        try {
+            loggedUser.setRole("Administrator");
+            product = getProductTypeByBarCode(productCode);
+            if(product == null) {
+                loggedUser.setRole(actualRole);
+                return false;
+            }
+        } catch(Exception e) {
+            loggedUser.setRole(actualRole);
+            return false;
+        }
+
+        loggedUser.setRole(actualRole);
+
+        //update quantity
+        try {
+            // delete row if productEntry amount is 0
+            String sql3 = "DELETE FROM productEntry WHERE transactionId=? AND barcode=? AND RFID=?";
+            PreparedStatement st2 = conn.prepareStatement(sql3);
+            st2.setInt(1,transactionId);
+            st2.setString(2,productCode);
+            st2.setString(3,RFID);
+            st2.executeUpdate();
+
+            loggedUser.setRole("Administrator");
+            // eventually increase amount of product available in inventory
+            if (!this.updateQuantity(product.getId(), 1)){
+                loggedUser.setRole(actualRole);
+                isInventoryUpdated = false;
+                return false;
+            }
+            isInventoryUpdated = false;
+            return true;
+
+        }catch(Exception e){
+            loggedUser.setRole(actualRole);
             return false;
         }
     }
@@ -2145,15 +2251,32 @@ public class EZShop implements EZShopInterface{
         if(returnId == null || returnId <= 0)
             throw new InvalidTransactionIdException();
 
-        if(RFID== null || RFID.length()!=10 || !RFID.matches("^[0-9]{10}$")) {
+        if(RFID== null || RFID.length()!=12 || !RFID.matches("^[0-9]{12}$")) {
             throw new InvalidRFIDException();
+        }
+
+        // check if return transaction exists and returns its saleTransactionId
+        int saleTransactionId;
+        try {
+            String sql = "SELECT saleTransactionId FROM returnTransaction WHERE id=?";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1,returnId);
+
+            ResultSet rs = st.executeQuery();
+            if(!rs.next())
+                return false;
+            saleTransactionId = rs.getInt("saleTransactionId");
+
+        } catch(SQLException e) {
+            return false;
         }
 
         String productCode;
         try {
-            String sql = "SELECT barcode FROM product, productEntry WHERE RFID=? AND productEntry.transactionId=? AND product.barcode=productEntry.barcode";
+            String sql = "SELECT product.barcode FROM product, productEntry WHERE product.RFID=? AND productEntry.transactionId=? AND product.RFID=productEntry.RFID";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setString(1, RFID);
+            st.setInt(2,saleTransactionId);
             ResultSet rs = st.executeQuery();
             if(!rs.isBeforeFirst())
                 // no barcode found
@@ -2165,12 +2288,38 @@ public class EZShop implements EZShopInterface{
             return false;
         }
 
-        try
-        {
-            return this.returnProduct(returnId,productCode,1);
+        // check if there is the product and the proper quantity in the sale transaction
+        double discountOfProduct;
+        try {
+            String sql3 = "SELECT discountRate FROM productEntry WHERE transactionId=? AND barcode=? AND RFID=?";
+            PreparedStatement st3 = conn.prepareStatement(sql3);
+            st3.setInt(1,saleTransactionId);
+            st3.setString(2,productCode);
+            st3.setString(3,RFID);
+            ResultSet rs3 = st3.executeQuery();
+
+            if(!rs3.isBeforeFirst())
+                return false;
+            rs3.next();
+            discountOfProduct = rs3.getDouble("discountRate");
+        }catch(SQLException e) {
+            return false;
         }
-        catch (Exception e)
-        {
+
+        // insert a new productEntry for returnTransaction if not yet created
+        try {
+            String sql2 = "INSERT INTO productEntry (transactionId, barcode, amount, discountRate, RFID) VALUES (?,?,?,?,?)";
+            PreparedStatement st2 = conn.prepareStatement(sql2);
+            st2.setInt(1,returnId);
+            st2.setString(2,productCode);
+            st2.setInt(3,1);
+            st2.setDouble(4,discountOfProduct);
+            st2.setString(5, RFID);
+
+            int updatedRows = st2.executeUpdate();
+            return !(updatedRows == 0);
+
+        }catch(SQLException e) {
             return false;
         }
     }

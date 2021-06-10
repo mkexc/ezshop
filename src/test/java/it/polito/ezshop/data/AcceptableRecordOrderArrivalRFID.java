@@ -45,11 +45,11 @@ public class AcceptableRecordOrderArrivalRFID {
 
     @Test
     public void duplicatedRFID() throws Exception{
-        shop.recordOrderArrivalRFID(orderIdPayed,"0000000010");
+        shop.recordOrderArrivalRFID(orderIdPayed,"000000000010");
         shop.updatePosition(idProd2,"13-culo-14");
-        assertThrows(InvalidRFIDException.class, ()-> shop.recordOrderArrivalRFID(orderIdPayed2,"0000000010"));
-        assertThrows(InvalidRFIDException.class, ()-> shop.recordOrderArrivalRFID(orderIdPayed2,"0000000001"));
-        assertThrows(InvalidRFIDException.class, ()-> shop.recordOrderArrivalRFID(orderIdPayed2,"0000000009"));
+        assertThrows(InvalidRFIDException.class, ()-> shop.recordOrderArrivalRFID(orderIdPayed2,"000000000010"));
+        assertThrows(InvalidRFIDException.class, ()-> shop.recordOrderArrivalRFID(orderIdPayed2,"000000000001"));
+        assertThrows(InvalidRFIDException.class, ()-> shop.recordOrderArrivalRFID(orderIdPayed2,"000000000009"));
 
 
     }
@@ -58,38 +58,38 @@ public class AcceptableRecordOrderArrivalRFID {
     public void authTest() throws Exception {
         shop.logout();
         assertThrows(UnauthorizedException.class, () ->
-                shop.recordOrderArrivalRFID(orderIdPayed,"0000000010")
+                shop.recordOrderArrivalRFID(orderIdPayed,"000000000010")
         );
         shop.login("23", "12345");
         assertThrows(UnauthorizedException.class, () ->
-                shop.recordOrderArrivalRFID(orderIdPayed,"0000000010")
+                shop.recordOrderArrivalRFID(orderIdPayed,"000000000010")
         );
     }
 
     @Test
     public void testInvalidOrderId() throws Exception {
         shop.login("admin", "ciao");
-        assertFalse(shop.recordOrderArrivalRFID(300,"0000000010"));
+        assertFalse(shop.recordOrderArrivalRFID(300,"000000000010"));
         assertThrows(InvalidOrderIdException.class, () ->
-                shop.recordOrderArrivalRFID(-300,"0000000010")
+                shop.recordOrderArrivalRFID(-300,"000000000010")
         );
         assertThrows(InvalidOrderIdException.class, () ->
-                shop.recordOrderArrivalRFID(null,"0000000010")
+                shop.recordOrderArrivalRFID(null,"000000000010")
         );
     }
 
     @Test
     public void testCompletedState() throws Exception {
-        assertFalse(shop.recordOrderArrivalRFID(255,"0000000010"));
+        assertFalse(shop.recordOrderArrivalRFID(255,"000000000010"));
     }
 
     @Test
     public void testNoLocation() {
-        assertThrows(InvalidLocationException.class,()->shop.recordOrderArrivalRFID(orderIdPayed2,"0000000010"));
+        assertThrows(InvalidLocationException.class,()->shop.recordOrderArrivalRFID(orderIdPayed2,"000000000010"));
     }
 
     @Test
     public void testCorrectCase() throws Exception {
-        assertTrue(shop.recordOrderArrivalRFID(orderIdPayed,"0000000010"));
+        assertTrue(shop.recordOrderArrivalRFID(orderIdPayed,"000000000010"));
     }
 }

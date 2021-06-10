@@ -31,16 +31,16 @@ public class AcceptableAddProductToSaleRFID {
     public void authTest() throws Exception
     {
         shop.logout();
-        assertThrows(UnauthorizedException.class, () -> shop.addProductToSaleRFID(1,"0000000010"));
+        assertThrows(UnauthorizedException.class, () -> shop.addProductToSaleRFID(1,"000000000010"));
         shop.login("23","12345");
     }
 
     @Test
     public void invalidTransactionId()
     {
-        assertThrows(InvalidTransactionIdException.class, () -> shop.addProductToSaleRFID(0,"0000000010"));
-        assertThrows(InvalidTransactionIdException.class, () -> shop.addProductToSaleRFID(-1,"0000000010"));
-        assertThrows(InvalidTransactionIdException.class, () -> shop.addProductToSaleRFID(null,"0000000010"));
+        assertThrows(InvalidTransactionIdException.class, () -> shop.addProductToSaleRFID(0,"000000000010"));
+        assertThrows(InvalidTransactionIdException.class, () -> shop.addProductToSaleRFID(-1,"000000000010"));
+        assertThrows(InvalidTransactionIdException.class, () -> shop.addProductToSaleRFID(null,"000000000010"));
     }
 
     @Test
@@ -63,15 +63,13 @@ public class AcceptableAddProductToSaleRFID {
         shop.updateQuantity(idProduct,70);
         shop.logout();
         shop.login("23","12345");
-        assertFalse(shop.addProductToSaleRFID(id,"1111111111"));
+        assertFalse(shop.addProductToSaleRFID(id,"111111111111"));
     }
-
-
 
     @Test
     public void notStartedSaleTransaction() throws Exception
     {
-        assertFalse(shop.addProductToSaleRFID(99999,"0000000010"));
+        assertFalse(shop.addProductToSaleRFID(99999,"000000000010"));
     }
 
     @Test
@@ -85,9 +83,26 @@ public class AcceptableAddProductToSaleRFID {
         //shop.updateQuantity(idProduct,70);
         shop.recordBalanceUpdate(1000.0);
         Integer idOrder = shop.payOrderFor("2424242424239",70,1);
-        shop.recordOrderArrivalRFID(idOrder,"0000000010");
+        shop.recordOrderArrivalRFID(idOrder,"000000000010");
         shop.logout();
         shop.login("23","12345");
-        assertTrue(shop.addProductToSaleRFID(id,"0000000010"));
+        assertTrue(shop.addProductToSaleRFID(id,"000000000010"));
+    }
+
+    @Test
+    public void testMultipleAddSameProductToSale() throws Exception {
+        shop.logout();
+        shop.login("admin","ciao");
+        Integer id = shop.startSaleTransaction();
+        Integer idProduct = shop.createProductType("Vino","2424242424239",10.0,"Buono");
+        shop.updatePosition(idProduct,"14-Boh-15");
+        //shop.updateQuantity(idProduct,70);
+        shop.recordBalanceUpdate(1000.0);
+        Integer idOrder = shop.payOrderFor("2424242424239",70,1);
+        shop.recordOrderArrivalRFID(idOrder,"000000000010");
+        shop.logout();
+        shop.login("23","12345");
+        shop.addProductToSaleRFID(id,"000000000010");
+        assertFalse(shop.addProductToSaleRFID(id,"000000000010"));
     }
 }
