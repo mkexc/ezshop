@@ -2,9 +2,9 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 03/06/2021
+Date: 10/06/2021
 
-Version: 1.0
+Version: 1.1
 
 # Levelized structure map
 
@@ -12,7 +12,7 @@ Version: 1.0
 
 ![LSM-without-untagle](assets/img/LSMOld.png)
 
-## After untangle
+## After untangle and Changes2
 
 ![LSM-with-untagle](assets/img/LSMNew.png)
 
@@ -22,7 +22,7 @@ Version: 1.0
 
 ![Structural-over-complexity-chart-without-untagle](assets/img/structural-over-complexity-old.png)
 
-## After untangle
+## After untangle and Changes2
 
 ![Structural-over-complexity-chart-with-untagle](assets/img/structural-over-complexity-new.png)
 
@@ -47,6 +47,16 @@ Version: 1.0
 | Classes (all)                             | 37      |
 | NI (number of bytecode instructions)      | 6359    |
 | LOC (non comment non blank lines of code) | ~2734   |
+
+## After Changes2
+
+| Metric                                    | Measure |
+| ----------------------------------------- | ------- |
+| Packages                                  | 5       |
+| Classes (outer)                           | 38      |
+| Classes (all)                             | 38      |
+| NI (number of bytecode instructions)      | 7173    |
+| LOC (non comment non blank lines of code) | ~3084   |
 
 # Items with XS
 
@@ -77,13 +87,28 @@ Version: 1.0
 | ezshop.it.polito.ezshop.data.EZShop.modifyCustomer(java.lang.Integer, java.lang.String, java.lang.String):boolean    | 0%      |  17  | 160  | 18   |
 | ezshop.it.polito.ezshop.data.EZShop.applyDiscountRateToProduct(java.lang.Integer, java.lang.String, double):boolean  | 0%      |  16  | 147  | 9    |
 
+## After changes2
+
+| Item                                                                                                                 |  Tangle | Fat  | Size | XS   |
+| -------------------------------------------------------------------------------------------------------------------- | ------- | ---- | ---- | ---- |
+| ezshop.it.polito.ezshop.data.EZShop                                                                                  | 0%      |  176 | 6118 | 1946 |
+| ezshop.it.polito.ezshop.data.EZShop.endReturnTransaction(java.lang.Integer, boolean):boolean                         | 0%      |   25 | 309  | 123  |
+| ezshop.it.polito.ezshop.data.EZShop.returnProduct(java.lang.Integer, java.lang.String, int):boolean                  | 0%      |   22 | 222  | 70   |
+| ezshop.it.polito.ezshop.data.EZShop.recordOrderArrivalRFID(java.lang.Integer, java.lang.String):boolean              | 0%      |   21 | 225  | 64   |
+| ezshop.it.polito.ezshop.data.EZShop.deleteProductFromSale(java.lang.Integer, java.lang.String, int):boolean          | 0%      |   21 | 192  | 54   |
+| ezshop.it.polito.ezshop.data.EZShop.addProductToSale(java.lang.Integer, java.lang.String, int):boolean               | 0%      |   20 | 207  | 51   |
+| ezshop.it.polito.ezshop.data.EZShop.addProductToSaleRFID(java.lang.Integer, java.lang.String):boolean                | 0%      |   19 | 195  | 41   |
+| ezshop.it.polito.ezshop.data.EZShop.returnProductRFID(java.lang.Integer, java.lang.String):boolean                   | 0%      |   18 | 185  | 30   |
+| ezshop.it.polito.ezshop.data.EZShop.deleteProductFromSaleRFID(java.lang.Integer, java.lang.String):boolean           | 0%      |   17 | 186  | 21   |
+| ezshop.it.polito.ezshop.data.EZShop.deleteSaleTransaction(java.lang.Integer):boolean                                 | 0%      |   17 | 169  | 19   |
+
 # Package level tangles
 
 ## Before untangle
 
 ![diagram-without-untagle](assets/img/tangle-diagram.png)
 
-## After untangle
+## After untangle and Changes2
 
 No tangles found.
 

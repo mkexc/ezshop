@@ -2,20 +2,16 @@
 
 Authors: Roberto Alessi (290180), Michelangelo Bartolomucci (292422), Gianvito Marzo (281761), Roberto Torta (290184)
 
-Date: 03/06/2021
+Date: 10/06/2021
 
-Version: 1.1
+Version: 1.2
 
 # Contents
 
 - [Dependency graph](#dependency graph)
-
 - [Integration approach](#integration)
-
 - [Tests](#tests)
-
 - [Scenarios](#scenarios)
-
 - [Coverage of scenarios and FR](#scenario-coverage)
 - [Coverage of non-functional requirements](#nfr-coverage)
 - [Coverage of methods and code lines](#Coverage-of-methods-and-code-lines)
@@ -246,6 +242,7 @@ This step corresponds to Unit testing.
 |                                      * |RFIDNotPresent                  |
 |                                      * |notStartedSaleTransaction       |
 |                                      * |correctCase                     |
+|                                      * |testMultipleAddSameProductToSale|
 | AcceptableApplyDiscountRateToProduct   |authTest                        |
 |                                      * |invalidTransactionId            |
 |                                      * |invalidProductCodeException     |
@@ -317,10 +314,11 @@ This step corresponds to Unit testing.
 |                                      * |testInvalidRFID                 |
 |                                      * |testInvalidQuantity             |
 |                                      * |testIdCorrect                   |
-|                                      * |testNoProductInProductType      |
 |                                      * |testNoRFIDInSaleTransaction     |
 |                                      * |testNoReturnTransactionId       |
 |                                      * |testCorrectCase                 |
+|                                      * |testMultipleReturnSameRFID      |
+|                                      * |testMultipleReturnTransaction   |
 
 ## Step 6
 
@@ -435,13 +433,12 @@ This step corresponds to Unit testing.
 | 7              | C start return transaction                                                               |
 | 8              | C return a product by RFID                                                               |
 
-
 # Coverage of Scenarios and FR
 
 We define coverage of Scenarios and FRs in relation to test classes, instead of single JUnit test.
 
 | Scenario ID | Functional Requirements covered                                                           | JUnit Test(s)                                                                                                                                                                                                                                                                                                                                                                         |
-| ----------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------                                                                                                  |
+| ----------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1.1         | FR3.1                                                                                     | AcceptableCreateProductType                                                                                                                                                                                                                                                                                                                                                           |
 | 1.2         | FR3.1                                                                                     | AcceptableUpdatePosition                                                                                                                                                                                                                                                                                                                                                              |
 | 1.3         | FR3.1                                                                                     | AcceptableUpdateProduct                                                                                                                                                                                                                                                                                                                                                               |
@@ -490,7 +487,7 @@ We define coverage of Scenarios and FRs in relation to test classes, instead of 
 | NFR5                       | AcceptableCreditCard.testValidateWithLuhn                                                            |
 | NFR6                       | AcceptableAttachCardToCustomer.invalidCardId                                                         |
 
-![Test timing from IDE: IntelliJ IDEA](assets/img/testTiming.jpg)
+![Test timing from IDE: IntelliJ IDEA](assets/img/testTiming.png)
 Here's the test's timing, the complete test report is report is linked in the table above (NFR2)
 
 # Coverage of methods and code lines
