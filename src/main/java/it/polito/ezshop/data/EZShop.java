@@ -87,6 +87,9 @@ public class EZShop implements EZShopInterface{
             sql = "DELETE FROM creditCard WHERE true";
             st = conn.prepareStatement(sql);
             st.executeUpdate();
+            sql = "DELETE FROM product WHERE true";
+            st = conn.prepareStatement(sql);
+            st.executeUpdate();
 
             sql = "UPDATE sqlite_sequence SET seq=0 WHERE name!='returnTransaction'";
             st = conn.prepareStatement(sql);
@@ -855,10 +858,109 @@ public class EZShop implements EZShopInterface{
     }
 
     @Override
-    public boolean recordOrderArrivalRFID(Integer orderId, String RFIDfrom) throws InvalidOrderIdException, UnauthorizedException, 
-InvalidLocationException, InvalidRFIDException {
-        return false;
+    public boolean recordOrderArrivalRFID(Integer orderId, String RFIDfrom) throws InvalidOrderIdException, UnauthorizedException, InvalidLocationException, InvalidRFIDException {
+        // check role of the user (only administrator, cashier and shopManager)
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && (!loggedUser.getRole().equals("ShopManager"))))
+            throw new UnauthorizedException();
+
+        // orderId not null, not <=0
+        if(orderId == null || orderId <= 0){
+            throw new InvalidOrderIdException();
+        }
+
+        if(RFIDfrom== null || RFIDfrom.length()!=12 || !RFIDfrom.matches("^[0-9]{12}$"))
+        {
+            throw new InvalidRFIDException();
+        }
+
+        int quantity;
+        String productCode;
+        ProductType product;
+        //String actualStatus;
+        try {
+            String sql = "SELECT quantity, productCode FROM 'order' WHERE id=? AND status='PAYED'";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1, orderId);
+            ResultSet rs = st.executeQuery();
+
+            if(!rs.next())
+                // no orderId found
+                return false;
+
+            quantity = rs.getInt("quantity");
+            productCode = rs.getString("productCode");
+
+            //actualStatus = rs.getString("status");
+            product = this.getProductTypeByBarCode(productCode);
+        } catch (Exception e) {
+            return false;
+        }
+
+        String sql2;
+        for(int i=0;i<quantity;i++){
+            try {
+                sql2 = "SELECT * FROM product WHERE RFID=?";
+                PreparedStatement st2 = conn.prepareStatement(sql2);
+                st2.setString(1, String.format("%1$12d", Integer.parseInt(RFIDfrom) + i).replace(' ', '0'));
+
+                ResultSet rs2 = st2.executeQuery();
+                if(rs2.isBeforeFirst()){
+                    throw new InvalidRFIDException();
+                }
+
+            }catch(SQLException e){
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        if(product.getLocation() == null || product.getLocation().equals("")){
+            throw new InvalidLocationException();
+        }
+
+        try {
+            this.updateQuantity(product.getId(), quantity);
+            isInventoryUpdated = false;
+        } catch(Exception e){
+            return false;
+        }
+
+        // set order status to COMPLETED
+        try {
+            String sql="UPDATE 'order' SET status=? WHERE id=?";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1,"COMPLETED");
+            st.setInt(2,orderId);
+            int updatedRows = st.executeUpdate();
+
+            if(updatedRows == 0)
+                return false;
+
+            isOrderListUpdated = false;
+
+        } catch (SQLException e) {
+            return false;
+        }
+
+        //RFID UPDATE
+        String sql3;
+        for(int i=0;i<quantity;i++){
+            try {
+                sql3 = "INSERT INTO product(RFID,barcode) VALUES (?,?)";
+                PreparedStatement st3 = conn.prepareStatement(sql3);
+                st3.setString(1, String.format("%1$12d", Integer.parseInt(RFIDfrom) + i).replace(' ', '0'));
+                st3.setString(2, productCode);
+                st3.executeUpdate();
+            }catch(SQLException e){
+                e.printStackTrace();
+                return false;
+            }
+        }
+        
+        return true;
+
     }
+
     @Override
     public List<Order> getAllOrders() throws UnauthorizedException {
         // check role of the user (only administrator, cashier and shopManager)
@@ -1360,10 +1462,94 @@ InvalidLocationException, InvalidRFIDException {
     }
 
     @Override
-    public boolean addProductToSaleRFID(Integer transactionId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, InvalidQuantityException, UnauthorizedException{
-        return false;
+    public boolean addProductToSaleRFID(Integer transactionId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, InvalidQuantityException, UnauthorizedException {
+        //check authorization
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
+            throw new UnauthorizedException();
+        //check id
+        if(transactionId == null || transactionId <= 0)
+            throw new InvalidTransactionIdException();
+
+        if(RFID== null || RFID.length()!=12 || !RFID.matches("^[0-9]{12}$")) {
+            throw new InvalidRFIDException();
+        }
+
+        String productCode;
+        try {
+            String sql = "SELECT barcode FROM product WHERE RFID=?";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, RFID);
+            ResultSet rs = st.executeQuery();
+            if(!rs.isBeforeFirst())
+                // no barcode found
+                return false;
+            rs.next();
+
+            productCode = rs.getString("barcode");
+        } catch (Exception e) {
+            return false;
+        }
+
+        ProductType product;
+
+        //check transaction status
+        try {
+            String sql = "SELECT id from SaleTransaction WHERE id=? AND status='OPEN'";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1,transactionId);
+            ResultSet rs=st.executeQuery();
+            if(!rs.isBeforeFirst())
+                return false;
+        }catch(SQLException e){
+            // transactionId not an existing or open transaction
+            return false;
+        }
+
+        String actualRole = loggedUser.getRole();
+        //check presence of the product;
+        try {
+            loggedUser.setRole("Administrator");
+            product = getProductTypeByBarCode(productCode);
+            if(product == null) {
+                loggedUser.setRole(actualRole);
+                return false;
+            }
+        } catch(Exception e) {
+            loggedUser.setRole(actualRole);
+            return false;
+        }
+        // check availability of the product
+        try {
+            loggedUser.setRole("Administrator");
+            // eventually decrease amount of product if available
+            if (!this.updateQuantity(product.getId(),-1)){
+                loggedUser.setRole(actualRole);
+                return false;
+            }
+            isInventoryUpdated = false;
+        } catch(Exception e){
+            loggedUser.setRole(actualRole);
+            return false;
+        }
+
+        loggedUser.setRole(actualRole);
+
+        // insert a new product entry for a new sale transaction
+        try {
+            String sql2 = "INSERT INTO productEntry (transactionId, barcode, amount, RFID) VALUES (?,?,?,?)";
+            PreparedStatement st = conn.prepareStatement(sql2);
+            st.setInt(1, transactionId);
+            st.setString(2, productCode);
+            st.setInt(3, 1);
+            st.setString(4, RFID);
+            int updatedRows = st.executeUpdate();
+
+            return !(updatedRows == 0);
+        } catch(SQLException e) {
+            return false;
+        }
     }
-    
+
     @Override
     public boolean deleteProductFromSale(Integer transactionId, String productCode, int amount) throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException, UnauthorizedException {
         //check authorization
@@ -1469,8 +1655,92 @@ InvalidLocationException, InvalidRFIDException {
     }
 
     @Override
-    public boolean deleteProductFromSaleRFID(Integer transactionId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, InvalidQuantityException, UnauthorizedException{
-        return false;
+    public boolean deleteProductFromSaleRFID(Integer transactionId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, InvalidQuantityException, UnauthorizedException {
+        //check authorization
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
+            throw new UnauthorizedException();
+        //check id
+        if(transactionId == null || transactionId <= 0)
+            throw new InvalidTransactionIdException();
+
+        if(RFID== null || RFID.length()!=12 || !RFID.matches("^[0-9]{12}$")) {
+            throw new InvalidRFIDException();
+        }
+
+        String productCode;
+        try {
+            String sql = "SELECT barcode FROM product WHERE RFID=?";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, RFID);
+            ResultSet rs = st.executeQuery();
+            if(!rs.isBeforeFirst())
+                // no barcode found
+                return false;
+            rs.next();
+
+            productCode = rs.getString("barcode");
+        } catch (Exception e) {
+            return false;
+        }
+
+        ProductType product;
+
+        //check transaction status
+        try {
+            String sql = "SELECT id, status from SaleTransaction WHERE id=? AND status='OPEN'";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1,transactionId);
+            ResultSet rs = st.executeQuery();
+            if(!rs.next())
+                return false;
+//            if(rs.getInt("id") != transactionId){
+//                return false;
+//            }
+        }catch(SQLException e){
+            // transactionId not an existing or open transaction
+            return false;
+        }
+
+        String actualRole = loggedUser.getRole();
+        //check presence of the product;
+        try {
+            loggedUser.setRole("Administrator");
+            product = getProductTypeByBarCode(productCode);
+            if(product == null) {
+                loggedUser.setRole(actualRole);
+                return false;
+            }
+        } catch(Exception e) {
+            loggedUser.setRole(actualRole);
+            return false;
+        }
+
+        loggedUser.setRole(actualRole);
+
+        //update quantity
+        try {
+            // delete row if productEntry amount is 0
+            String sql3 = "DELETE FROM productEntry WHERE transactionId=? AND barcode=? AND RFID=?";
+            PreparedStatement st2 = conn.prepareStatement(sql3);
+            st2.setInt(1,transactionId);
+            st2.setString(2,productCode);
+            st2.setString(3,RFID);
+            st2.executeUpdate();
+
+            loggedUser.setRole("Administrator");
+            // eventually increase amount of product available in inventory
+            if (!this.updateQuantity(product.getId(), 1)){
+                loggedUser.setRole(actualRole);
+                isInventoryUpdated = false;
+                return false;
+            }
+            isInventoryUpdated = false;
+            return true;
+
+        }catch(Exception e){
+            loggedUser.setRole(actualRole);
+            return false;
+        }
     }
 
     @Override
@@ -1973,11 +2243,86 @@ InvalidLocationException, InvalidRFIDException {
     }
 
     @Override
-    public boolean returnProductRFID(Integer returnId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, UnauthorizedException 
-    {
-        return false;
-    }
+    public boolean returnProductRFID(Integer returnId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, UnauthorizedException {
+        //check authorization
+        if(loggedUser == null || (!loggedUser.getRole().equals("Administrator") && !loggedUser.getRole().equals("ShopManager") && !loggedUser.getRole().equals("Cashier")))
+            throw new UnauthorizedException();
+        //check id
+        if(returnId == null || returnId <= 0)
+            throw new InvalidTransactionIdException();
 
+        if(RFID== null || RFID.length()!=12 || !RFID.matches("^[0-9]{12}$")) {
+            throw new InvalidRFIDException();
+        }
+
+        // check if return transaction exists and returns its saleTransactionId
+        int saleTransactionId;
+        try {
+            String sql = "SELECT saleTransactionId FROM returnTransaction WHERE id=?";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1,returnId);
+
+            ResultSet rs = st.executeQuery();
+            if(!rs.next())
+                return false;
+            saleTransactionId = rs.getInt("saleTransactionId");
+
+        } catch(SQLException e) {
+            return false;
+        }
+
+        String productCode;
+        try {
+            String sql = "SELECT product.barcode FROM product, productEntry WHERE product.RFID=? AND productEntry.transactionId=? AND product.RFID=productEntry.RFID";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, RFID);
+            st.setInt(2,saleTransactionId);
+            ResultSet rs = st.executeQuery();
+            if(!rs.isBeforeFirst())
+                // no barcode found
+                return false;
+            rs.next();
+
+            productCode = rs.getString("barcode");
+        } catch (Exception e) {
+            return false;
+        }
+
+        // check if there is the product and the proper quantity in the sale transaction
+        double discountOfProduct;
+        try {
+            String sql3 = "SELECT discountRate FROM productEntry WHERE transactionId=? AND barcode=? AND RFID=?";
+            PreparedStatement st3 = conn.prepareStatement(sql3);
+            st3.setInt(1,saleTransactionId);
+            st3.setString(2,productCode);
+            st3.setString(3,RFID);
+            ResultSet rs3 = st3.executeQuery();
+
+            if(!rs3.isBeforeFirst())
+                return false;
+            rs3.next();
+            discountOfProduct = rs3.getDouble("discountRate");
+        }catch(SQLException e) {
+            return false;
+        }
+
+        // insert a new productEntry for returnTransaction if not yet created
+        try {
+            String sql2 = "INSERT INTO productEntry (transactionId, barcode, amount, discountRate, RFID) VALUES (?,?,?,?,?)";
+            PreparedStatement st2 = conn.prepareStatement(sql2);
+            st2.setInt(1,returnId);
+            st2.setString(2,productCode);
+            st2.setInt(3,1);
+            st2.setDouble(4,discountOfProduct);
+            st2.setString(5, RFID);
+
+            int updatedRows = st2.executeUpdate();
+            return !(updatedRows == 0);
+
+        }catch(SQLException e) {
+            return false;
+        }
+    }
 
     @Override
     public boolean endReturnTransaction(Integer returnId, boolean commit) throws InvalidTransactionIdException, UnauthorizedException {
